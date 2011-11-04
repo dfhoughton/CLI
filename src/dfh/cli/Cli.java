@@ -11,12 +11,12 @@ import java.util.TreeMap;
  * @author David Houghton
  * 
  */
-public class Parser {
+public class Cli {
 	private ArrayList<String> argList;
 	private TreeMap<String, Object> commands;
 
-	public Parser parse(String[] args) {
-		Parser p = new Parser();
+	public Cli parse(String[] args) {
+		Cli p = new Cli();
 		p.commands = new TreeMap<String, Object>();
 		p.argList = new ArrayList<String>(args.length);
 		boolean endCommands = false;
@@ -44,10 +44,17 @@ public class Parser {
 		return p;
 	}
 
-	public boolean getBoolean(String string) {
+	public Boolean bool(String string) {
 		if (commands.containsKey(string)) {
 			return new Boolean((String) commands.get(string));
 		}
-		return false;
+		return null;
+	}
+
+	public Integer integer(String string) {
+		if (commands.containsKey(string)) {
+			return new Integer((String) commands.get(string));
+		}
+		return null;
 	}
 }
