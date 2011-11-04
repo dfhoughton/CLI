@@ -1,0 +1,15 @@
+dfh.cli
+=======
+
+A small project to facilitate writing CLI programs in Java. The aim
+is to provide a terse, declarative means of specifying commands, constraints
+among commands, usage information, and so forth such that a particular CLI
+program isn't cluttered with the argument parsing code and you can easily find
+the logic of the program itself. Also, you needn't spend much time writing
+the parsing code, you just type a terse *declaration* of how it is to occur and
+get on with things.
+
+As of now this is a placeholder for features. 
+
+David F. Houghton
+4 November 2011
