@@ -9,7 +9,7 @@ the logic of the program itself. Also, you needn't spend much time writing
 the parsing code, you just type a terse *declaration* of how it is to occur and
 get on with things.
 
-As of now this is a placeholder for features. 
+This project is inspried by Perl modules such as Getopt::Long::Descriptive.
 
 David F. Houghton
 4 November 2011
