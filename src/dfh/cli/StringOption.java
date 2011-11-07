@@ -4,7 +4,9 @@ public class StringOption extends Option<String> {
 
 	@Override
 	public String description() {
-		return "string option";
+		if (description == null)
+			return "string option";
+		return description;
 	}
 
 	@Override

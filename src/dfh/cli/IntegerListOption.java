@@ -10,7 +10,9 @@ public class IntegerListOption extends CollectionOption<List<Integer>> {
 
 	@Override
 	public String description() {
-		return "a list of integers";
+		if (description == null)
+			return "a list of integers";
+		return description;
 	}
 
 	@Override

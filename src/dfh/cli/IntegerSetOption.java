@@ -10,7 +10,9 @@ public class IntegerSetOption extends CollectionOption<Set<Integer>> {
 
 	@Override
 	public String description() {
-		return "a set of integers";
+		if (description == null)
+			return "a set of integers";
+		return description;
 	}
 
 	@Override

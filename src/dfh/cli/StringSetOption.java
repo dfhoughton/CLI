@@ -10,7 +10,9 @@ public class StringSetOption extends CollectionOption<Set<String>> {
 
 	@Override
 	public String description() {
-		return "a set of strings";
+		if (description == null)
+			return "a set of strings";
+		return description;
 	}
 
 	@Override

@@ -10,7 +10,9 @@ public class NumberListOption extends CollectionOption<List<Double>> {
 
 	@Override
 	public String description() {
-		return "a list of floating point numbers";
+		if (description == null)
+			return "a list of floating point numbers";
+		return description;
 	}
 
 	@Override

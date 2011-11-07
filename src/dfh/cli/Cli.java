@@ -3,11 +3,13 @@ package dfh.cli;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -52,17 +54,34 @@ public class Cli {
 		USAGE,
 	};
 
+	/**
+	 * If the {@link Modifiers#HELP} modifier is provided to
+	 * {@link Cli#Cli(Object[][][], Modifiers...)}, these are the preferred
+	 * flags to trigger help.
+	 */
+	public static final String[] PREFERRED_HELP_FLAGS = { "help", "h", "?" };
+	/**
+	 * If the {@link Modifiers#HELP} modifier is provided to
+	 * {@link Cli#Cli(Object[][][], Modifiers...)} and none of
+	 * {@link #PREFERRED_HELP_FLAGS} is available, these are the preferred flags
+	 * to trigger help.
+	 */
+	public static final String[] AUXILIARY_HELP_FLAGS = { "usage", "info",
+			"how-to-use" };
+
 	private List<String> argList;
 	private LinkedHashMap<String, Integer> argNames = new LinkedHashMap<String, Integer>();
 	private boolean isSlurpy = true;
 	private TreeMap<String, Option<?>> options = new TreeMap<String, Option<?>>();
+	private BooleanOption helpOption = null;
 	private List<String> errors = new ArrayList<String>();
 	private String name = "EXECUTABLE";
-	private String fullUsage = "";
+	private String usage = "", abstr = "";
 	private boolean argsSpecified = false;
 	private boolean nameSpecified = false;
 	private boolean usageSpecified = false;
 	private boolean slurpRequired = false;
+	private boolean throwException = false;
 	/**
 	 * Option so marked must be specified on command line.
 	 */
@@ -76,15 +95,65 @@ public class Cli {
 	 */
 	public static final int SET = 6;
 
-	public Cli(Object[][][] spec) {
-		try {
-			for (Object[][] cmd : spec)
+	public Cli(Object[][][] spec, Modifiers... mods) {
+		for (Object[][] cmd : spec) {
+			try {
 				parseSpec(cmd);
-		} catch (ValidationException e) {
-			errors.add(e.getMessage());
+			} catch (ValidationException e) {
+				errors.add(e.getMessage());
+			}
+		}
+		boolean added = false;
+		for (Modifiers m : mods) {
+			if (m == Modifiers.THROW_EXCEPTION)
+				throwException = true;
+			else if (m == Modifiers.HELP) {
+				if (added)
+					continue;
+				helpOption = new BooleanOption();
+				helpOption.setDescription("print usage information");
+				try {
+					for (String s : PREFERRED_HELP_FLAGS)
+						added = addHelp(added, s);
+					if (!added) {
+						for (String auxHelp : AUXILIARY_HELP_FLAGS) {
+							added = addHelp(added, auxHelp);
+							if (added)
+								break;
+						}
+					}
+				} catch (ValidationException e) {
+					errors.add(e.getMessage());
+				}
+				if (!added) {
+					StringBuilder b = new StringBuilder();
+					b.append("could not add help command under any of the following names: ");
+					boolean nonInitial = false;
+					for (String s : PREFERRED_HELP_FLAGS) {
+						if (nonInitial)
+							b.append(", ");
+						else
+							nonInitial = true;
+						b.append(s);
+					}
+					for (String s : AUXILIARY_HELP_FLAGS)
+						b.append(", ").append(s);
+					errors.add(b.toString());
+				}
+			}
 		}
 		if (!errors.isEmpty())
 			usage(1);
+	}
+
+	protected boolean addHelp(boolean added, String s)
+			throws ValidationException {
+		if (!options.containsKey(s)) {
+			helpOption.addName(s);
+			options.put(s, helpOption);
+			added = true;
+		}
+		return added;
 	}
 
 	private void parseSpec(Object[][] cmd) throws ValidationException {
@@ -147,38 +216,49 @@ public class Cli {
 					throw new ValidationException(
 							"usage details specified more than once");
 				usageSpecified = true;
-				if (cmd[0].length == 2) {
+				boolean usageDefined = false;
+				if (cmd[0].length > 1) {
 					if (cmd[0][1] instanceof String)
-						fullUsage = (String) cmd[0][1];
+						abstr = (String) cmd[0][1];
 					else
 						throw new ValidationException(
-								"usage information must be provided as a String");
-				} else if (cmd[1].length == 1) {
-					if (cmd[1][0] instanceof String) {
-						try {
-							InputStream is = Cli.class.getClassLoader()
-									.getResourceAsStream((String) cmd[1][0]);
-							BufferedInputStream bis = new BufferedInputStream(
-									is);
-							ByteArrayOutputStream baos = new ByteArrayOutputStream();
-							byte[] buf = new byte[1024];
-							int count;
-							while ((count = bis.read(buf)) > -1) {
-								baos.write(buf, 0, count);
-							}
-							bis.close();
-							fullUsage = new String(baos.toByteArray());
-						} catch (Exception e) {
+								"abstract must be provided as a String");
+					if (cmd[0].length > 2) {
+						if (cmd[0][2] instanceof String)
+							usage = (String) cmd[0][1];
+						else
 							throw new ValidationException(
-									"unable to load usage details from resource "
-											+ e);
+									"usage must be provided as a String");
+						usageDefined = true;
+					}
+				}
+				if (!usageDefined) {
+					if (cmd.length > 1 && cmd[1].length > 0)
+						if (cmd[1][0] instanceof String) {
+							try {
+								InputStream is = Cli.class
+										.getClassLoader()
+										.getResourceAsStream((String) cmd[1][0]);
+								BufferedInputStream bis = new BufferedInputStream(
+										is);
+								ByteArrayOutputStream baos = new ByteArrayOutputStream();
+								byte[] buf = new byte[1024];
+								int count;
+								while ((count = bis.read(buf)) > -1) {
+									baos.write(buf, 0, count);
+								}
+								bis.close();
+								usage = new String(baos.toByteArray());
+							} catch (Exception e) {
+								throw new ValidationException(
+										"unable to load usage details from resource "
+												+ e);
+							}
 						}
-					} else
-						throw new ValidationException(
-								"external resource providing usage information expected to be specified as a URL string");
-				} else
+				}
+				if (!usageDefined && "".equals(abstr))
 					throw new ValidationException(
-							"only one element expected in external usage resource specification");
+							"no usage or abstract specified");
 				break;
 			}
 		} else {
@@ -199,7 +279,7 @@ public class Cli {
 								"description and name element of spec for --"
 										+ opt.name
 										+ " must contain only a description and an optional argument name");
-					opt.setOptionDescription(descAndName[0].toString());
+					opt.setDescription(descAndName[0].toString());
 					if (descAndName.length == 2)
 						opt.setArgDescription(descAndName[1].toString());
 				}
@@ -294,7 +374,7 @@ public class Cli {
 							+ opt.name);
 				if (Integer.class.equals(o))
 					continue;
-				if (ValidationRule.class == o.getClass())
+				if (o instanceof ValidationRule<?>)
 					opt.addValidationRule((ValidationRule<?>) o);
 				else
 					throw new ValidationException(
@@ -331,6 +411,8 @@ public class Cli {
 			} catch (ValidationException e) {
 				errors.add(e.getMessage());
 			}
+			if (lastCommand != null && lastCommand == helpOption)
+				usage(0);
 		}
 		if (argNames.size() > 0) {
 			if (argNames.size() < argList.size()) {
@@ -361,7 +443,7 @@ public class Cli {
 				}
 				opt.terminalValidation();
 			} catch (ValidationException e) {
-				errors.add(e.getMessage());
+				errors.add("--" + opt.name + ": " + e.getMessage());
 			}
 		}
 		if (!errors.isEmpty())
@@ -369,12 +451,23 @@ public class Cli {
 	}
 
 	public void usage(int status) {
-		System.err.println("ERRORS");
-		for (String error : errors)
-			System.err.printf("\t%s%n", error);
-		System.err.println();
-		int c1 = 0, c2 = 0;
-		for (Option<?> c : options.values()) {
+		PrintStream out = null;
+		ByteArrayOutputStream baos = null;
+		if (throwException) {
+			baos = new ByteArrayOutputStream();
+			out = new PrintStream(baos);
+		} else
+			out = status == 0 ? System.out : System.err;
+		if (!errors.isEmpty()) {
+			out.println("ERRORS");
+			for (String error : errors)
+				out.printf("\t%s%n", error);
+			out.println();
+		}
+		int c1 = 0, c2 = 0, c3 = 0;
+		Set<Option<?>> optionSet = new LinkedHashSet<Option<?>>(
+				options.values());
+		for (Option<?> c : optionSet) {
 			String optDesc = c.optionDescription();
 			String argDescription = c.argDescription();
 			if (optDesc.length() > c1)
@@ -382,14 +475,35 @@ public class Cli {
 			if (argDescription.length() > c2)
 				c2 = argDescription.length();
 		}
-		String format = "\t%" + c1 + "s %" + c2 + "s  %s%n";
-		System.err.printf("USAGE: %s", name());
-		for (Option<?> c : options.values()) {
+		String format = "\t%-" + c1 + "s %-" + c2 + "s  %s%s%n";
+		out.printf("USAGE: %s%s%s%n%n", name(), optDigest(), argDigest());
+		if (!"".equals(abstr))
+			out.printf("\t%s%n%n", abstr);
+		for (Option<?> c : optionSet) {
 			String optDesc = c.optionDescription();
 			String argDescription = c.argDescription();
-			System.err.printf(format, optDesc, argDescription, c.description());
+			out.printf(format, optDesc, argDescription, c.description(),
+					c.def == null ? "" : "; default: " + c.def);
+		}
+		if (status == 0 && !"".equals(usage))
+			out.printf("%n%s%n", usage);
+		if (throwException) {
+			out.close();
+			throw new RuntimeException(new String(baos.toByteArray()));
 		}
 		System.exit(status);
+	}
+
+	private String optDigest() {
+		if (options.isEmpty())
+			return "";
+		return " [options]";
+	}
+
+	private Object argDigest() {
+		if (argNames.isEmpty() && !isSlurpy)
+			return "";
+		return " [args]"; // TODO summarize arguments
 	}
 
 	private String name() {
@@ -421,7 +535,7 @@ public class Cli {
 			Option<?> opt = options.get(string);
 			try {
 				BooleanOption bopt = (BooleanOption) opt;
-				return bopt.value;
+				return bopt.value();
 			} catch (ClassCastException e) {
 				throw new RuntimeException("--" + opt.name + " not boolean");
 			}
@@ -434,7 +548,7 @@ public class Cli {
 			Option<?> opt = options.get(string);
 			try {
 				IntegerOption iopt = (IntegerOption) opt;
-				return iopt.value;
+				return iopt.value();
 			} catch (ClassCastException e) {
 				throw new RuntimeException("--" + opt.name + " not integer");
 			}

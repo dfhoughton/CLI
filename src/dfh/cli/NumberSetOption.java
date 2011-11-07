@@ -10,7 +10,9 @@ public class NumberSetOption extends CollectionOption<Set<Double>> {
 
 	@Override
 	public String description() {
-		return "a set of floating point numbers";
+		if (description == null)
+			return "a set of floating point numbers";
+		return description;
 	}
 
 	@Override

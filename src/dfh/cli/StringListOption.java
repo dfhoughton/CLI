@@ -10,7 +10,9 @@ public class StringListOption extends CollectionOption<List<String>> {
 
 	@Override
 	public String description() {
-		return "a list of strings";
+		if (description == null)
+			return "a list of strings";
+		return description;
 	}
 
 	@Override

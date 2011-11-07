@@ -17,6 +17,7 @@ public abstract class Option<K> {
 	protected K def;
 	protected String argDescription = "arg";
 	protected String optionDescription;
+	protected String description;
 	protected boolean hasArgument = true;
 	protected boolean argumentOptional = false;
 	protected boolean required = false;
@@ -31,10 +32,6 @@ public abstract class Option<K> {
 
 	public void setArgDescription(String argDescription) {
 		this.argDescription = argDescription;
-	}
-
-	public void setOptionDescription(String optionDescription) {
-		this.optionDescription = optionDescription;
 	}
 
 	public void setHasArgument(boolean hasArgument) {
@@ -53,7 +50,11 @@ public abstract class Option<K> {
 
 	public void addName(Object n) throws ValidationException {
 		if (n instanceof String) {
-			longNames.add(n.toString());
+			String s = (String) n;
+			if (s.length() == 1)
+				shortNames.add(s.charAt(0));
+			else
+				longNames.add(s);
 		} else if (n instanceof Character) {
 			shortNames.add((Character) n);
 		} else {
@@ -91,11 +92,10 @@ public abstract class Option<K> {
 					b.append(" | ");
 				b.append("--").append(s);
 			}
-			if (!shortNames.isEmpty()) {
+			for (Character c : shortNames) {
 				if (b.length() > 0)
-					b.append(" | -");
-				for (Character c : shortNames)
-					b.append(c);
+					b.append(" | ");
+				b.append("-").append(c);
 			}
 			optionDescription = b.toString();
 		}
@@ -105,8 +105,8 @@ public abstract class Option<K> {
 	public String argDescription() {
 		if (hasArgument()) {
 			if (argumentOptional())
-				return '[' + argDescription + ']';
-			return argDescription;
+				return "[<" + argDescription + ">]";
+			return '<' + argDescription + '>';
 		}
 		return "";
 	}
@@ -125,7 +125,7 @@ public abstract class Option<K> {
 
 	final void terminalValidation() throws ValidationException {
 		for (ValidationRule<K> v : validationRules) {
-			v.test(value);
+			v.test(value());
 		}
 	}
 
@@ -156,5 +156,9 @@ public abstract class Option<K> {
 
 	void assignDefault() {
 		value = def;
+	}
+
+	public void setDescription(String string) {
+		this.description = string;
 	}
 }

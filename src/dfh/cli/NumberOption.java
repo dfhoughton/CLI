@@ -4,7 +4,9 @@ public class NumberOption extends Option<Double> {
 
 	@Override
 	public String description() {
-		return "floating point numerical option";
+		if (description == null)
+			return "floating point numerical option";
+		return description;
 	}
 
 	@Override

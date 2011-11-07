@@ -9,7 +9,9 @@ public class BooleanOption extends Option<Boolean> {
 
 	@Override
 	public String description() {
-		return "a boolean option; default value is " + def;
+		if (description == null)
+			return "a boolean option";
+		return description;
 	}
 
 	@Override

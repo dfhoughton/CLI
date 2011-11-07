@@ -9,6 +9,9 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 
 import dfh.cli.Cli;
+import dfh.cli.Cli.Opt;
+import dfh.cli.Modifiers;
+import dfh.cli.ValidationException;
 
 public class specParse {
 	@Test
@@ -80,17 +83,35 @@ public class specParse {
 			fail("could not parse spec");
 		}
 	}
-	
+
 	@Test
 	public void stringPresent() {
 		try {
 			Object[][][] spec = { { { "foo", String.class } } };
 			Cli cli = new Cli(spec);
-			cli.parse(new String[] {"--foo", "foo"});
+			cli.parse(new String[] { "--foo", "foo" });
 			assertNotNull(cli.string("foo"));
 		} catch (Exception e) {
 			fail("could not parse spec");
 		}
 	}
 
+	@Test
+	public void integerError() {
+		try {
+			Object[][][] spec = {
+					//
+					{ { "foo", Integer.class, "quux" },
+							{ "some nonsense", "bar" } },//
+					{ { Opt.NAME, "baz" } },//
+					{ { Opt.ARGS } },//
+					{ { Opt.USAGE, "waste time" } },//
+			};
+			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			cli.parse(new String[] { "--foo", "3.3" });
+			fail("did not recognize 3.3 as non-integer");
+		} catch (RuntimeException e) {
+			System.err.println(e.getMessage());
+		}
+	}
 }

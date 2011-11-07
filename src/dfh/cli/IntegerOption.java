@@ -4,7 +4,9 @@ public class IntegerOption extends Option<Integer> {
 
 	@Override
 	public String description() {
-		return "whole number option";
+		if (description == null)
+			return "whole number option";
+		return description;
 	}
 
 	@Override
