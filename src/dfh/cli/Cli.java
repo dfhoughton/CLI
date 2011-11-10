@@ -468,6 +468,16 @@ public class Cli {
 			usage(1);
 	}
 
+	/**
+	 * Prints usage information to default stream and exits either by throwing a
+	 * {@link RuntimeException}, if {@link Modifiers#THROW_EXCEPTION} was
+	 * provided in {@link Cli#Cli(Object[][][], Modifiers...)}, or by calling
+	 * {@link System#exit(int)}.
+	 * 
+	 * @param status
+	 *            if equals 0 is equivalent to calling <code>--help</code>;
+	 *            errors only output if <code>status</code> is greater than 0
+	 */
 	public void usage(int status) {
 		PrintStream out = null;
 		ByteArrayOutputStream baos = null;
@@ -476,7 +486,26 @@ public class Cli {
 			out = new PrintStream(baos);
 		} else
 			out = status == 0 ? System.out : System.err;
-		if (!errors.isEmpty()) {
+		usage(status, out);
+		if (throwException) {
+			out.close();
+			throw new RuntimeException(new String(baos.toByteArray()));
+		}
+		System.exit(status);
+	}
+
+	/**
+	 * Print usage information to given {@link PrintStream}.
+	 * <p>
+	 * 
+	 * @param status
+	 *            if equals 0 is equivalent to calling <code>--help</code>;
+	 *            errors only output if <code>status</code> is greater than 0
+	 * @param out
+	 *            sink for usage information
+	 */
+	public void usage(int status, PrintStream out) {
+		if (!(status == 0 || errors.isEmpty())) {
 			out.println("ERRORS");
 			for (String error : errors)
 				out.printf("\t%s%n", error);
@@ -505,11 +534,6 @@ public class Cli {
 		}
 		if (status == 0 && !"".equals(usage))
 			out.printf("%n%s%n", usage);
-		if (throwException) {
-			out.close();
-			throw new RuntimeException(new String(baos.toByteArray()));
-		}
-		System.exit(status);
 	}
 
 	private String optDigest() {
