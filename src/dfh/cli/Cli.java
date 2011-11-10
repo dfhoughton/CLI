@@ -4,8 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -184,7 +186,7 @@ public class Cli {
 				argsSpecified = true;
 				isSlurpy = false;
 				for (int i = 1; i < cmd[0].length; i++) {
-					Object next = cmd[i];
+					Object next = cmd[0][i];
 					if (next instanceof Opt) {
 						if (next == Opt.STAR || next == Opt.PLUS) {
 							if (isSlurpy)
@@ -225,7 +227,7 @@ public class Cli {
 								"abstract must be provided as a String");
 					if (cmd[0].length > 2) {
 						if (cmd[0][2] instanceof String)
-							usage = (String) cmd[0][1];
+							usage = (String) cmd[0][2];
 						else
 							throw new ValidationException(
 									"usage must be provided as a String");
@@ -273,7 +275,7 @@ public class Cli {
 			}
 			if (cmd.length > 1) {
 				Object[] descAndName = cmd[1];
-				if (descAndName.length > 0) {
+				if (descAndName != null && descAndName.length > 0) {
 					if (descAndName.length > 2)
 						throw new ValidationException(
 								"description and name element of spec for --"
@@ -304,9 +306,9 @@ public class Cli {
 			for (Object o : restrictions) {
 				if (o instanceof Integer) {
 					int i = ((Integer) o).intValue();
-					isSet = (i | SET) == SET;
-					isRepeatable = (i | REPEATABLE) == REPEATABLE;
-					isRequired = (i | REQUIRED) == REQUIRED;
+					isSet = (i & SET) == SET;
+					isRepeatable = (i & REPEATABLE) == REPEATABLE;
+					isRequired = (i & REQUIRED) == REQUIRED;
 				}
 			}
 		}
@@ -337,7 +339,8 @@ public class Cli {
 				opt = new IntegerListOption();
 			else
 				opt = new IntegerOption();
-		} else if (cz.equals(Number.class)) {
+		} else if (cz.equals(Number.class) || cz.equals(Double.class)
+				|| cz.equals(Float.class)) {
 			if (isSet)
 				opt = new NumberSetOption();
 			else if (isRepeatable)
@@ -366,13 +369,18 @@ public class Cli {
 						"spec base must consist of strings or characters, optionally followed by a class, optionally followed by a default value");
 			}
 		}
+		if (isRequired && cz.equals(Boolean.class))
+			throw new ValidationException(
+					"--"
+							+ opt.name
+							+ " is boolean and marked as required; these are incompatible");
 		opt.setDefault(def);
 		if (restrictions != null) {
 			for (Object o : restrictions) {
 				if (o == null)
 					throw new ValidationException("null found in spec for --"
 							+ opt.name);
-				if (Integer.class.equals(o))
+				if (Integer.class.equals(o.getClass()))
 					continue;
 				if (o instanceof ValidationRule<?>)
 					opt.addValidationRule((ValidationRule<?>) o);
@@ -386,7 +394,7 @@ public class Cli {
 		return opt;
 	}
 
-	public void parse(String[] args) {
+	public void parse(String... args) {
 		argList = new ArrayList<String>(args.length);
 		boolean endCommands = false;
 		Option<?> lastCommand = null;
@@ -418,14 +426,24 @@ public class Cli {
 			if (argNames.size() < argList.size()) {
 				if (!(isSlurpy && !slurpRequired && argNames.size() == argList
 						.size() - 1)) {
-					List<String> nameList = new ArrayList<String>(
-							argNames.keySet());
-					for (int i = argList.size(), lim = isSlurpy
-							&& !slurpRequired ? argNames.size() - 1 : argNames
-							.size(); i < lim; i++) {
-						errors.add("argument " + nameList.get(i)
-								+ " not defined");
+					StringBuilder b = new StringBuilder();
+					b.append("only expected arguments: ");
+					boolean nonInitial = false;
+					for (String s : argNames.keySet()) {
+						if (nonInitial)
+							b.append(", ");
+						else
+							nonInitial = true;
+						b.append('<').append(s).append('>');
 					}
+					errors.add(b.toString());
+				}
+			} else if (argNames.size() > argList.size()) {
+				List<String> nameList = new ArrayList<String>(argNames.keySet());
+				for (int i = argList.size(), lim = isSlurpy && !slurpRequired ? argNames
+						.size() - 1 : argNames.size(); i < lim; i++) {
+					errors.add("argument " + (i + 1) + ", <" + nameList.get(i)
+							+ ">, not defined");
 				}
 			}
 		}
@@ -436,7 +454,7 @@ public class Cli {
 					if (opt.value == null) {
 						if (opt.def == null)
 							errors.add("--" + opt.name
-									+ " is required but has not been defined");
+									+ " is required but has no defined value");
 						else
 							opt.assignDefault();
 					}
@@ -464,7 +482,7 @@ public class Cli {
 				out.printf("\t%s%n", error);
 			out.println();
 		}
-		int c1 = 0, c2 = 0, c3 = 0;
+		int c1 = 1, c2 = 1;
 		Set<Option<?>> optionSet = new LinkedHashSet<Option<?>>(
 				options.values());
 		for (Option<?> c : optionSet) {
@@ -500,10 +518,15 @@ public class Cli {
 		return " [options]";
 	}
 
-	private Object argDigest() {
-		if (argNames.isEmpty() && !isSlurpy)
-			return "";
-		return " [args]"; // TODO summarize arguments
+	private String argDigest() {
+		if (argNames.isEmpty())
+			return isSlurpy ? (slurpRequired ? " <arg>+" : " <arg>*") : "";
+		StringBuilder b = new StringBuilder();
+		for (String s : argNames.keySet())
+			b.append(" <").append(s).append('>');
+		if (isSlurpy)
+			b.append(slurpRequired ? '+' : '*');
+		return b.toString();
 	}
 
 	private String name() {
@@ -515,12 +538,14 @@ public class Cli {
 		if (s.startsWith("--")) {
 			c = options.get(s.substring(2));
 			if (c == null)
-				throw new ValidationException("unknown option " + s);
+				throw new ValidationException("unknown option --" + s);
 			c.mark();
 		} else {
 			String bundle = s.substring(1);
+			if (bundle.equals("-"))
+				throw new ValidationException("malformed option '-'");
 			for (int i = 0; i < bundle.length(); i++) {
-				String sc = s.substring(i, i + 1);
+				String sc = bundle.substring(i, i + 1);
 				c = options.get(sc);
 				if (c == null)
 					throw new ValidationException("unknown option -" + sc);
@@ -528,6 +553,17 @@ public class Cli {
 			}
 		}
 		return c;
+	}
+
+	/**
+	 * Register an error to report. This is useful if you do additional
+	 * validation beyond what is provided in the spec and find that the
+	 * combination of options provided is inconsistent or unusable in some way.
+	 * 
+	 * @param message
+	 */
+	public void error(String message) {
+		errors.add(message);
 	}
 
 	public Boolean bool(String string) {
@@ -598,6 +634,30 @@ public class Cli {
 		throw new RuntimeException("unknown option --" + string);
 	}
 
+	/**
+	 * Returns collection of values pertaining to a particular option. Throws a
+	 * {@link RuntimeException} if this request does not match the option specs.
+	 * 
+	 * @param string
+	 *            option name
+	 * @return set of type-erased values
+	 */
+	public Collection<?> collection(String string) {
+		Option<?> opt = options.get(string);
+		if (opt != null) {
+			if (opt instanceof IntegerListOption
+					|| opt instanceof IntegerSetOption
+					|| opt instanceof StringListOption
+					|| opt instanceof StringSetOption
+					|| opt instanceof NumberListOption
+					|| opt instanceof NumberSetOption)
+				return (Collection<?>) opt.value();
+			throw new RuntimeException("--" + opt.name
+					+ " is not a repeatable option");
+		}
+		throw new RuntimeException("unknown option --" + string);
+	}
+
 	public String string(String string) {
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
@@ -628,6 +688,13 @@ public class Cli {
 		return argList;
 	}
 
+	/**
+	 * Retrieves an argument by name. If this is a slurpy argument, it retrieves
+	 * the first value specified.
+	 * 
+	 * @param name
+	 * @return value of a given argument
+	 */
 	public String argument(String name) {
 		Integer i = argNames.get(name);
 		if (i == null)

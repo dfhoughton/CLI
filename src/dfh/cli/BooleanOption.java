@@ -3,8 +3,7 @@ package dfh.cli;
 public class BooleanOption extends Option<Boolean> {
 
 	{
-		hasArgument = true;
-		argumentOptional = true;
+		hasArgument = false;
 	}
 
 	@Override

@@ -15,11 +15,10 @@ public abstract class Option<K> {
 
 	protected K value;
 	protected K def;
-	protected String argDescription = "arg";
+	protected String argDescription = "val";
 	protected String optionDescription;
 	protected String description;
 	protected boolean hasArgument = true;
-	protected boolean argumentOptional = false;
 	protected boolean required = false;
 
 	public boolean isRequired() {
@@ -36,10 +35,6 @@ public abstract class Option<K> {
 
 	public void setHasArgument(boolean hasArgument) {
 		this.hasArgument = hasArgument;
-	}
-
-	public void setArgumentOptional(boolean argumentOptional) {
-		this.argumentOptional = argumentOptional;
 	}
 
 	public K value() {
@@ -104,15 +99,9 @@ public abstract class Option<K> {
 
 	public String argDescription() {
 		if (hasArgument()) {
-			if (argumentOptional())
-				return "[<" + argDescription + ">]";
 			return '<' + argDescription + '>';
 		}
 		return "";
-	}
-
-	public boolean argumentOptional() {
-		return argumentOptional;
 	}
 
 	public boolean hasArgument() {
