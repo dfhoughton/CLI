@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="dfh.Cli" basedir="." default="jar">
+	<description>Declarative, non-intrustive CLI command parser.</description>
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="test.dir" value="${basedir}/test" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="test.classes.dir" value="${build.dir}/test-classes" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="doc.dir" value="${basedir}/documentation/html/api" />
+	<path id="junit.path">
+		<pathelement location="/usr/share/java/junit4.jar" />
+	</path>
+	<path id="classpath.test">
+		<pathelement location="${classes.dir}" />
+		<pathelement location="${test.dir}" />
+		<pathelement location="${test.classes.dir}" />
+		<path refid="junit.path" />
+	</path>
+
+	<target name="clean" description="removes anything created by any other ant task">
+		<delete dir="${build.dir}" />
+		<delete dir="${doc.dir}" />
+	</target>
+
+	<target name="compile" description="compile source to bytecode">
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile" description="packages code into jar">
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}" />
+	</target>
+
+	<target name="javadoc" description="API for public and protected methods">
+		<mkdir dir="${doc.dir}" />
+		<javadoc access="protected" destdir="${doc.dir}" author="true" version="true" use="true" windowtitle="dfh.cli">
+			<link href="http://download.oracle.com/javase/6/docs/api/" />
+			<fileset dir="${src.dir}" defaultexcludes="yes">
+				<include name="**/*.java" />
+			</fileset>
+		</javadoc>
+	</target>
+
+	<target name="test-compile" depends="compile" description="compiles junit tests">
+		<mkdir dir="${test.classes.dir}" />
+		<javac srcdir="${test.dir}" destdir="${test.classes.dir}" includeantruntime="false">
+			<classpath refid="classpath.test" />
+		</javac>
+	</target>
+	<target name="test" depends="test-compile" description="runs junit tests">
+		<junit>
+			<classpath refid="classpath.test" />
+			<formatter type="plain" usefile="false" />
+			<test name="dfh.cli.test.CliTest" />
+		</junit>
+	</target>
+</project>
