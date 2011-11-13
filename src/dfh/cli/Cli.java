@@ -4,15 +4,14 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 /**
  * For parsing CLI ARGS.
@@ -54,6 +53,13 @@ public class Cli {
 		 * {@link #useResource}.
 		 */
 		USAGE,
+		/**
+		 * Marks a line of text to be inserted among the lines of the command
+		 * descriptions in the usage information. The second element in this
+		 * array, if present, should be a string providing the text to insert.
+		 * If no string is present, a blank line will be inserted.
+		 */
+		TEXT,
 	};
 
 	/**
@@ -70,11 +76,17 @@ public class Cli {
 	 */
 	public static final String[] AUXILIARY_HELP_FLAGS = { "usage", "info",
 			"how-to-use" };
+	/**
+	 * The pattern command names must obey: some string of word characters (\w)
+	 * or hyphens neither beginning nor ending in a hyphen or an underscore.
+	 */
+	public static final Pattern COMMAND_NAME_PATTERN = Pattern.compile(
+			"[a-z0-9][\\w-]*(?<![_-])", Pattern.CASE_INSENSITIVE);
 
 	private List<String> argList;
-	private LinkedHashMap<String, Integer> argNames = new LinkedHashMap<String, Integer>();
+	private Map<String, Integer> argNames = new LinkedHashMap<String, Integer>();
 	private boolean isSlurpy = true;
-	private TreeMap<String, Option<?>> options = new TreeMap<String, Option<?>>();
+	private Map<String, Option<?>> options = new LinkedHashMap<String, Option<?>>();
 	private BooleanOption helpOption = null;
 	private List<String> errors = new ArrayList<String>();
 	private String name = "EXECUTABLE";
@@ -112,6 +124,7 @@ public class Cli {
 			else if (m == Modifiers.HELP) {
 				if (added)
 					continue;
+				options.put("_" + options.size(), new DummyOption(""));
 				helpOption = new BooleanOption();
 				helpOption.setDescription("print usage information");
 				try {
@@ -262,6 +275,31 @@ public class Cli {
 					throw new ValidationException(
 							"no usage or abstract specified");
 				break;
+			case TEXT:
+				if (cmd.length > 1)
+					throw new ValidationException("ill-formed specification; "
+							+ o
+							+ " line should consist of a single element array");
+				DummyOption dummy = null;
+				if (cmd[0].length == 1) {
+					dummy = new DummyOption("");
+				} else if (cmd[0].length == 2) {
+					Object obj = cmd[0][1];
+					if (obj instanceof String)
+						dummy = new DummyOption((String) obj);
+					else
+						throw new ValidationException(
+								"ill-formed specification; second element of a "
+										+ o + " line should be a String");
+				} else
+					throw new ValidationException(
+							"ill-formed specification; second element of a "
+									+ o + " cannot have more than 2 elements");
+				options.put("_" + options.size(), dummy);
+				break;
+			default:
+				throw new ValidationException("dfh.cli broken; unknown enum "
+						+ o);
 			}
 		} else {
 			Option<?> opt = optionForType(cmd[0], cmd.length == 3 ? cmd[2]
@@ -291,12 +329,16 @@ public class Cli {
 
 	protected void registerName(Option<?> opt, String s)
 			throws ValidationException {
-		Option<?> old = options.get(s);
-		if (!(old == null || old == opt))
-			throw new ValidationException("option " + s
-					+ " used for two distinct options: --" + opt.name
-					+ " and --" + old.name);
-		options.put(s, opt);
+		if (COMMAND_NAME_PATTERN.matcher(s).matches()) {
+			Option<?> old = options.get(s);
+			if (!(old == null || old == opt))
+				throw new ValidationException("option " + s
+						+ " used for two distinct options: --" + opt.name
+						+ " and --" + old.name);
+			options.put(s, opt);
+		} else
+			throw new ValidationException("option name " + s
+					+ " violates option name pattern " + COMMAND_NAME_PATTERN);
 	}
 
 	private Option<?> optionForType(Object[] base, Object[] restrictions)
@@ -515,6 +557,8 @@ public class Cli {
 		Set<Option<?>> optionSet = new LinkedHashSet<Option<?>>(
 				options.values());
 		for (Option<?> c : optionSet) {
+			if (c instanceof DummyOption)
+				continue;
 			String optDesc = c.optionDescription();
 			String argDescription = c.argDescription();
 			if (optDesc.length() > c1)
@@ -527,10 +571,14 @@ public class Cli {
 		if (!"".equals(abstr))
 			out.printf("\t%s%n%n", abstr);
 		for (Option<?> c : optionSet) {
-			String optDesc = c.optionDescription();
-			String argDescription = c.argDescription();
-			out.printf(format, optDesc, argDescription, c.description(),
-					c.def == null ? "" : "; default: " + c.def);
+			if (c instanceof DummyOption)
+				out.println(c.description());
+			else {
+				String optDesc = c.optionDescription();
+				String argDescription = c.argDescription();
+				out.printf(format, optDesc, argDescription, c.description(),
+						c.def == null ? "" : "; default: " + c.def);
+			}
 		}
 		if (status == 0 && !"".equals(usage))
 			out.printf("%n%s%n", usage);
@@ -560,20 +608,27 @@ public class Cli {
 	private Option<?> extractCommands(String s) throws ValidationException {
 		Option<?> c = null;
 		if (s.startsWith("--")) {
-			c = options.get(s.substring(2));
-			if (c == null)
+			s = s.substring(2);
+			if (COMMAND_NAME_PATTERN.matcher(s).matches()) {
+				c = options.get(s);
+				if (c == null)
+					throw new ValidationException("unknown option --" + s);
+				c.mark();
+			} else
 				throw new ValidationException("unknown option --" + s);
-			c.mark();
 		} else {
 			String bundle = s.substring(1);
 			if (bundle.equals("-"))
 				throw new ValidationException("malformed option '-'");
 			for (int i = 0; i < bundle.length(); i++) {
 				String sc = bundle.substring(i, i + 1);
-				c = options.get(sc);
-				if (c == null)
+				if (COMMAND_NAME_PATTERN.matcher(sc).matches()) {
+					c = options.get(sc);
+					if (c == null)
+						throw new ValidationException("unknown option -" + sc);
+					c.mark();
+				} else
 					throw new ValidationException("unknown option -" + sc);
-				c.mark();
 			}
 		}
 		return c;

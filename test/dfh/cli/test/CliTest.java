@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -573,4 +574,203 @@ public class CliTest {
 			assertTrue("usage at end", s.trim().endsWith("bar"));
 		}
 	}
+
+	@Test
+	public void textTest1() {
+		try {
+			Object[][][] spec = {
+					//
+					{ { "foo" } },//
+					{ { Opt.TEXT } },//
+					{ { "bar" } },//
+			};
+			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue(
+					"added blank line",
+					Pattern.compile(
+							"--foo\\s++a boolean option\\s*$\\s*$\\s*--bar",
+							Pattern.MULTILINE).matcher(s).find());
+		}
+	}
+
+	@Test
+	public void textTest2() {
+		try {
+			Object[][][] spec = {
+					//
+					{ { "foo" } },//
+					{ { Opt.TEXT, "quux" } },//
+					{ { "bar" } },//
+			};
+			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue(
+					"added quux line",
+					Pattern.compile(
+							"--foo\\s++a boolean option\\s*$\\nquux$\\s*--bar",
+							Pattern.MULTILINE).matcher(s).find());
+		}
+	}
+
+	@Test
+	public void textTestError1() {
+		try {
+			Object[][][] spec = {
+					//
+					{ { "foo" } },//
+					{ { Opt.TEXT, "quux", "baz" } },//
+					{ { "bar" } },//
+			};
+			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			fail("should have thrown error");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("found error", s.startsWith("ERRORS"));
+			assertTrue("correct error",
+					s.indexOf("cannot have more than 2 elements") > -1);
+		}
+	}
+
+	@Test
+	public void textTestError3() {
+		try {
+			Object[][][] spec = {
+					//
+					{ { "foo" } },//
+					{ { Opt.TEXT, "quux" }, { "baz" } },//
+					{ { "bar" } },//
+			};
+			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			fail("should have thrown error");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("found error", s.startsWith("ERRORS"));
+			assertTrue(
+					"correct error",
+					s.indexOf("line should consist of a single element array") > -1);
+		}
+	}
+
+	@Test
+	public void commandNameTest1() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "f&oo" } },//
+			};
+			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			fail("should have thrown error");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("found error", s.startsWith("ERRORS"));
+			assertTrue("correct error",
+					s.indexOf("violates option name pattern") > -1);
+		}
+	}
+
+	@Test
+	public void commandNameTest2() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "" } },//
+			};
+			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			fail("should have thrown error");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("found error", s.startsWith("ERRORS"));
+			assertTrue("correct error",
+					s.indexOf("violates option name pattern") > -1);
+		}
+	}
+
+	@Test
+	public void commandNameTest3() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "-foo" } },//
+			};
+			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			fail("should have thrown error");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("found error", s.startsWith("ERRORS"));
+			assertTrue("correct error",
+					s.indexOf("violates option name pattern") > -1);
+		}
+	}
+
+	@Test
+	public void commandNameTest4() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "_foo" } },//
+			};
+			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			fail("should have thrown error");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("found error", s.startsWith("ERRORS"));
+			assertTrue("correct error",
+					s.indexOf("violates option name pattern") > -1);
+		}
+	}
+
+	@Test
+	public void commandNameTest5() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo-" } },//
+			};
+			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			fail("should have thrown error");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("found error", s.startsWith("ERRORS"));
+			assertTrue("correct error",
+					s.indexOf("violates option name pattern") > -1);
+		}
+	}
+
+	@Test
+	public void commandNameTest6() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo_" } },//
+			};
+			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			fail("should have thrown error");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("found error", s.startsWith("ERRORS"));
+			assertTrue("correct error",
+					s.indexOf("violates option name pattern") > -1);
+		}
+	}
+
+	@Test
+	public void commandNameTest7() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "9" } },//
+			};
+			new Cli(spec, Modifiers.THROW_EXCEPTION);
+		} catch (RuntimeException e) {
+			fail("'9' should be acceptable command name");
+		}
+	}
+
 }

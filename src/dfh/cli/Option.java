@@ -5,6 +5,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * The base class for the various long or short flags one can put on the command
+ * line. An {@link Option} handles its own validation, defaults, parsing, and so
+ * forth.
+ * <p>
+ * <b>Creation date:</b> Nov 10, 2011
+ * 
+ * @author David Houghton
+ * 
+ * @param <K>
+ *            the value associated with the option
+ */
 public abstract class Option<K> {
 	protected boolean found = false;
 	protected Set<String> longNames = new TreeSet<String>();
