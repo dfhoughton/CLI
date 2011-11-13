@@ -773,4 +773,22 @@ public class CliTest {
 		}
 	}
 
+	@Test
+	public void doubleDashTest() {
+		try {
+			Object[][][] spec = {
+					//
+					{ { "foo" } },//
+					{ { "bar" } },//
+			};
+			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			cli.parse("--foo", "--", "--bar");
+			assertTrue("one argument", cli.argList().size() == 1);
+			assertTrue("single argument is --bar",
+					cli.argList().get(0).equals("--bar"));
+		} catch (RuntimeException e) {
+			fail("should not have thrown exction");
+		}
+	}
+
 }
