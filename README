@@ -59,11 +59,10 @@ USAGE: co.linguix.splunk.ml.experiment.NFoldCrossValidationExperiment [options]
 
 	slice training data into n folds, training on remainder and testing on each in turn
 
-	--help | -? | -h                   print usage information
-	--balance | -b                     whether to resample data to even the odds of each class at each stage of cascade; default: true
-	--binary         <file name base>  whether to dump .arff files for first fold cascade training
-	--cutoff | -c    <threshold>       satisfaction level less than which is "unsatisfactory"; default: 3
-	--dump | -d                        whether to dump raw data as .arff file
 	--folds | -f     <n>               number of sections to slice the data into; default: 10
+	--cutoff | -c    <threshold>       satisfaction level less than which is "unsatisfactory"; default: 3
+	--balance | -b                     whether to resample data to even the odds of each class at each stage of cascade; default: true
+	--dump | -d                        whether to dump raw data as .arff file
+	--binary         <file name base>  whether to dump .arff files for first fold cascade training
 
-
+	--help | -? | -h                   print usage information
