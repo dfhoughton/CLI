@@ -23,6 +23,7 @@ Here's an example of the code in use in an actual program:
 	public static void main(String[] args) throws Exception {
 		Object[][][] spec = {
 				//
+				{ { Opt.VERSION, 1 } },//
 				{ { "folds", 'f', Integer.class, 10 },
 						{ "number of sections to slice the data into", "n" },
 						{ Range.greaterOrEq(2) } },//
@@ -65,4 +66,11 @@ USAGE: co.linguix.splunk.ml.experiment.NFoldCrossValidationExperiment [options]
 	--dump | -d                        whether to dump raw data as .arff file
 	--binary         <file name base>  whether to dump .arff files for first fold cascade training
 
+	--version | -v                     print some.package.NFoldCrossValidationExperiment version
 	--help | -? | -h                   print usage information
+
+Other Stuff
+-----------
+This software is distributed under the terms of the FSF Lesser Gnu
+Public License (see lgpl.txt).
+

@@ -787,7 +787,23 @@ public class CliTest {
 			assertTrue("single argument is --bar",
 					cli.argList().get(0).equals("--bar"));
 		} catch (RuntimeException e) {
-			fail("should not have thrown exction");
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void versionTest() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.VERSION, 1 } },//
+			};
+			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			cli.version();
+			fail("should have thrown exception");
+		} catch (RuntimeException e) {
+			assertTrue("correct version information", e.getMessage().trim()
+					.equals("EXECUTABLE 1"));
 		}
 	}
 

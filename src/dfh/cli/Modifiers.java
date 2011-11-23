@@ -16,6 +16,11 @@ public enum Modifiers {
 	 */
 	HELP,
 	/**
+	 * Auto-generate version command. See {@link Cli#PREFERRED_VERSION_FLAGS}.
+	 * If none of these is available, a {@link ValidationException} is thrown.
+	 */
+	VERSION,
+	/**
 	 * Throw a {@link RuntimeException} when option parsing or validation fails
 	 * rather than calling {@link System#exit(int)}.
 	 */

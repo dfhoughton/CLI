@@ -60,6 +60,14 @@ public class Cli {
 		 * If no string is present, a blank line will be inserted.
 		 */
 		TEXT,
+		/**
+		 * Specifies version number, which will be reported with the --version
+		 * option. The version number is actually an arbitrary {@link String}:
+		 * whatever one gets when one calls <code>toString()</code> on the
+		 * objection immediately following this {@link Opt} in the
+		 * specification.
+		 */
+		VERSION,
 	};
 
 	/**
@@ -77,6 +85,12 @@ public class Cli {
 	public static final String[] AUXILIARY_HELP_FLAGS = { "usage", "info",
 			"how-to-use" };
 	/**
+	 * If the {@link Modifiers#VERSION} modifier is provided to
+	 * {@link Cli#Cli(Object[][][], Modifiers...)}, these are the flags to
+	 * trigger the version command.
+	 */
+	public static final String[] PREFERRED_VERSION_FLAGS = { "version", "v" };
+	/**
 	 * The pattern command names must obey: some string of word characters (\w)
 	 * or hyphens neither beginning nor ending in a hyphen or an underscore.
 	 */
@@ -87,7 +101,7 @@ public class Cli {
 	private Map<String, Integer> argNames = new LinkedHashMap<String, Integer>();
 	private boolean isSlurpy = true;
 	private Map<String, Option<?>> options = new LinkedHashMap<String, Option<?>>();
-	private BooleanOption helpOption = null;
+	private BooleanOption helpOption = null, versionOption = null;
 	private List<String> errors = new ArrayList<String>();
 	private String name = "EXECUTABLE";
 	private String usage = "", abstr = "";
@@ -96,6 +110,7 @@ public class Cli {
 	private boolean usageSpecified = false;
 	private boolean slurpRequired = false;
 	private boolean throwException = false;
+	private String version = "undefined";
 	/**
 	 * Option so marked must be specified on command line.
 	 */
@@ -117,58 +132,83 @@ public class Cli {
 				errors.add(e.getMessage());
 			}
 		}
-		boolean added = false;
+		boolean hasHelp = false;
 		for (Modifiers m : mods) {
 			if (m == Modifiers.THROW_EXCEPTION)
 				throwException = true;
-			else if (m == Modifiers.HELP) {
-				if (added)
-					continue;
-				options.put("_" + options.size(), new DummyOption(""));
-				helpOption = new BooleanOption();
-				helpOption.setDescription("print usage information");
-				try {
-					for (String s : PREFERRED_HELP_FLAGS)
-						added = addHelp(added, s);
-					if (!added) {
-						for (String auxHelp : AUXILIARY_HELP_FLAGS) {
-							added = addHelp(added, auxHelp);
-							if (added)
-								break;
-						}
-					}
-				} catch (ValidationException e) {
-					errors.add(e.getMessage());
+			else if (m == Modifiers.HELP)
+				hasHelp = true;
+		}
+		if (hasHelp || versionOption != null)
+			options.put("_" + options.size(), new DummyOption(""));
+		if (versionOption != null) {
+			boolean added = false;
+			versionOption.setDescription("print " + name + " version");
+			try {
+				for (String s : PREFERRED_VERSION_FLAGS)
+					added = addAuxiliary(versionOption, s) || added;
+			} catch (ValidationException e) {
+				errors.add(e.getMessage());
+			}
+			if (!added) {
+				StringBuilder b = new StringBuilder();
+				b.append("could not version help command under any of the following names: ");
+				boolean nonInitial = false;
+				for (String s : PREFERRED_VERSION_FLAGS) {
+					if (nonInitial)
+						b.append(", ");
+					else
+						nonInitial = true;
+					b.append(s);
 				}
+				errors.add(b.toString());
+			}
+		}
+		if (hasHelp) {
+			boolean added = false;
+			helpOption = new BooleanOption();
+			helpOption.setDescription("print usage information");
+			try {
+				for (String s : PREFERRED_HELP_FLAGS)
+					added = addAuxiliary(helpOption, s) || added;
 				if (!added) {
-					StringBuilder b = new StringBuilder();
-					b.append("could not add help command under any of the following names: ");
-					boolean nonInitial = false;
-					for (String s : PREFERRED_HELP_FLAGS) {
-						if (nonInitial)
-							b.append(", ");
-						else
-							nonInitial = true;
-						b.append(s);
+					for (String auxHelp : AUXILIARY_HELP_FLAGS) {
+						added = addAuxiliary(helpOption, auxHelp) || added;
+						if (added)
+							break;
 					}
-					for (String s : AUXILIARY_HELP_FLAGS)
-						b.append(", ").append(s);
-					errors.add(b.toString());
 				}
+			} catch (ValidationException e) {
+				errors.add(e.getMessage());
+			}
+			if (!added) {
+				StringBuilder b = new StringBuilder();
+				b.append("could not add help command under any of the following names: ");
+				boolean nonInitial = false;
+				for (String s : PREFERRED_HELP_FLAGS) {
+					if (nonInitial)
+						b.append(", ");
+					else
+						nonInitial = true;
+					b.append(s);
+				}
+				for (String s : AUXILIARY_HELP_FLAGS)
+					b.append(", ").append(s);
+				errors.add(b.toString());
 			}
 		}
 		if (!errors.isEmpty())
 			usage(1);
 	}
 
-	protected boolean addHelp(boolean added, String s)
+	protected boolean addAuxiliary(BooleanOption opt, String s)
 			throws ValidationException {
 		if (!options.containsKey(s)) {
-			helpOption.addName(s);
-			options.put(s, helpOption);
-			added = true;
+			opt.addName(s);
+			options.put(s, opt);
+			return true;
 		}
-		return added;
+		return false;
 	}
 
 	private void parseSpec(Object[][] cmd) throws ValidationException {
@@ -296,6 +336,21 @@ public class Cli {
 							"ill-formed specification; second element of a "
 									+ o + " cannot have more than 2 elements");
 				options.put("_" + options.size(), dummy);
+				break;
+			case VERSION:
+				if (versionOption != null)
+					throw new ValidationException(
+							o
+									+ " must be included only once in the specification");
+				if (cmd.length > 1)
+					throw new ValidationException("ill-formed specification; "
+							+ o
+							+ " line should consist of a single element array");
+				if (cmd[0].length != 2)
+					throw new ValidationException(o
+							+ " line must contain two objects");
+				versionOption = new BooleanOption();
+				version = cmd[0][1].toString();
 				break;
 			default:
 				throw new ValidationException("dfh.cli broken; unknown enum "
@@ -461,8 +516,12 @@ public class Cli {
 			} catch (ValidationException e) {
 				errors.add(e.getMessage());
 			}
-			if (lastCommand != null && lastCommand == helpOption)
-				usage(0);
+			if (lastCommand != null) {
+				if (lastCommand == helpOption)
+					usage(0);
+				if (lastCommand == versionOption)
+					version();
+			}
 		}
 		if (argNames.size() > 0) {
 			if (argNames.size() < argList.size()) {
@@ -508,6 +567,25 @@ public class Cli {
 		}
 		if (!errors.isEmpty())
 			usage(1);
+	}
+
+	/**
+	 * Prints out version information.
+	 */
+	public void version() {
+		PrintStream out = null;
+		ByteArrayOutputStream baos = null;
+		if (throwException) {
+			baos = new ByteArrayOutputStream();
+			out = new PrintStream(baos);
+		} else
+			out = System.out;
+		out.printf("%s %s%n", name, version);
+		if (throwException) {
+			out.close();
+			throw new RuntimeException(new String(baos.toByteArray()));
+		}
+		System.exit(0);
 	}
 
 	/**
