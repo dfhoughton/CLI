@@ -9,7 +9,13 @@ the logic of the program itself. Also, you needn't spend much time writing
 the parsing code, you just type a terse *declaration* of how it is to occur and
 get on with things.
 
-This project is inspired by Perl modules such as Getopt::Long::Descriptive.
+This project is inspired by Perl modules such as Getopt::Long::Descriptive. It was
+also inspired by my dislike for the verbosity of http://commons.apache.org/cli/, whose
+object-oriented style fits nicely in the Java paradigm but I find forces me to write
+too much command parsing code to the detriment of rapid prototyping and code
+readability. This library doesn't parse as wide a range of option types as either
+of these, but it gives you your long options -- "--help" -- and your short, POSIX
+options -- "-xzvf file". I find this enough.
 
 David F. Houghton
 4 November 2011
@@ -41,7 +47,7 @@ Here's an example of the code in use in an actual program:
 						{
 								"whether to dump .arff files for first fold cascade training",
 								"file name base" } },//
-				{ { Opt.NAME, NFoldCrossValidationExperiment.class.getName() } },//
+				{ { Opt.NAME, getClass().getName() } },//
 				{ { Opt.ARGS } },//
 				{ {
 						Opt.USAGE,
@@ -56,7 +62,7 @@ Here's an example of the code in use in an actual program:
 
 And here's the usage information produced with the --help flag:
 
-USAGE: co.linguix.splunk.ml.experiment.NFoldCrossValidationExperiment [options]
+USAGE: some.package.NFoldCrossValidationExperiment [options]
 
 	slice training data into n folds, training on remainder and testing on each in turn
 
