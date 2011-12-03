@@ -509,7 +509,12 @@ public class Cli {
 						endCommands = true;
 						argList.add(s);
 					} else {
-						lastCommand.store(s);
+						if (lastCommand.hasArgument)
+							lastCommand.store(s);
+						else {
+							argList.add(s);
+							endCommands = true;
+						}
 						lastCommand = null;
 					}
 				}
@@ -525,8 +530,7 @@ public class Cli {
 		}
 		if (argNames.size() > 0) {
 			if (argNames.size() < argList.size()) {
-				if (!(isSlurpy && !slurpRequired && argNames.size() == argList
-						.size() - 1)) {
+				if (!isSlurpy) {
 					StringBuilder b = new StringBuilder();
 					b.append("only expected arguments: ");
 					boolean nonInitial = false;
@@ -696,7 +700,7 @@ public class Cli {
 				throw new ValidationException("unknown option --" + s);
 		} else {
 			String bundle = s.substring(1);
-			if (bundle.equals("-"))
+			if (bundle.equals(""))
 				throw new ValidationException("malformed option '-'");
 			for (int i = 0; i < bundle.length(); i++) {
 				String sc = bundle.substring(i, i + 1);
@@ -866,5 +870,21 @@ public class Cli {
 			return argList;
 		int i = argNames.size() - 1;
 		return argList.subList(i, argList.size());
+	}
+
+	/**
+	 * Call {@link #usage(int)} with parameter 1 if there are any errors in the
+	 * error list.
+	 */
+	public void errorCheck() {
+		if (!errors.isEmpty())
+			usage(1);
+	}
+
+	/**
+	 * @return whether any errors have been registered
+	 */
+	public boolean hasErrors() {
+		return !errors.isEmpty();
 	}
 }

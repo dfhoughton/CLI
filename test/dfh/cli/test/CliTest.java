@@ -154,6 +154,22 @@ public class CliTest {
 	}
 
 	@Test
+	public void plusArgsPlus() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.ARGS, "foo", "bar", Opt.PLUS } },//
+			};
+			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			cli.parse("1", "2", "3");
+			assertTrue("extra args given to --bar", cli.slurpedArguments()
+					.size() == 2);
+		} catch (RuntimeException e) {
+			fail("threw error inappropriately: " + e);
+		}
+	}
+
+	@Test
 	public void slurpyArgs() {
 		try {
 			Object[][][] spec = {
