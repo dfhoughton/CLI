@@ -25,40 +25,40 @@ example
 
 Here's an example of the code in use in an actual program:
 
-        ...
-	public static void main(String[] args) throws Exception {
-		Object[][][] spec = {
-				//
-				{ { Opt.VERSION, 1 } },//
-				{ { "folds", 'f', Integer.class, 10 },
-						{ "number of sections to slice the data into", "n" },
-						{ Range.greaterOrEq(2) } },//
-				{
-						{ "cutoff", 'c', Integer.class, 3 },
-						{
-								"satisfaction level less than which is \"unsatisfactory\"",
-								"threshold" }, { Range.excl(1, 5) } },//
-				{
-						{ "balance", 'b', Boolean.class, true },
-						{ "whether to resample data to even the odds of each class at each stage of cascade" } },//
-				{ { "dump", 'd' }, { "whether to dump raw data as .arff file" } },//
-				{
-						{ "binary", String.class },
-						{
-								"whether to dump .arff files for first fold cascade training",
-								"file name base" } },//
-				{ { Opt.NAME, getClass().getName() } },//
-				{ { Opt.ARGS } },//
-				{ {
-						Opt.USAGE,
-						"slice training data into n folds, training on remainder and testing on each in turn" } },//
-		};
-		Cli p = new Cli(spec, Modifiers.HELP);
-		p.parse(args);
-		int folds = p.integer("folds"), cutoff = p.integer("cutoff");
-		boolean doDump = p.bool("dump"), doBalance = p.bool("balance");
-		String nfoldDump = p.string("binary");
-                ...
+   ...
+   public static void main(String[] args) throws Exception {
+      Object[][][] spec = {
+            //
+            { { Opt.VERSION, 1 } },//
+            { { "folds", 'f', Integer.class, 10 },
+                  { "number of sections to slice the data into", "n" },
+                  { Range.greaterOrEq(2) } },//
+            {
+                  { "cutoff", 'c', Integer.class, 3 },
+                  {
+                        "satisfaction level less than which is \"unsatisfactory\"",
+                        "threshold" }, { Range.excl(1, 5) } },//
+            {
+                  { "balance", 'b', Boolean.class, true },
+                  { "whether to resample data to even the odds of each class at each stage of cascade" } },//
+            { { "dump", 'd' }, { "whether to dump raw data as .arff file" } },//
+            {
+                  { "binary", String.class },
+                  {
+                        "whether to dump .arff files for first fold cascade training",
+                        "file name base" } },//
+            { { Opt.NAME, getClass().getName() } },//
+            { { Opt.ARGS } },//
+            { {
+                  Opt.USAGE,
+                  "slice training data into n folds, training on remainder and testing on each in turn" } },//
+      };
+      Cli p = new Cli(spec, Modifiers.HELP);
+      p.parse(args);
+      int folds = p.integer("folds"), cutoff = p.integer("cutoff");
+      boolean doDump = p.bool("dump"), doBalance = p.bool("balance");
+      String nfoldDump = p.string("binary");
+      ...
 
 And here's the usage information produced with the --help flag:
 

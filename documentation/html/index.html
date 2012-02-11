@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>dfh.cli.Cli</title>
+<link href="../css/dfh.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/pageutils.js"></script>
+<script type="text/javascript" src="headers.json"></script>
+<style type="text/css">
+.sm {
+	font-size: small;
+}
+</style>
+</head>
+<body onLoad="dfh.prepare('CLI', 'dfh.cli')">
+	<h1>
+		C<span class="sm">ommand</span>L<span class="sm">ine</span>I<span
+			class="sm">nterface</span>
+	</h1>
+	<p>
+		The purpose of
+		<code>dfh.cli</code>
+		is to allow you to write a command line utility in Java while spending
+		as little time as possible parsing and validating command line options
+		-- basically, to give Java programmers something like <a
+			href="http://search.cpan.org/search?mode=all&query=Getopt%3A%3ALong%3A%3ADescriptive">Getopt::Long::Descriptive</a>.
+		It's unlikely that Java code will achieve the concision of Perl, but
+		at least we could spend less time beating around the bush.<span
+			class="fn">I have used the Apache Commons <a
+			href="http://commons.apache.org/cli/usage.html">CLI</a> library. I
+			found I was spending too much time creating options and such. I
+			wanted to spend still less time mucking with the command line. Also,
+			I wanted it to be easier to generate usage information. So I wrote
+			this.
+		</span>
+	</p>
+	<span id="toc"></span>
+	<h2>Example</h2>
+	<p>
+		In
+		<code>dfh.cli</code>
+		you create a command line specification as an
+		<code>Object[][][]</code>
+		. You use this specification, along with some optional modifiers, to
+		create a
+		<code>dfh.cli.Cli</code>
+		object. You initialize this object by passing it the raw arguments.
+		Then you query it to obtain the values relevant to your code. This
+		process is illustrated below.
+	</p>
+	<pre>
+   public static void main(String[] args) throws Exception {
+      Object[][][] spec = {
+            //                  
+            { { Opt.VERSION, 1 } },//
+            { { "folds", 'f', Integer.class, 10 },
+                  { "number of sections to slice the data into", "n" },
+                  { Range.greaterOrEq(2) } },// 
+            {                   
+                  { "cutoff", 'c', Integer.class, 3 },
+                  {                             
+                        "satisfaction level less than which is \"unsatisfactory\"", 
+                        "threshold" }, { Range.excl(1, 5) } },//
+            {                   
+                  { "balance", 'b', Boolean.class, true },
+                  { "whether to resample data to even the odds of each class at each stage of cascade" } },// 
+            { { "dump", 'd' }, { "whether to dump raw data as .arff file" } },//
+            {                   
+                  { "binary", String.class },   
+                  {                             
+                        "whether to dump .arff files for first fold cascade training", 
+                        "file name base" } },//                 
+            { { Opt.NAME, getClass().getName() } },//
+            { { Opt.ARGS } },// 
+            { {                 
+                  Opt.USAGE,                    
+                  "slice training data into n folds, training on remainder and testing on each in turn" } },//
+      };        
+      Cli p = new Cli(spec, Modifiers.HELP);
+      p.parse(args);
+      int folds = p.integer("folds"), cutoff = p.integer("cutoff");
+      boolean doDump = p.bool("dump"), doBalance = p.bool("balance");
+      String nfoldDump = p.string("binary");
+      ...       
+</pre>
+	<h2>Usage</h2>
+	<p>
+		If you created the
+		<code>dfh.cli.Cli</code>
+		object with the optional
+		<code>HELP</code>
+		modifier, as above, the user can use the
+		<code>--help</code>
+		option to obtain usage information, as below.
+	</p>
+	<pre>
+USAGE: some.package.NFoldCrossValidationExperiment [options]
+
+	slice training data into n folds, training on remainder and testing on each in turn
+
+	--folds | -f     &lt;n&gt;               number of sections to slice the data into; default: 10
+	--cutoff | -c    &lt;threshold&gt;       satisfaction level less than which is "unsatisfactory"; default: 3
+	--balance | -b                     whether to resample data to even the odds of each class at each stage of cascade; default: true
+	--dump | -d                        whether to dump raw data as .arff file
+	--binary         &lt;file name base&gt;  whether to dump .arff files for first fold cascade training
+
+	--version | -v                     print some.package.NFoldCrossValidationExperiment version
+	--help | -? | -h                   print usage information
+</pre>
+	<h2>Spec Spec</h2>
+	<p>A specification consists of an array of specification lines.</p>
+		<pre>
+spec := "{" &lt;line&gt;+ "}"
+line := ( &lt;option_definition&gt; | &lt;argument_definition&gt; | &lt;usage&gt; | &lt;name&gt; | &lt;version&gt; | &lt;text&gt; ) ","
+		</pre>
+		<h3>option definition</h3>
+		<pre>
+option_definition := "{" &lt;option&gt; [ "," &lt;description&gt; [ "," &lt;restriction&gt; ] ] "}"
+           option := "{" [ &lt;name&gt; | &lt;char&gt; ]+ [ "," &lt;type&gt; [ "," &lt;default&gt; ] ] "}"
+      description := "{" &lt;description_text&gt; [ "," &lt;arg_name&gt; ] "}"
+      restriction := "{" 
+		</pre>
+		<h3>argument definition</h3>
+		<h3>text</h3>
+		<h3>usage</h3>
+		<h3>name</h3>
+		<h3>version</h3>
+</body>
+</html>

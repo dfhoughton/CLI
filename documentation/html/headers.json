@@ -1,0 +1,10 @@
+/**
+ * Headers for CLI pages.
+ */
+
+var hdrs = {
+	"home" : "http://dfhoughton.com",
+	"CLI" : "index.html",
+	"API" : "api/index.html",
+	"download" : "download.html"
+};
