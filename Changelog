@@ -1,3 +1,5 @@
+1.04
+
 1.03, 13 February 2012
    * added --foo=bar form to long options
    * removed pipe symbol between variant listings in usage
