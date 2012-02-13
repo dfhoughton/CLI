@@ -109,21 +109,68 @@ USAGE: some.package.NFoldCrossValidationExperiment [options]
 </pre>
 	<h2>Spec Spec</h2>
 	<p>A specification consists of an array of specification lines.</p>
-		<pre>
+	<pre>
 spec := "{" &lt;line&gt;+ "}"
-line := ( &lt;option_definition&gt; | &lt;argument_definition&gt; | &lt;usage&gt; | &lt;name&gt; | &lt;version&gt; | &lt;text&gt; ) ","
-		</pre>
-		<h3>option definition</h3>
-		<pre>
+line := ( &lt;option_definition&gt; | &lt;argument_definition&gt; | &lt;usage&gt; | &lt;name&gt; | &lt;version&gt; | &lt;text&gt; ) ","</pre>
+	<h3>option definition</h3>
+	<pre>
 option_definition := "{" &lt;option&gt; [ "," &lt;description&gt; [ "," &lt;restriction&gt; ] ] "}"
            option := "{" [ &lt;name&gt; | &lt;char&gt; ]+ [ "," &lt;type&gt; [ "," &lt;default&gt; ] ] "}"
       description := "{" &lt;description_text&gt; [ "," &lt;arg_name&gt; ] "}"
-      restriction := "{" 
-		</pre>
-		<h3>argument definition</h3>
-		<h3>text</h3>
-		<h3>usage</h3>
-		<h3>name</h3>
-		<h3>version</h3>
+      restriction := "{" [ &lt;integer&gt; | &lt;validation_rule&gt; ]+ "}"</pre>
+	<h4>name</h4>
+	<p>The only thing required of an option is a name.</p>
+	<pre>		Object[][][] spec = {{{ <b>"foo"</b> }}};
+		Cli cli = new Cli(spec, Modifiers.HELP);
+		cli.parse("--help");</pre>
+	returns
+	<pre>USAGE: EXECUTABLE [options] <arg>*
+
+	--foo               a boolean option
+
+	--help | -? | -h    print usage information</pre>
+	<p>You may provide multiple names, including characters, which will
+		become short options names. Short option names may be bundled and need
+		only be preceded by a single dash whereas long names must be preceded
+		by a double dash.</p>
+	<pre>		Object[][][] spec = {
+				//
+				{ { "foo", <b>"bar"</b>, <b>'f'</b> } },//
+				{ { "baz", <b>'z'</b> } },//
+		};
+		Cli cli = new Cli(spec, Modifiers.HELP);
+		cli.parse("--help");</pre>
+	returns
+	<pre>USAGE: EXECUTABLE [options] <arg>*
+
+	--bar | --foo | -f    a boolean option
+	--baz | -z            a boolean option
+
+	--help | -? | -h      print usage information</pre>
+	for which all the following are equivalent
+	<pre>--bar --baz
+--foo --baz
+-f --baz
+--f --z
+-f -z
+-fz</pre>
+	<p>
+		Long feature names must match the regex
+		<code>[a-z0-9][\w-]*(?&lt;![_-])</code>
+		. That is, they must begin with a letter or number, they may contain a
+		letter, number, dash, or underscore, and they cannot end in a dash or
+		underscore.
+	</p>
+	<h4>type</h4>
+	<h4>default</h4>
+	<h4>description text</h4>
+	<h4>arg name</h4>
+	<h4>integer</h4>
+	<h4>validation rule</h4>
+	<h3>argument definition</h3>
+	<h3>text</h3>
+	<h3>usage</h3>
+	<h3>name</h3>
+	<h3>version</h3>
 </body>
 </html>
