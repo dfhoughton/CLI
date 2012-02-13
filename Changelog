@@ -1,5 +1,7 @@
+1.03, 13 February 2012
    * added --foo=bar form to long options
    * removed pipe symbol between variant listings in usage
+   * have begun implementing documentation to put at dfhoughton.com
 
 1.02, 3 December 2011
    * fixed bug causing first argument to be dropped after a boolean option
