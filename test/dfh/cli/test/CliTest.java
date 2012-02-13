@@ -808,6 +808,24 @@ public class CliTest {
 	}
 
 	@Test
+	public void longWithEquals() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo" } },//
+			};
+			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			cli.parse("--foo=false", "bar");
+			assertTrue("one argument", cli.argList().size() == 1);
+			assertTrue("single argument is bar",
+					cli.argList().get(0).equals("bar"));
+			assertFalse("--foo set to false by --foo=false", cli.bool("foo"));
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
 	public void versionTest() {
 		try {
 			Object[][][] spec = {

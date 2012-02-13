@@ -509,7 +509,8 @@ public class Cli {
 						endCommands = true;
 						argList.add(s);
 					} else {
-						if (lastCommand.hasArgument)
+						if (lastCommand.hasArgument
+								&& lastCommand.stored == null)
 							lastCommand.store(s);
 						else {
 							argList.add(s);
@@ -689,8 +690,14 @@ public class Cli {
 
 	private Option<?> extractCommands(String s) throws ValidationException {
 		Option<?> c = null;
+		String arg = null;
 		if (s.startsWith("--")) {
 			s = s.substring(2);
+			int i = s.indexOf('=');
+			if (i > -1) {
+				arg = s.substring(i + 1);
+				s = s.substring(0, i);
+			}
 			if (COMMAND_NAME_PATTERN.matcher(s).matches()) {
 				c = options.get(s);
 				if (c == null)
@@ -712,6 +719,9 @@ public class Cli {
 				} else
 					throw new ValidationException("unknown option -" + sc);
 			}
+		}
+		if (arg != null) {
+			c.store(arg);
 		}
 		return c;
 	}
