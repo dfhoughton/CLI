@@ -96,13 +96,13 @@ public abstract class Option<K> {
 			StringBuilder b = new StringBuilder();
 			for (String s : longNames) {
 				if (b.length() > 0)
-					b.append(" | ");
+					b.append(' ');
 				b.append("--").append(s);
 			}
 			for (Character c : shortNames) {
 				if (b.length() > 0)
-					b.append(" | ");
-				b.append("-").append(c);
+					b.append(' ');
+				b.append('-').append(c);
 			}
 			optionDescription = b.toString();
 		}

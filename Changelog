@@ -1,3 +1,6 @@
+   * added --foo=bar form to long options
+   * removed pipe symbol between variant listings in usage
+
 1.02, 3 December 2011
    * fixed bug causing first argument to be dropped after a boolean option
    * added some methods to facilitate post-parsing validation
