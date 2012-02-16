@@ -855,6 +855,12 @@ public class Cli {
 		throw new RuntimeException("unknown option --" + string);
 	}
 
+	/**
+	 * Returns all arguments left after option parsing. @see
+	 * {@link #argument(String)} {@link #slurpedArguments()}
+	 * 
+	 * @return all arguments left after option parsing
+	 */
 	public List<String> argList() {
 		return argList;
 	}
@@ -873,6 +879,9 @@ public class Cli {
 		return argList.get(i);
 	}
 
+	/**
+	 * @return all non-unique arguments
+	 */
 	public List<String> slurpedArguments() {
 		if (!isSlurpy)
 			throw new RuntimeException("not slurpy argument list");

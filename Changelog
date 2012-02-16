@@ -1,4 +1,5 @@
 1.04
+   * added StrSet and StrRegex validation rules
 
 1.03, 13 February 2012
    * added --foo=bar form to long options
