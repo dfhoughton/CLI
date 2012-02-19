@@ -124,6 +124,12 @@ public class Cli {
 	 */
 	public static final Pattern COMMAND_NAME_PATTERN = Pattern.compile(
 			"[a-z0-9][\\w-]*(?<![_-])", Pattern.CASE_INSENSITIVE);
+	/**
+	 * Pattern which, if matched, causes a semicolon to be inserted before
+	 * default value or "required" in option description.
+	 */
+	public static final Pattern NEEDS_SEMICOLON = Pattern
+			.compile("[\\p{L}\\p{N}_\\s]$");
 
 	private List<String> argList;
 	private Map<String, Integer> argNames = new LinkedHashMap<String, Integer>();
@@ -499,6 +505,11 @@ public class Cli {
 					"--"
 							+ opt.name
 							+ " is boolean and marked as required; these are incompatible");
+		if (isRequired && def != null)
+			throw new ValidationException(
+					"--"
+							+ opt.name
+							+ " is marked as required and has a default value; these are incompatible");
 		opt.setDefault(def);
 		if (restrictions != null) {
 			for (Object o : restrictions) {
@@ -687,8 +698,19 @@ public class Cli {
 			else {
 				String optDesc = c.optionDescription();
 				String argDescription = c.argDescription();
+				String suffix = "";
+				if (c.def != null || c.isRequired()) {
+					StringBuilder b = new StringBuilder();
+					if (NEEDS_SEMICOLON.matcher(c.description()).find())
+						b.append(';');
+					if (c.isRequired())
+						b.append(" REQUIRED");
+					else
+						b.append(" default: ").append(c.def);
+					suffix = b.toString();
+				}
 				out.printf(format, optDesc, argDescription, c.description(),
-						c.def == null ? "" : "; default: " + c.def);
+						suffix);
 			}
 		}
 		if (status == 0 && !"".equals(usage))

@@ -2,6 +2,7 @@
    * added StrSet and StrRegex validation rules
    * moved Modifiers into Cli as Mod to reduce the verbosity and number of
      imports
+   * check for options with default values being required
 
 1.03, 13 February 2012
    * added --foo=bar form to long options

@@ -228,8 +228,7 @@ public class CliTest {
 			//
 			{ { "foo" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("should have thrown error when help called");
 		} catch (RuntimeException e) {
@@ -410,8 +409,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", "bar" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -428,8 +426,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", "bar", Opt.PLUS } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -446,8 +443,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", "bar", Opt.STAR } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -463,8 +459,7 @@ public class CliTest {
 			Object[][][] spec = {
 			//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -481,8 +476,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, Opt.PLUS } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -499,8 +493,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, Opt.STAR } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -517,8 +510,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -535,8 +527,7 @@ public class CliTest {
 			//
 			{ { Opt.NAME, "foo" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -552,8 +543,7 @@ public class CliTest {
 			//
 			{ { Opt.USAGE, "foo" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -575,8 +565,7 @@ public class CliTest {
 			//
 			{ { Opt.USAGE, "foo", "bar" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -592,8 +581,7 @@ public class CliTest {
 			//
 			{ { Opt.USAGE, "foo" }, { "foo" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -611,8 +599,7 @@ public class CliTest {
 					{ { Opt.TEXT } },//
 					{ { "bar" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -634,8 +621,7 @@ public class CliTest {
 					{ { Opt.TEXT, "quux" } },//
 					{ { "bar" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
-					Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -854,4 +840,54 @@ public class CliTest {
 		}
 	}
 
+	@Test
+	public void defaultRequiredConflict() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo", String.class, "foo" }, {}, { Cli.REQUIRED } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.version();
+			fail("should have thrown exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("begins with error messages", s.startsWith("ERRORS"));
+			assertTrue(
+					"correct error",
+					s.indexOf("--foo is marked as required and has a default value; these are incompatible") > -1);
+		}
+	}
+
+	@Test
+	public void requiredShown() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo", String.class }, {}, { Cli.REQUIRED } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("correct usage generated", s.indexOf("REQUIRED") > -1);
+		}
+	}
+
+	@Test
+	public void defaultShown() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo", String.class, "foo" } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("correct usage generated", s.indexOf("default") > -1);
+		}
+	}
 }
