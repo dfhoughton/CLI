@@ -53,7 +53,7 @@ Here's an example of the code in use in an actual program:
                   Opt.USAGE,
                   "slice training data into n folds, training on remainder and testing on each in turn" } },//
       };
-      Cli p = new Cli(spec, Modifiers.HELP);
+      Cli p = new Cli(spec, Mod.HELP);
       p.parse(args);
       int folds = p.integer("folds"), cutoff = p.integer("cutoff");
       boolean doDump = p.bool("dump"), doBalance = p.bool("balance");
@@ -66,14 +66,14 @@ USAGE: some.package.NFoldCrossValidationExperiment [options]
 
 	slice training data into n folds, training on remainder and testing on each in turn
 
-	--folds | -f     <n>               number of sections to slice the data into; default: 10
-	--cutoff | -c    <threshold>       satisfaction level less than which is "unsatisfactory"; default: 3
-	--balance | -b                     whether to resample data to even the odds of each class at each stage of cascade; default: true
-	--dump | -d                        whether to dump raw data as .arff file
-	--binary         <file name base>  whether to dump .arff files for first fold cascade training
+	--folds -f     <n>               number of sections to slice the data into; default: 10
+	--cutoff -c    <threshold>       satisfaction level less than which is "unsatisfactory"; default: 3
+	--balance -b                     whether to resample data to even the odds of each class at each stage of cascade; default: true
+	--dump -d                        whether to dump raw data as .arff file
+	--binary       <file name base>  whether to dump .arff files for first fold cascade training
 
-	--version | -v                     print some.package.NFoldCrossValidationExperiment version
-	--help | -? | -h                   print usage information
+	--version -v                     print some.package.NFoldCrossValidationExperiment version
+	--help -? -h                     print usage information
 
 Other Stuff
 -----------
