@@ -1,5 +1,13 @@
 Roadmap of planned changes.
 
-. move Modifiers into dfh.cli.Cli to minimize import statements
+key:
+  . item awaiting attention
+  - deprecated item
+  * item completed
+
+Periodically I'll clear out this list, moving completed and deprecated items to a sort of
+historical holding pen at the end.
+
+* move Modifiers into dfh.cli.Cli to minimize import statements
 . automatically note required options
 . create die method that dies with an error statement and usage

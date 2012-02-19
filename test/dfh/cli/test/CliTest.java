@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import dfh.cli.Cli;
 import dfh.cli.Cli.Opt;
-import dfh.cli.Modifiers;
 
 public class CliTest {
 	@Test
@@ -105,7 +104,7 @@ public class CliTest {
 			//
 			{ { "foo", Integer.class, "quux" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--foo", "3.3");
 			fail("did not recognize 3.3 as non-integer");
 		} catch (RuntimeException e) {
@@ -124,7 +123,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse();
 			fail("did not recognize absence of argument");
 		} catch (RuntimeException e) {
@@ -142,7 +141,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", Opt.PLUS } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse();
 			fail("did not recognize absence of argument");
 		} catch (RuntimeException e) {
@@ -160,7 +159,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", "bar", Opt.PLUS } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("1", "2", "3");
 			assertTrue("extra args given to --bar", cli.slurpedArguments()
 					.size() == 2);
@@ -176,7 +175,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", Opt.STAR } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse();
 			assertTrue("no error thrown when arg is slurpy", true);
 		} catch (RuntimeException e) {
@@ -192,7 +191,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", Opt.STAR } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("bar", "quux");
 			assertTrue("no error thrown when arg is slurpy", true);
 			assertTrue("correct number of slurped arguments", cli
@@ -210,7 +209,7 @@ public class CliTest {
 			//
 			{ { "foo", Double.class } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--foo", "blort");
 			fail("did not recognize 'blort' as a non-double");
 		} catch (RuntimeException e) {
@@ -229,7 +228,8 @@ public class CliTest {
 			//
 			{ { "foo" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("should have thrown error when help called");
 		} catch (RuntimeException e) {
@@ -246,7 +246,7 @@ public class CliTest {
 			//
 			{ { "foo", Integer.class }, null, { Cli.REQUIRED } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse();
 			fail("should have thrown when required option was absent");
 		} catch (RuntimeException e) {
@@ -265,7 +265,7 @@ public class CliTest {
 			//
 			{ { "foo" }, null, { Cli.REQUIRED } },//
 			};
-			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown when boolean option was marked as required");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
@@ -282,7 +282,7 @@ public class CliTest {
 		//
 		{ { "foo", String.class }, null, { Cli.SET } },//
 		};
-		Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "bar", "--foo", "quux");
 		assertTrue("contains bar", cli.stringCollection("foo").contains("bar"));
 		assertTrue("contains quux", cli.stringCollection("foo")
@@ -295,7 +295,7 @@ public class CliTest {
 		//
 		{ { "foo", String.class }, null, { Cli.REPEATABLE } },//
 		};
-		Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "bar", "--foo", "bar");
 		assertTrue("contains bar", cli.stringCollection("foo").contains("bar"));
 		assertTrue("contains 2 items", cli.stringCollection("foo").size() == 2);
@@ -307,7 +307,7 @@ public class CliTest {
 		//
 		{ { "foo", Integer.class }, null, { Cli.SET } },//
 		};
-		Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "2");
 		assertTrue("contains 1", cli.integerCollection("foo").contains(1));
 		assertTrue("contains 2", cli.integerCollection("foo").contains(2));
@@ -319,7 +319,7 @@ public class CliTest {
 		//
 		{ { "foo", Integer.class }, null, { Cli.REPEATABLE } },//
 		};
-		Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "1");
 		assertTrue("contains 1", cli.integerCollection("foo").contains(1));
 		assertTrue("contains 2 items", cli.integerCollection("foo").size() == 2);
@@ -331,7 +331,7 @@ public class CliTest {
 		//
 		{ { "foo", Number.class }, null, { Cli.SET } },//
 		};
-		Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "2");
 		assertTrue("contains 1", cli.numberCollection("foo").contains(1D));
 		assertTrue("contains 2", cli.numberCollection("foo").contains(2D));
@@ -343,7 +343,7 @@ public class CliTest {
 		//
 		{ { "foo", Number.class }, null, { Cli.REPEATABLE } },//
 		};
-		Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "1");
 		assertTrue("contains 1", cli.numberCollection("foo").contains(1D));
 		assertTrue("contains 2 items", cli.numberCollection("foo").size() == 2);
@@ -356,7 +356,7 @@ public class CliTest {
 			//
 			{ { "foo" }, null, { Cli.REPEATABLE } },//
 			};
-			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown when boolean option was marked as repeatable");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
@@ -373,7 +373,7 @@ public class CliTest {
 				{ { "foo", 'f' } },//
 				{ { "bar", 'b' } },//
 		};
-		Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("-fb");
 		assertTrue("bundled options", cli.bool("f") && cli.bool("b"));
 	}
@@ -385,7 +385,7 @@ public class CliTest {
 				{ { "foo", 'f' } },//
 				{ { "bar", 'b' } },//
 		};
-		Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("-fb");
 		assertTrue("bundled options", cli.bool("foo") && cli.bool("bar"));
 	}
@@ -397,7 +397,7 @@ public class CliTest {
 				{ { "foo", 'f' } },//
 				{ { "bar", 'b', String.class } },//
 		};
-		Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("-fb", "quux");
 		assertTrue("bundled options",
 				cli.bool("foo") && "quux".equals(cli.string("bar")));
@@ -410,7 +410,8 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", "bar" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -427,7 +428,8 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", "bar", Opt.PLUS } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -444,7 +446,8 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", "bar", Opt.STAR } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -460,7 +463,8 @@ public class CliTest {
 			Object[][][] spec = {
 			//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -477,7 +481,8 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, Opt.PLUS } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -494,7 +499,8 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, Opt.STAR } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -511,7 +517,8 @@ public class CliTest {
 			//
 			{ { Opt.ARGS } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -528,7 +535,8 @@ public class CliTest {
 			//
 			{ { Opt.NAME, "foo" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -544,7 +552,8 @@ public class CliTest {
 			//
 			{ { Opt.USAGE, "foo" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -566,7 +575,8 @@ public class CliTest {
 			//
 			{ { Opt.USAGE, "foo", "bar" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -582,7 +592,8 @@ public class CliTest {
 			//
 			{ { Opt.USAGE, "foo" }, { "foo" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -600,7 +611,8 @@ public class CliTest {
 					{ { Opt.TEXT } },//
 					{ { "bar" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -622,7 +634,8 @@ public class CliTest {
 					{ { Opt.TEXT, "quux" } },//
 					{ { "bar" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION, Modifiers.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION,
+					Cli.Mod.HELP);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -644,7 +657,7 @@ public class CliTest {
 					{ { Opt.TEXT, "quux", "baz" } },//
 					{ { "bar" } },//
 			};
-			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown error");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
@@ -663,7 +676,7 @@ public class CliTest {
 					{ { Opt.TEXT, "quux" }, { "baz" } },//
 					{ { "bar" } },//
 			};
-			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown error");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
@@ -681,7 +694,7 @@ public class CliTest {
 			//
 			{ { "f&oo" } },//
 			};
-			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown error");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
@@ -698,7 +711,7 @@ public class CliTest {
 			//
 			{ { "" } },//
 			};
-			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown error");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
@@ -715,7 +728,7 @@ public class CliTest {
 			//
 			{ { "-foo" } },//
 			};
-			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown error");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
@@ -732,7 +745,7 @@ public class CliTest {
 			//
 			{ { "_foo" } },//
 			};
-			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown error");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
@@ -749,7 +762,7 @@ public class CliTest {
 			//
 			{ { "foo-" } },//
 			};
-			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown error");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
@@ -766,7 +779,7 @@ public class CliTest {
 			//
 			{ { "foo_" } },//
 			};
-			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown error");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
@@ -783,7 +796,7 @@ public class CliTest {
 			//
 			{ { "9" } },//
 			};
-			new Cli(spec, Modifiers.THROW_EXCEPTION);
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		} catch (RuntimeException e) {
 			fail("'9' should be acceptable command name");
 		}
@@ -797,7 +810,7 @@ public class CliTest {
 					{ { "foo" } },//
 					{ { "bar" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--foo", "--", "--bar");
 			assertTrue("one argument", cli.argList().size() == 1);
 			assertTrue("single argument is --bar",
@@ -814,7 +827,7 @@ public class CliTest {
 			//
 			{ { "foo" } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--foo=false", "bar");
 			assertTrue("one argument", cli.argList().size() == 1);
 			assertTrue("single argument is bar",
@@ -832,7 +845,7 @@ public class CliTest {
 			//
 			{ { Opt.VERSION, 1 } },//
 			};
-			Cli cli = new Cli(spec, Modifiers.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.version();
 			fail("should have thrown exception");
 		} catch (RuntimeException e) {

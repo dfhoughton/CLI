@@ -69,24 +69,52 @@ public class Cli {
 		 */
 		VERSION,
 	};
+	
+	/**
+	 * Constants that can be used to control the parsing of command options.
+	 * <p>
+	 * <b>Creation date:</b> Nov 7, 2011
+	 * 
+	 * @author David Houghton
+	 * 
+	 */
+	public enum Mod {
+		/**
+		 * Auto-generate help text. See {@link Cli#PREFERRED_HELP_FLAGS} and
+		 * {@link Cli#AUXILIARY_HELP_FLAGS}. If none of these is available, a
+		 * {@link ValidationException} is thrown.
+		 */
+		HELP,
+		/**
+		 * Auto-generate version command. See {@link Cli#PREFERRED_VERSION_FLAGS}.
+		 * If none of these is available, a {@link ValidationException} is thrown.
+		 */
+		VERSION,
+		/**
+		 * Throw a {@link RuntimeException} when option parsing or validation fails
+		 * rather than calling {@link System#exit(int)}.
+		 */
+		THROW_EXCEPTION
+	}
+
 
 	/**
-	 * If the {@link Modifiers#HELP} modifier is provided to
-	 * {@link Cli#Cli(Object[][][], Modifiers...)}, these are the preferred
+	 * If the {@link Mod#HELP} modifier is provided to
+	 * {@link Cli#Cli(Object[][][], Mod...)}, these are the preferred
 	 * flags to trigger help.
 	 */
 	public static final String[] PREFERRED_HELP_FLAGS = { "help", "h", "?" };
 	/**
-	 * If the {@link Modifiers#HELP} modifier is provided to
-	 * {@link Cli#Cli(Object[][][], Modifiers...)} and none of
+	 * If the {@link Mod#HELP} modifier is provided to
+	 * {@link Cli#Cli(Object[][][], Mod...)} and none of
 	 * {@link #PREFERRED_HELP_FLAGS} is available, these are the preferred flags
 	 * to trigger help.
 	 */
 	public static final String[] AUXILIARY_HELP_FLAGS = { "usage", "info",
 			"how-to-use" };
 	/**
-	 * If the {@link Modifiers#VERSION} modifier is provided to
-	 * {@link Cli#Cli(Object[][][], Modifiers...)}, these are the flags to
+	 * If the {@link Mod#VERSION} modifier is provided to
+	 * {@link Cli#Cli(Object[][][], Mod...)}, these are the flags to
 	 * trigger the version command.
 	 */
 	public static final String[] PREFERRED_VERSION_FLAGS = { "version", "v" };
@@ -124,7 +152,7 @@ public class Cli {
 	 */
 	public static final int SET = 6;
 
-	public Cli(Object[][][] spec, Modifiers... mods) {
+	public Cli(Object[][][] spec, Mod... mods) {
 		for (Object[][] cmd : spec) {
 			try {
 				parseSpec(cmd);
@@ -133,10 +161,10 @@ public class Cli {
 			}
 		}
 		boolean hasHelp = false;
-		for (Modifiers m : mods) {
-			if (m == Modifiers.THROW_EXCEPTION)
+		for (Mod m : mods) {
+			if (m == Mod.THROW_EXCEPTION)
 				throwException = true;
-			else if (m == Modifiers.HELP)
+			else if (m == Mod.HELP)
 				hasHelp = true;
 		}
 		if (hasHelp || versionOption != null)
@@ -595,8 +623,8 @@ public class Cli {
 
 	/**
 	 * Prints usage information to default stream and exits either by throwing a
-	 * {@link RuntimeException}, if {@link Modifiers#THROW_EXCEPTION} was
-	 * provided in {@link Cli#Cli(Object[][][], Modifiers...)}, or by calling
+	 * {@link RuntimeException}, if {@link Mod#THROW_EXCEPTION} was
+	 * provided in {@link Cli#Cli(Object[][][], Mod...)}, or by calling
 	 * {@link System#exit(int)}.
 	 * 
 	 * @param status
