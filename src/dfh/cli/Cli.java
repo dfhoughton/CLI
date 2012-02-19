@@ -69,7 +69,7 @@ public class Cli {
 		 */
 		VERSION,
 	};
-	
+
 	/**
 	 * Constants that can be used to control the parsing of command options.
 	 * <p>
@@ -86,22 +86,22 @@ public class Cli {
 		 */
 		HELP,
 		/**
-		 * Auto-generate version command. See {@link Cli#PREFERRED_VERSION_FLAGS}.
-		 * If none of these is available, a {@link ValidationException} is thrown.
+		 * Auto-generate version command. See
+		 * {@link Cli#PREFERRED_VERSION_FLAGS}. If none of these is available, a
+		 * {@link ValidationException} is thrown.
 		 */
 		VERSION,
 		/**
-		 * Throw a {@link RuntimeException} when option parsing or validation fails
-		 * rather than calling {@link System#exit(int)}.
+		 * Throw a {@link RuntimeException} when option parsing or validation
+		 * fails rather than calling {@link System#exit(int)}.
 		 */
 		THROW_EXCEPTION
 	}
 
-
 	/**
 	 * If the {@link Mod#HELP} modifier is provided to
-	 * {@link Cli#Cli(Object[][][], Mod...)}, these are the preferred
-	 * flags to trigger help.
+	 * {@link Cli#Cli(Object[][][], Mod...)}, these are the preferred flags to
+	 * trigger help.
 	 */
 	public static final String[] PREFERRED_HELP_FLAGS = { "help", "h", "?" };
 	/**
@@ -114,8 +114,8 @@ public class Cli {
 			"how-to-use" };
 	/**
 	 * If the {@link Mod#VERSION} modifier is provided to
-	 * {@link Cli#Cli(Object[][][], Mod...)}, these are the flags to
-	 * trigger the version command.
+	 * {@link Cli#Cli(Object[][][], Mod...)}, these are the flags to trigger the
+	 * version command.
 	 */
 	public static final String[] PREFERRED_VERSION_FLAGS = { "version", "v" };
 	/**
@@ -623,8 +623,8 @@ public class Cli {
 
 	/**
 	 * Prints usage information to default stream and exits either by throwing a
-	 * {@link RuntimeException}, if {@link Mod#THROW_EXCEPTION} was
-	 * provided in {@link Cli#Cli(Object[][][], Mod...)}, or by calling
+	 * {@link RuntimeException}, if {@link Mod#THROW_EXCEPTION} was provided in
+	 * {@link Cli#Cli(Object[][][], Mod...)}, or by calling
 	 * {@link System#exit(int)}.
 	 * 
 	 * @param status
@@ -926,6 +926,19 @@ public class Cli {
 	public void errorCheck() {
 		if (!errors.isEmpty())
 			usage(1);
+	}
+
+	/**
+	 * Convenience method that calls {@link #error(String)} then
+	 * {@link #errorCheck()}. Useful for less verbose validation code if you
+	 * don't care to collect all errors before dumping the usage information.
+	 * 
+	 * @param error
+	 *            description of a validation error
+	 */
+	public void die(String error) {
+		errors.add(error);
+		errorCheck();
 	}
 
 	/**

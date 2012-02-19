@@ -8,6 +8,14 @@ key:
 Periodically I'll clear out this list, moving completed and deprecated items to a sort of
 historical holding pen at the end.
 
+TODO
+====
+
 * move Modifiers into dfh.cli.Cli to minimize import statements
 . automatically note required options
-. create die method that dies with an error statement and usage
+* create die method that dies with an error statement and usage
+
+RELICS
+======
+
+Things swept out of TODO list:
