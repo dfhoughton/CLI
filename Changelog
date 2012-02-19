@@ -1,4 +1,4 @@
-1.04
+1.04, 19 February 2012
    * added StrSet and StrRegex validation rules
    * moved Modifiers into Cli as Mod to reduce the verbosity and number of
      imports
