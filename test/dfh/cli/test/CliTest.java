@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import dfh.cli.Cli;
 import dfh.cli.Cli.Opt;
+import dfh.cli.Cli.Res;
 
 public class CliTest {
 	@Test
@@ -243,7 +244,7 @@ public class CliTest {
 		try {
 			Object[][][] spec = {
 			//
-			{ { "foo", Integer.class }, null, { Cli.REQUIRED } },//
+			{ { "foo", Integer.class }, null, { Res.REQUIRED } },//
 			};
 			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse();
@@ -262,7 +263,7 @@ public class CliTest {
 		try {
 			Object[][][] spec = {
 			//
-			{ { "foo" }, null, { Cli.REQUIRED } },//
+			{ { "foo" }, null, { Res.REQUIRED } },//
 			};
 			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown when boolean option was marked as required");
@@ -279,7 +280,7 @@ public class CliTest {
 	public void stringSet() {
 		Object[][][] spec = {
 		//
-		{ { "foo", String.class }, null, { Cli.SET } },//
+		{ { "foo", String.class }, null, { Res.SET } },//
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "bar", "--foo", "quux");
@@ -292,7 +293,7 @@ public class CliTest {
 	public void stringList() {
 		Object[][][] spec = {
 		//
-		{ { "foo", String.class }, null, { Cli.REPEATABLE } },//
+		{ { "foo", String.class }, null, { Res.REPEATABLE } },//
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "bar", "--foo", "bar");
@@ -304,7 +305,7 @@ public class CliTest {
 	public void integerSet() {
 		Object[][][] spec = {
 		//
-		{ { "foo", Integer.class }, null, { Cli.SET } },//
+		{ { "foo", Integer.class }, null, { Res.SET } },//
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "2");
@@ -316,7 +317,7 @@ public class CliTest {
 	public void integerList() {
 		Object[][][] spec = {
 		//
-		{ { "foo", Integer.class }, null, { Cli.REPEATABLE } },//
+		{ { "foo", Integer.class }, null, { Res.REPEATABLE } },//
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "1");
@@ -328,7 +329,7 @@ public class CliTest {
 	public void doubleSet() {
 		Object[][][] spec = {
 		//
-		{ { "foo", Number.class }, null, { Cli.SET } },//
+		{ { "foo", Number.class }, null, { Res.SET } },//
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "2");
@@ -340,7 +341,7 @@ public class CliTest {
 	public void doubleList() {
 		Object[][][] spec = {
 		//
-		{ { "foo", Number.class }, null, { Cli.REPEATABLE } },//
+		{ { "foo", Number.class }, null, { Res.REPEATABLE } },//
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "1");
@@ -353,7 +354,7 @@ public class CliTest {
 		try {
 			Object[][][] spec = {
 			//
-			{ { "foo" }, null, { Cli.REPEATABLE } },//
+			{ { "foo" }, null, { Res.REPEATABLE } },//
 			};
 			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown when boolean option was marked as repeatable");
@@ -845,7 +846,7 @@ public class CliTest {
 		try {
 			Object[][][] spec = {
 			//
-			{ { "foo", String.class, "foo" }, {}, { Cli.REQUIRED } },//
+			{ { "foo", String.class, "foo" }, {}, { Res.REQUIRED } },//
 			};
 			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.version();
@@ -864,7 +865,7 @@ public class CliTest {
 		try {
 			Object[][][] spec = {
 			//
-			{ { "foo", String.class }, {}, { Cli.REQUIRED } },//
+			{ { "foo", String.class }, {}, { Res.REQUIRED } },//
 			};
 			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");

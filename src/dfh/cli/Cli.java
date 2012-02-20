@@ -99,6 +99,29 @@ public class Cli {
 	}
 
 	/**
+	 * Restriction modifiers. These may appear in the third sub-array in an
+	 * option specification alongside {@link ValidationRule ValidationRules}.
+	 * <p>
+	 * 
+	 * @author David F. Houghton - Feb 20, 2012
+	 * 
+	 */
+	public enum Res {
+		/**
+		 * Option so marked defines a member of a list
+		 */
+		REPEATABLE,
+		/**
+		 * Option so marked must be specified on command line
+		 */
+		REQUIRED,
+		/**
+		 * Option so marked defines a unique member of a collection
+		 */
+		SET
+	}
+
+	/**
 	 * If the {@link Mod#HELP} modifier is provided to
 	 * {@link Cli#Cli(Object[][][], Mod...)}, these are the preferred flags to
 	 * trigger help.
@@ -145,18 +168,6 @@ public class Cli {
 	private boolean slurpRequired = false;
 	private boolean throwException = false;
 	private String version = "undefined";
-	/**
-	 * Option so marked must be specified on command line.
-	 */
-	public static final int REQUIRED = 1;
-	/**
-	 * Option so marked defines a member of a list.
-	 */
-	public static final int REPEATABLE = 2;
-	/**
-	 * Option so marked defines a unique member of a collection.
-	 */
-	public static final int SET = 6;
 
 	public Cli(Object[][][] spec, Mod... mods) {
 		for (Object[][] cmd : spec) {
@@ -435,11 +446,20 @@ public class Cli {
 		boolean isSet = false, isRepeatable = false, isRequired = false;
 		if (restrictions != null) {
 			for (Object o : restrictions) {
-				if (o instanceof Integer) {
-					int i = ((Integer) o).intValue();
-					isSet = (i & SET) == SET;
-					isRepeatable = (i & REPEATABLE) == REPEATABLE;
-					isRequired = (i & REQUIRED) == REQUIRED;
+				if (o instanceof Res) {
+					switch ((Res) o) {
+					case SET:
+						isSet = true;
+					case REPEATABLE:
+						isRepeatable = true;
+						break;
+					case REQUIRED:
+						isRequired = true;
+						break;
+					default:
+						throw new ValidationException(
+								"unexpected Res constant: " + o);
+					}
 				}
 			}
 		}
@@ -516,7 +536,7 @@ public class Cli {
 				if (o == null)
 					throw new ValidationException("null found in spec for --"
 							+ opt.name);
-				if (Integer.class.equals(o.getClass()))
+				if (o instanceof Res)
 					continue;
 				if (o instanceof ValidationRule<?>)
 					opt.addValidationRule((ValidationRule<?>) o);

@@ -1,3 +1,6 @@
+1.05
+   * all modifiers now enums -- eliminated integer restriction modifiers
+   
 1.04, 19 February 2012
    * added StrSet and StrRegex validation rules
    * moved Modifiers into Cli as Mod to reduce the verbosity and number of

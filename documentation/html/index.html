@@ -76,7 +76,7 @@
                   Opt.USAGE,                    
                   "slice training data into n folds, training on remainder and testing on each in turn" } },//
       };        
-      Cli p = new Cli(spec, Modifiers.HELP);
+      Cli p = new Cli(spec, Mod.HELP);
       p.parse(args);
       int folds = p.integer("folds"), cutoff = p.integer("cutoff");
       boolean doDump = p.bool("dump"), doBalance = p.bool("balance");
@@ -98,14 +98,14 @@ USAGE: some.package.NFoldCrossValidationExperiment [options]
 
 	slice training data into n folds, training on remainder and testing on each in turn
 
-	--folds | -f     &lt;n&gt;               number of sections to slice the data into; default: 10
-	--cutoff | -c    &lt;threshold&gt;       satisfaction level less than which is "unsatisfactory"; default: 3
-	--balance | -b                     whether to resample data to even the odds of each class at each stage of cascade; default: true
-	--dump | -d                        whether to dump raw data as .arff file
-	--binary         &lt;file name base&gt;  whether to dump .arff files for first fold cascade training
+	--folds -f     &lt;n&gt;               number of sections to slice the data into; default: 10
+	--cutoff -c    &lt;threshold&gt;       satisfaction level less than which is "unsatisfactory"; default: 3
+	--balance -b                     whether to resample data to even the odds of each class at each stage of cascade; default: true
+	--dump -d                        whether to dump raw data as .arff file
+	--binary       &lt;file name base&gt;  whether to dump .arff files for first fold cascade training
 
-	--version | -v                     print some.package.NFoldCrossValidationExperiment version
-	--help | -? | -h                   print usage information
+	--version -v                     print some.package.NFoldCrossValidationExperiment version
+	--help -? -h                     print usage information
 </pre>
 	<h2>Spec Spec</h2>
 	<p>A specification consists of an array of specification lines.</p>
@@ -113,6 +113,17 @@ USAGE: some.package.NFoldCrossValidationExperiment [options]
 spec := "{" &lt;line&gt;+ "}"
 line := ( &lt;option_definition&gt; | &lt;argument_definition&gt; | &lt;usage&gt; | &lt;name&gt; | &lt;version&gt; | &lt;text&gt; ) ","</pre>
 	<h3>option definition</h3>
+	<p>An option definition is an array of up to 3 arrays of objects. E.g.,</p>
+	<pre>		Object[][][] spec = {
+				//
+				{ { "foo", Boolean.class, true } },//
+				{ { "bar", Integer.class }, {}, { Range.greater(2) } },//
+				{ { "baz" }, { "a lovely option" } },//
+				{ { "corge", Number.class, 3.1415 }, { "also lovely", "num" },
+						{ Cli.REQUIRED | Cli.REPEATABLE } },//
+				{ { "quux", Float.class }, {}, { Cli.REQUIRED, Cli.SET } },//<span class="fn">As you can see, you can use either commas or pipe symbols to separate integral option modifiers.</span>
+		};</pre>
+	<p>More explicitly:</p>
 	<pre>
 option_definition := "{" &lt;option&gt; [ "," &lt;description&gt; [ "," &lt;restriction&gt; ] ] "}"
            option := "{" [ &lt;name&gt; | &lt;char&gt; ]+ [ "," &lt;type&gt; [ "," &lt;default&gt; ] ] "}"
@@ -121,14 +132,30 @@ option_definition := "{" &lt;option&gt; [ "," &lt;description&gt; [ "," &lt;rest
 	<h4>name</h4>
 	<p>The only thing required of an option is a name.</p>
 	<pre>		Object[][][] spec = {{{ <b>"foo"</b> }}};
-		Cli cli = new Cli(spec, Modifiers.HELP);
+		Cli cli = new Cli(spec, Mod.HELP);
 		cli.parse("--help");</pre>
 	returns
 	<pre>USAGE: EXECUTABLE [options] <arg>*
 
-	--foo               a boolean option
+	--foo           a boolean option
 
-	--help | -? | -h    print usage information</pre>
+	--help -? -h    print usage information</pre>
+	<p>
+		The option's names provide identifiers by which its value may be
+		retrieved from the
+		<code>dfh.cli.Cli</code>
+		object after parsing.
+	</p>
+	<pre>		Cli cli = new Cli(new Object[][][] { { { "foo", 'f', 'o' } } });
+		cli.parse("-f");
+		System.out.println(cli.bool("foo"));
+		System.out.println(cli.bool("f"));
+		System.out.println(cli.bool("o"));
+	</pre>
+	produces
+	<pre>true
+true
+true</pre>
 	<p>You may provide multiple names, including characters, which will
 		become short options names. Short option names may be bundled and need
 		only be preceded by a single dash whereas long names must be preceded
@@ -138,15 +165,15 @@ option_definition := "{" &lt;option&gt; [ "," &lt;description&gt; [ "," &lt;rest
 				{ { "foo", <b>"bar"</b>, <b>'f'</b> } },//
 				{ { "baz", <b>'z'</b> } },//
 		};
-		Cli cli = new Cli(spec, Modifiers.HELP);
+		Cli cli = new Cli(spec, Mod.HELP);
 		cli.parse("--help");</pre>
 	returns
 	<pre>USAGE: EXECUTABLE [options] <arg>*
 
-	--bar | --foo | -f    a boolean option
-	--baz | -z            a boolean option
+	--bar --foo -f    a boolean option
+	--baz -z          a boolean option
 
-	--help | -? | -h      print usage information</pre>
+	--help -? -h      print usage information</pre>
 	for which all the following are equivalent
 	<pre>--bar --baz
 --foo --baz
@@ -162,7 +189,44 @@ option_definition := "{" &lt;option&gt; [ "," &lt;description&gt; [ "," &lt;rest
 		underscore.
 	</p>
 	<h4>type</h4>
+	<p>An option's type is specified by a <code>java.lang.Class</code> object. E.g.,</p>
+	<pre>Object[][][] spec = { { { "foo", <b>String.class</b> } } };</pre>
+	<p>Currently only the following types are supported.</p>
+	<ul style="list-style: none;">
+		<li><code>java.lang.String.class</code></li>
+		<li><code>java.lang.Integer.class</code></li>
+		<li><code>java.lang.Double.class</code></li>
+		<li><code>java.lang.Float.class</code></li>
+		<li><code>java.lang.Number.class</code></li>
+		<li><code>java.lang.Boolean.class</code></li>
+	</ul>
+	<p>
+		If not type is provided the option will be boolean. The only reason to
+		specify the boolean type is when you wish such an option to have a
+		default other than
+		<code>true</code>
+		.
+	</p>
 	<h4>default</h4>
+	<p>
+		The final thing that may appear in an
+		<code>&lt;option&gt;</code>
+		is a default value. Booleans always have a default value --
+		<code>true</code>
+		-- though this may be changed to
+		<code>false</code>
+		by specifying the default explicitly. An explicit default value will
+		be displayed in usage information. E.g.,
+	</p>
+	<pre>		Object[][][] spec = { { { "foo", String.class, "bar" } } };
+		Cli cli = new Cli(spec, Cli.Mod.HELP);
+		cli.parse("--help");</pre>
+		<p>produces</p>
+		<pre>USAGE: EXECUTABLE [options] &lt;arg&gt;*
+
+	--foo        &lt;val&gt;  string option<b>; default: bar</b>
+
+	--help -? -h        print usage information</pre>
 	<h4>description text</h4>
 	<h4>arg name</h4>
 	<h4>integer</h4>
