@@ -120,15 +120,15 @@ line := ( &lt;option_definition&gt; | &lt;argument_definition&gt; | &lt;usage&gt
 				{ { "bar", Integer.class }, {}, { Range.greater(2) } },//
 				{ { "baz" }, { "a lovely option" } },//
 				{ { "corge", Number.class, 3.1415 }, { "also lovely", "num" },
-						{ Cli.REQUIRED | Cli.REPEATABLE } },//
-				{ { "quux", Float.class }, {}, { Cli.REQUIRED, Cli.SET } },//<span class="fn">As you can see, you can use either commas or pipe symbols to separate integral option modifiers.</span>
+						{ Res.REQUIRED, Res.REPEATABLE } },//
+				{ { "quux", Float.class }, {}, { Res.REQUIRED, Res.SET } },//
 		};</pre>
 	<p>More explicitly:</p>
 	<pre>
 option_definition := "{" &lt;option&gt; [ "," &lt;description&gt; [ "," &lt;restriction&gt; ] ] "}"
-           option := "{" [ &lt;name&gt; | &lt;char&gt; ]+ [ "," &lt;type&gt; [ "," &lt;default&gt; ] ] "}"
-      description := "{" &lt;description_text&gt; [ "," &lt;arg_name&gt; ] "}"
-      restriction := "{" [ &lt;integer&gt; | &lt;validation_rule&gt; ]+ "}"</pre>
+           option := "{" [ &lt;name&gt; | &lt;char&gt; ] [ "," [ &lt;name&gt; | &lt;char&gt; ] ]* [ "," &lt;type&gt; [ "," &lt;default&gt; ] ] "}"
+      description := "{" [ &lt;description_text&gt; [ "," &lt;arg_name&gt; ] ] "}"
+      restriction := "{" [ [ &lt;CLI.Res&gt; | &lt;validation_rule&gt; ] [ "," [ &lt;CLI.Res&gt; | &lt;validation_rule&gt; ] ]* ] "}"</pre>
 	<h4>name</h4>
 	<p>The only thing required of an option is a name.</p>
 	<pre>		Object[][][] spec = {{{ <b>"foo"</b> }}};

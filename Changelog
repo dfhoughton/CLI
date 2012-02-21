@@ -1,5 +1,6 @@
 1.05
    * all modifiers now enums -- eliminated integer restriction modifiers
+   * made restrictions apply only to non-null options (oops)
    
 1.04, 19 February 2012
    * added StrSet and StrRegex validation rules
