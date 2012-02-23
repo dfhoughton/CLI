@@ -55,7 +55,7 @@
 		<junit>
 			<classpath refid="classpath.test" />
 			<formatter type="plain" usefile="false" />
-			<test name="dfh.cli.test.CliTest" />
+			<test name="dfh.cli.test.AllTests" />
 		</junit>
 	</target>
 </project>
