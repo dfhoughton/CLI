@@ -16,7 +16,7 @@ TODO
 * create die method that dies with an error statement and usage
 . make internationalizable
 . add coercion of arbitrary types from strings
-. add number set validation rule
+* add number set validation rule
 
 RELICS
 ======
