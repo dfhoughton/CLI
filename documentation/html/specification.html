@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>dfh.cli.Cli</title>
+<link href="../css/dfh.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/pageutils.js"></script>
+<script type="text/javascript" src="headers.json"></script>
+<style type="text/css">
+.sm {
+	font-size: small;
+}
+</style>
+</head>
+<body onLoad="dfh.prepare('spec', 'dfh.cli')">
+	<h1>CLI Specification</h1>
+	<p>
+		You use
+		<code>dfh.cli</code>
+		to parse command line arguments. To do this for a particular
+		application, the first thing you need is a specification of what
+		arguments it expects.
+	</p>
+	<pre>Object[][][] spec = {
+	{ { "foo" } },                    // boolean option
+	{ { "bar", 'b' } },               // boolean with short and long versions
+	{ { 'c' }, { "usually false" } }, // boolean with description
+	{ { 'd', Integer.class } },       // integer
+	{ { 'e', Integer.class, 1 } },    // integer with default
+	// floating point with a description and a name for its argument
+	{ { 'f', Double.class }, { "some number", "num" } },
+	// float with a restriction
+	{ { 'g', Float.class }, {}, { Range.positive() } },
+	// set of strings -- option may be repeated -- required to be non-empty
+	{ { 'h', String.class }, {}, { Cli.Res.SET, Cli.Res.REQUIRED } },
+	// some usage information
+	{ { Cli.Opt.USAGE, "short description", "long description" } },
+	// name for executable
+	{ { Cli.Opt.NAME, "hotstuff" } },
+	// argument list description
+	{ { Cli.Opt.ARGS, "quux", "corge", "others", Cli.Opt.PLUS } },
+};</pre>
+	<p>The specification then is an array of arrays of arrays. You can
+		think of this as an array of specification lines. The lines come in
+		two sorts. Those that define a particular option.</p>
+	<pre>{ { "foo" } },
+{ { "bar", 'b' } },
+{ { 'f', Double.class }, { "some number", "num" } },
+{ { 'g', Float.class }, {}, { Range.positive() } },</pre>
+	<p>
+		And those that begin with a
+		<code>Cli.Opt</code>
+		constant.
+	</p>
+	<pre>{ { Cli.Opt.USAGE, "short description", "long description" } },
+{ { Cli.Opt.NAME, "hotstuff" } },
+{ { Cli.Opt.ARGS, "quux", "corge", "others", Cli.Opt.PLUS } },</pre>
+	<p>
+		The latter modify properties of the
+		<code>dfh.cli.Cli</code>
+		object or the usage information it generates. Both sorts of
+		specification line are described in greater detail below.
+	</p>
+	<span id="toc"></span>
+	<h2>Option Lines</h2>
+	<p>An option line contains one to three sub-arrays.</p>
+	<h3>First Array</h3>
+	<p>The first is required. It specifies option names, type, and any
+		default.</p>
+	<pre>{ { <b>"bar", 'b', 'c'</b> } },           // <b>names</b>
+{ { "foo", <b>String.class</b> } },       // <b>type</b>
+{ { "quux", Integer.class, <b>10</b> } }, // <b>default</b></pre>
+	<h4>name</h4>
+	<p>Every option requires at least one name. These can be specified
+		by string or character. One character names, whether strings or
+		characters, will be short options with a single hyphen prefix. Such features may be bundled. For example</p>
+	<pre>foo -bar quux</pre>
+	<p>is the same as</p>
+	<pre>foo -b -a -r quux</pre>
+	<p>which is the same as</p>
+	<pre>foo --b --a --r quux</pre>
+	<p>or</p>
+	<pre>foo --b true -a --r=quux</pre>
+	<p>
+		Basically, you can bundle short options but not long ones. You can
+		assign values using
+		<code>=</code>
+		as a separator with long options but not short ones. The only options
+		that do not require an argument are boolean, though you made provide
+		an argument for these as well.
+	</p>
+	<p>
+		If you attempt to use the same name for too options an error will be
+		thrown. Any option name can be used to retrieve the options value from
+		the
+		<code>dfh.cli.Cli</code>
+		object after arguments have been parsed.
+	</p>
+	<h4>type</h4>
+	<p>The acceptable option types are</p>
+	<ul style="list-style: none;">
+		<li><code>Boolean.class</code></li>
+		<li><code>String.class</code></li>
+		<li><code>Integer.class</code></li>
+		<li><code>Number.class</code></li>
+		<li><code>Float.class</code></li>
+		<li><code>Double.class</code></li>
+	</ul>
+	<p>If no type is provided, the option will be boolean. The number,
+		float, and double classes all cause the option to be parsed as a
+		double.</p>
+	<h4>default</h4>
+	<p>
+		An options default value, if any, is the last item in the first array.
+		Boolean options always have a default value of
+		<code>false</code>
+		, though you may change this. If you provide an explicit default
+		value, it will be listed in usage information.
+	</p>
+	<pre>	-e        &lt;val&gt;  whole number option<b>; default: 1</b></pre>
+	<p>An option cannot be marked as required if it has a default. See
+		the third array below.</p>
+	<h3>Second Array</h3>
+	<p>The second array in an option line is used only in the
+		construction of usage information. It provides a description of the
+		option and possibly, if the option is non-boolean, a name for its
+		argument.</p>
+		<pre>// <b>only a description, default name "val" used</b>
+{ { "foo", String.class }, { <b>"description"</b> } },
+// this one has an argument name
+{ { "bar", String.class }, { "another description", <b>"baz"</b> } },</pre>
+<p>produces</p>
+<pre>	--foo     &lt;val&gt;  description
+	--bar     &lt;baz&gt;  another description</pre>
+	<p>If you don't wish to provide any of this information, a simple
+		description will be generated indicating the option type. If you wish
+		to provide some restriction but are satisfied with the default
+		description, you must provide an empty array for the second item in
+		the option specification line.</p>
+		<pre>{ { "foo", Integer.class }, <b>{}</b>, { Range.positive() } }</pre>
+	<h3>Third Array</h3>
+	<p>The third array in an option specification line provides
+		restrictions on the possible values of the option and/or indicates
+		that it may be repeated.</p>
+		<pre>{ { 'a', Integer.class }, {}, { Cli.Res.REQUIRED } },
+{ { 'b', Integer.class }, {}, { Cli.Res.REPEATABLE } },
+{ { 'c', Integer.class }, {}, { Cli.Res.SET } },
+{ { 'd', Integer.class }, {}, { Range.nonNegative() } },
+{ { 'e', Integer.class }, {},
+		{ Range.nonNegative(), new ValidationRule&lt;Integer&gt;() {
+			@Override
+			public void test(Integer arg)
+					throws ValidationException {
+				double d = Math.sqrt(arg);
+				if (Math.floor(d) != d)
+					throw new ValidationException(
+							"not a square");
+			}
+		} } },</pre>
+	<p>
+		These values may be mixed an matched. For example, an option can be
+		required and repeatable, in which case the user must specify one or
+		more values for the option. The fourth example above shows multiple
+		validation rules being applied to an option. Validation rules can be
+		generated ad hoc like this, but a number of useful rules are provided
+		in the package
+		<code>dfh.cli.rules</code> among these are
+	</p>
+	<h4><code>dfh.cli.rules.Range</code></h4>
+	<p>This class specifies ranges of the number line that a numeric
+		option's value must fall within. The easiest way to use this is via
+		factory methods that generate various sorts of ranges:</p>
+	<ul style="list-style: none;">
+		<li><code>Range.positive()</code>: positive numbers</li>
+		<li><code>Range.negative()</code>: negative numbers</li>
+		<li><code>Range.nonNegative()</code>: non-negative numbers</li>
+		<li><code>Range.incl(Number, Number)</code>: a range including its enpoints</li>
+		<li>etc.</li>
+	</ul>
+	<h4><code>dfh.cli.rules.IntSet</code></h4>
+	<p>
+		This class is useful if the value must fall within some set not
+		equivalent to a range.
+	</p>
+	<pre>{ { 'a', Integer.class }, {}, { new IntSet(1, 5, 28) } }</pre>
+	<h4><code>dfh.cli.rules.StrRegex</code></h4>
+	<p>This rule validates a string value against a pattern:</p>
+	<pre>{ { 'a', String.class }, {}, { new StrRegex("[^e]+") } }</pre>
+	<p>
+		Either a string or a
+		<code>java.util.regex.Pattern</code>
+		may be provided to the constructor. The pattern must match against the
+		entire argument.
+	</p>
+	<h2>
+		<code>dfh.cli.Cli.Opt</code>
+		Lines
+	</h2>
+</body>
+</html>

@@ -48,193 +48,141 @@
 		Then you query it to obtain the values relevant to your code. This
 		process is illustrated below.
 	</p>
-	<pre>
-   public static void main(String[] args) throws Exception {
-      Object[][][] spec = {
-            //                  
-            { { Opt.VERSION, 1 } },//
-            { { "folds", 'f', Integer.class, 10 },
-                  { "number of sections to slice the data into", "n" },
-                  { Range.greaterOrEq(2) } },// 
-            {                   
-                  { "cutoff", 'c', Integer.class, 3 },
-                  {                             
-                        "satisfaction level less than which is \"unsatisfactory\"", 
-                        "threshold" }, { Range.excl(1, 5) } },//
-            {                   
-                  { "balance", 'b', Boolean.class, true },
-                  { "whether to resample data to even the odds of each class at each stage of cascade" } },// 
-            { { "dump", 'd' }, { "whether to dump raw data as .arff file" } },//
-            {                   
-                  { "binary", String.class },   
-                  {                             
-                        "whether to dump .arff files for first fold cascade training", 
-                        "file name base" } },//                 
-            { { Opt.NAME, getClass().getName() } },//
-            { { Opt.ARGS } },// 
-            { {                 
-                  Opt.USAGE,                    
-                  "slice training data into n folds, training on remainder and testing on each in turn" } },//
-      };        
-      Cli p = new Cli(spec, Mod.HELP);
-      p.parse(args);
-      int folds = p.integer("folds"), cutoff = p.integer("cutoff");
-      boolean doDump = p.bool("dump"), doBalance = p.bool("balance");
-      String nfoldDump = p.string("binary");
-      ...       
-</pre>
-	<h2>Usage</h2>
+	<p>The following bit of code</p>
+	<pre>Object[][][] spec = {
+	{ { "foo" } },                    // boolean option
+	{ { "bar", 'b' } },               // boolean with short and long versions
+	{ { 'c' }, { "usually false" } }, // boolean with description
+	{ { 'd', Integer.class } },       // integer
+	{ { 'e', Integer.class, 1 } },    // integer with default
+	// floating point with a description and a name for its argument
+	{ { 'f', Double.class }, { "some number", "num" } },
+	// float with a restriction
+	{ { 'g', Float.class }, {}, { Range.positive() } },
+	// set of strings -- option may be repeated -- required to be non-empty
+	{ { 'h', String.class }, {}, { Cli.Res.SET, Cli.Res.REQUIRED } },
+	// some usage information
+	{ { Cli.Opt.USAGE, "short description", "long description" } },
+	// name for executable
+	{ { Cli.Opt.NAME, "hotstuff" } },
+	// argument list description
+	{ { Cli.Opt.ARGS, "quux", "corge", "others", Cli.Opt.PLUS } },
+};
+Cli cli = new Cli(spec, Cli.Mod.HELP);
+cli.parse("--help");</pre>
+	<p>produces the following usage information.</p>
+	<pre>USAGE: hotstuff [options] &lt;quux&gt; &lt;corge&gt; &lt;others&gt;+
+
+	short description
+
+	--foo            a boolean option
+	--bar -b         a boolean option
+	-c               usually false
+	-d        &lt;val&gt;  whole number option
+	-e        &lt;val&gt;  whole number option; default: 1
+	-f        &lt;num&gt;  some number
+	-g        &lt;val&gt;  floating point numerical option
+	-h        &lt;val&gt;  a set of strings; REQUIRED
+
+	--help -?        print usage information
+
+long description</pre>
+	<h2>Overview</h2>
 	<p>
-		If you created the
-		<code>dfh.cli.Cli</code>
-		object with the optional
-		<code>HELP</code>
-		modifier, as above, the user can use the
-		<code>--help</code>
-		option to obtain usage information, as below.
+		Most of the essential parts of using
+		<code>dfh.cli</code>
+		are illustrated in the example above. You
 	</p>
-	<pre>
-USAGE: some.package.NFoldCrossValidationExperiment [options]
-
-	slice training data into n folds, training on remainder and testing on each in turn
-
-	--folds -f     &lt;n&gt;               number of sections to slice the data into; default: 10
-	--cutoff -c    &lt;threshold&gt;       satisfaction level less than which is "unsatisfactory"; default: 3
-	--balance -b                     whether to resample data to even the odds of each class at each stage of cascade; default: true
-	--dump -d                        whether to dump raw data as .arff file
-	--binary       &lt;file name base&gt;  whether to dump .arff files for first fold cascade training
-
-	--version -v                     print some.package.NFoldCrossValidationExperiment version
-	--help -? -h                     print usage information
-</pre>
-	<h2>Spec Spec</h2>
-	<p>A specification consists of an array of specification lines.</p>
-	<pre>
-spec := "{" &lt;line&gt;+ "}"
-line := ( &lt;option_definition&gt; | &lt;argument_definition&gt; | &lt;usage&gt; | &lt;name&gt; | &lt;version&gt; | &lt;text&gt; ) ","</pre>
-	<h3>option definition</h3>
-	<p>An option definition is an array of up to 3 arrays of objects. E.g.,</p>
-	<pre>		Object[][][] spec = {
-				//
-				{ { "foo", Boolean.class, true } },//
-				{ { "bar", Integer.class }, {}, { Range.greater(2) } },//
-				{ { "baz" }, { "a lovely option" } },//
-				{ { "corge", Number.class, 3.1415 }, { "also lovely", "num" },
-						{ Res.REQUIRED, Res.REPEATABLE } },//
-				{ { "quux", Float.class }, {}, { Res.REQUIRED, Res.SET } },//
-		};</pre>
-	<p>More explicitly:</p>
-	<pre>
-option_definition := "{" &lt;option&gt; [ "," &lt;description&gt; [ "," &lt;restriction&gt; ] ] "}"
-           option := "{" [ &lt;name&gt; | &lt;char&gt; ] [ "," [ &lt;name&gt; | &lt;char&gt; ] ]* [ "," &lt;type&gt; [ "," &lt;default&gt; ] ] "}"
-      description := "{" [ &lt;description_text&gt; [ "," &lt;arg_name&gt; ] ] "}"
-      restriction := "{" [ [ &lt;CLI.Res&gt; | &lt;validation_rule&gt; ] [ "," [ &lt;CLI.Res&gt; | &lt;validation_rule&gt; ] ]* ] "}"</pre>
-	<h4>name</h4>
-	<p>The only thing required of an option is a name.</p>
-	<pre>		Object[][][] spec = {{{ <b>"foo"</b> }}};
-		Cli cli = new Cli(spec, Mod.HELP);
-		cli.parse("--help");</pre>
-	returns
-	<pre>USAGE: EXECUTABLE [options] <arg>*
-
-	--foo           a boolean option
-
-	--help -? -h    print usage information</pre>
+	<ol>
+		<li>specify a command line interface <pre>Object[][][] spec = {
+	{ { "foo" } }, // boolean option
+	// ...
+	{ { Cli.Opt.ARGS, "quux", "corge", "others", Cli.Opt.PLUS } },
+};</pre>
+		</li>
+		<li>create a <code>dfh.cli.Cli</code> object with the
+			specification, optionally passing in modifiers that add options or
+			change the object's behavior <pre>Cli cli = new Cli(spec, Cli.Mod.HELP);</pre>
+		</li>
+		<li>and you parse some arguments with this object <pre>cli.parse("--help");</pre>
+		</li>
+	</ol>
+	<p>Two common steps are left out, however. You also generally</p>
+	<ol start="4">
+		<li>extract the parsed values <pre>boolean foo = cli.bool("foo"), bar = cli.bool("bar");
+Integer d = cli.integer("d");
+Set&lt;String&gt; h = (Set&lt;String&gt;) cli.stringCollection("h");</pre></li>
+		<li>and do some additional validation beyond what was done during
+			argument parsing<pre>if (cli.bool("c") &amp;&amp; bar)
+	cli.die("Not both -c and --bar!!! We go no further!");
+if (foo &amp;&amp; h.size() > 13)
+	cli.error("if --foo, then set -h must be less than 14");
+if (d == null &amp;&amp; bar)
+	cli.error("you must specify -d if --bar");
+cli.errorCheck();</pre>
+		</li>
+	</ol>
+	<h2>Further Details</h2>
+	<h3>specification</h3>
+	<p>For how to do this
+	<pre>Object[][][] spec = {
+	{ { "foo" } }, // boolean option
+	// ...
+	{ { Cli.Opt.ARGS, "quux", "corge", "others", Cli.Opt.PLUS } },
+};</pre>
+	go
+	<a href="specification.html">here</a>.
+	<h3>modifiers</h3>
+	<p>For more information about stuff like this
+	<pre>Cli cli = new Cli(spec, <b>Cli.Mod.HELP</b>);</pre>
+	go
+	<a href="modifiers.html">here</a>.
+	</p>
+	<h3>extracting option values</h3>
+	<p>For everything you can do here
+	<pre>boolean foo = cli.bool("foo"), bar = cli.bool("bar");
+Integer d = cli.integer("d");
+Set&lt;String&gt; h = (Set&lt;String&gt;) cli.stringCollection("h");</pre>
+	go
+	<a href="values.html">here</a>.
+	</p>
+	<h3>validation</h3>
 	<p>
-		The option's names provide identifiers by which its value may be
-		retrieved from the
-		<code>dfh.cli.Cli</code>
-		object after parsing.
+		And for validation tricks, go <a href="validation.html">here</a>.
 	</p>
-	<pre>		Cli cli = new Cli(new Object[][][] { { { "foo", 'f', 'o' } } });
-		cli.parse("-f");
-		System.out.println(cli.bool("foo"));
-		System.out.println(cli.bool("f"));
-		System.out.println(cli.bool("o"));
-	</pre>
-	produces
-	<pre>true
-true
-true</pre>
-	<p>You may provide multiple names, including characters, which will
-		become short options names. Short option names may be bundled and need
-		only be preceded by a single dash whereas long names must be preceded
-		by a double dash.</p>
-	<pre>		Object[][][] spec = {
-				//
-				{ { "foo", <b>"bar"</b>, <b>'f'</b> } },//
-				{ { "baz", <b>'z'</b> } },//
-		};
-		Cli cli = new Cli(spec, Mod.HELP);
-		cli.parse("--help");</pre>
-	returns
-	<pre>USAGE: EXECUTABLE [options] <arg>*
-
-	--bar --foo -f    a boolean option
-	--baz -z          a boolean option
-
-	--help -? -h      print usage information</pre>
-	for which all the following are equivalent
-	<pre>--bar --baz
---foo --baz
--f --baz
---f --z
--f -z
--fz</pre>
+	<h2>Shell Hint</h2>
 	<p>
-		Long feature names must match the regex
-		<code>[a-z0-9][\w-]*(?&lt;![_-])</code>
-		. That is, they must begin with a letter or number, they may contain a
-		letter, number, dash, or underscore, and they cannot end in a dash or
-		underscore.
+		Once you've written a command line application you want to use it from
+		the command line as you do
+		<code>less</code>
+		or
+		<code>grep</code>
+		. This means you type the name and some arguments and it does what you
+		want. What you <em>don't</em> want to do is type this.
 	</p>
-	<h4>type</h4>
-	<p>An option's type is specified by a <code>java.lang.Class</code> object. E.g.,</p>
-	<pre>Object[][][] spec = { { { "foo", <b>String.class</b> } } };</pre>
-	<p>Currently only the following types are supported.</p>
-	<ul style="list-style: none;">
-		<li><code>java.lang.String.class</code></li>
-		<li><code>java.lang.Integer.class</code></li>
-		<li><code>java.lang.Double.class</code></li>
-		<li><code>java.lang.Float.class</code></li>
-		<li><code>java.lang.Number.class</code></li>
-		<li><code>java.lang.Boolean.class</code></li>
-	</ul>
+	<pre>java -cp one.jar:another.jar:/usr/share/java/stillAnother.jar big.package.prefix.Class --foo --bar</pre>
+	<p>This is obnoxious. If you write a program which requires someone
+		to type all this you're lucky if they use it. If you're writing a
+		scripting language you can fix most of this with the shebang trick:</p>
+	<pre><b>#! /usr/bin/env perl -I~/peculiar/library/path</b>
+# this works great for Perl, Python, Ruby, Bash, etc.!
+# Put this at the top of your script and make it executable and you're golden.
+# Not so for Java.</pre>
 	<p>
-		If not type is provided the option will be boolean. The only reason to
-		specify the boolean type is when you wish such an option to have a
-		default other than
-		<code>true</code>
-		.
+		What to do with Java? You create a shell script to invoke your Java
+		class, <em>taking care to protect command line arguments from the
+			shell</em>. For example, the following will work in Bash.
 	</p>
-	<h4>default</h4>
-	<p>
-		The final thing that may appear in an
-		<code>&lt;option&gt;</code>
-		is a default value. Booleans always have a default value --
-		<code>true</code>
-		-- though this may be changed to
-		<code>false</code>
-		by specifying the default explicitly. An explicit default value will
-		be displayed in usage information. E.g.,
+	<pre>#!/bin/sh
+
+JAVA=/some/path/to/java
+CLASSPATH=~/my.jar
+CLASS=foo.bar.Quux
+$JAVA -cp $CLASSPATH $CLASS <b>"$@"</b></pre>
+	<p>You can then put the name of this script into the spec like so
+	
+	<pre>{ { Cli.Opt.NAME, "myscript" } },</pre>
+	to ensure the usage information is generated correctly.
 	</p>
-	<pre>		Object[][][] spec = { { { "foo", String.class, "bar" } } };
-		Cli cli = new Cli(spec, Cli.Mod.HELP);
-		cli.parse("--help");</pre>
-		<p>produces</p>
-		<pre>USAGE: EXECUTABLE [options] &lt;arg&gt;*
-
-	--foo        &lt;val&gt;  string option<b>; default: bar</b>
-
-	--help -? -h        print usage information</pre>
-	<h4>description text</h4>
-	<h4>arg name</h4>
-	<h4>integer</h4>
-	<h4>validation rule</h4>
-	<h3>argument definition</h3>
-	<h3>text</h3>
-	<h3>usage</h3>
-	<h3>name</h3>
-	<h3>version</h3>
 </body>
 </html>

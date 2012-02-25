@@ -6,5 +6,9 @@ var hdrs = {
 	"home" : "http://dfhoughton.com",
 	"CLI" : "index.html",
 	"API" : "api/index.html",
-	"download" : "download.html"
+	"download" : "download.html",
+	"spec" : "specification.html",
+	"modifiers" : "modifiers.html",
+	"use" : "values.html",
+	"validation" : "validation.html",
 };
