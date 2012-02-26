@@ -13,6 +13,208 @@
 </style>
 </head>
 <body onLoad="dfh.prepare('use', 'dfh.cli')">
+	<h1>Obtaining the Values Parsed</h1>
+	<p>
+		If
+		<code>dfh.cli.Cli</code>
+		successfully parses a command line, the next task is to obtain the
+		values parsed. These are retained in the parser itself, but I
+		generally extract them into their own variables immediately after
+		parsing.
+	</p>
+	<pre>Object[][][] spec = {
+	{ { "foo" } },
+	{ { "bar" } },
+	{ { "baz" } },
+	{ { "quux", Integer.class } },
+	{ { "corge", Integer.class } },
+	};
+Cli cli = new Cli(spec, Cli.Mod.HELP);
+cli.parse(args);
+boolean foo = cli.bool("foo"), bar = cli.bool("bar"), baz = cli.bool("baz");
+Integer quux = cli.integer("quux"), corge = cli.integer("corge");</pre>
 	<span id="toc"></span>
+	<h2>
+		The Significance of
+		<code>null</code>
+	</h2>
+	<p>
+		Except for boolean options and those with default values, it is always
+		possible that an option remains unset. In these cases you should use
+		<code>Integer</code>
+		,
+		<code>Double</code>
+		, and so forth rather than
+		<code>int</code>
+		and
+		<code>double</code>
+		and check these objects for nullity before using them. Note, if you
+		require options to have a a value you should mark them as required or
+		provide a default.
+	</p>
+	<h2>Numeric Values</h2>
+	<p>
+		<code>dfh.cli</code>
+		allows you to specify that a number is a float, integer, double, or
+		<code>Number</code>
+		, but the only values it will return to you are
+		<code>Integer</code>
+		and
+		<code>Number</code>
+		. If you truly only require float precision, you can request the float
+		value of
+		<code>Numbers</code>
+		returned.
+	</p>
+	<h2>Sets</h2>
+	<p>
+		An option marked via
+		<code>Cli.Res.SET</code>
+		will be represented internally as a
+		<code>java.util.LinkedHashSet</code>
+		. This retains only one instance of every value but it otherwise
+		preserves the order of the values on the command line. You can
+		retrieve a set like so:
+	<pre>Object[][][] spec = {
+{ { "foo", String.class }, {}, { Cli.Res.SET } },
+};
+Cli cli = new Cli(spec);
+cli.parse(args);
+Collection&lt;String&gt; foo = cli.stringCollection("foo");</pre>
+	</p>
+	<p>
+		If you wish you may safely cast such a collection to
+		<code>java.util.Set</code>
+		.
+	</p>
+	<p>
+		Only strings and numbers can come in sets. If you wish a set of
+		booleans, you'll have to hack something together because
+		<code>dfh.cli</code>
+		is coded to regard specifications of boolean sets as errors.
+	</p>
+	<h2>Lists</h2>
+	<p>
+		If an option is marked as
+		<code>Cli.Res.REPEATABLE</code>
+		and is not marked as a set, all the values found for this option will
+		be collected into a list.
+	</p>
+	<pre>Object[][][] spec = {
+{ { "foo", String.class }, {}, { <b>Cli.Res.REPEATABLE</b> } },
+};
+Cli cli = new Cli(spec);
+cli.parse(args);
+Collection&lt;String&gt; foo = cli.stringCollection("foo");</pre>
+	<p>
+		Again, the values of such an option are retrieved as a
+		<code>java.util.Collection</code>
+		. This collection may safely be cast to
+		<code>java.util.List</code>
+		. Underlyingly the collection is a
+		<code>java.util.LinkedList</code>
+		.
+	</p>
+	<h2>First Items</h2>
+	<p>The same method that retrieves the value of a non-repeatable
+		option will obtain the first value of a repeatable one -- the first
+		item in a set or list.</p>
+	<pre>Object[][][] spec = {
+{ { "foo", String.class }, {}, { <b>Cli.Res.REPEATABLE</b> } },
+};
+Cli cli = new Cli(spec);
+cli.parse(args);
+String foo = cli.string("foo");</pre>
+	<h2>Arguments</h2>
+	<p>The &ldquo;arguments&rdquo; are just the arguments left after
+		all options are assigned values. Unlike options, arguments are only
+		checked for existence, not type. Any argument validation must follow
+		command line parsing.</p>
+	<h3>double dash</h3>
+	<p>To halt option parsing and force all remaining items on the
+		command line to be parsed as arguments, one may provide a double dash
+		argument:</p>
+	<pre>executable --foo bar --quux <b>--</b> --corge</pre>
+	<p>
+		In this example
+		<code>--corge</code>
+		will be taken in as un unparsed string rather than a boolean option,
+		even if the specification provides a
+		<code>--corge</code>
+		option. Such a boolean option will continue to have a false value and
+		the first argument of the executable will be
+		<code>--corge</code>
+		.
+	</p>
+	<p>Likewise, if any argument, parsing from left to right, cannot be
+		interpreted as the value of an option, it and all remaining arguments
+		will be passed to the executable as arguments.</p>
+	<h3>anonymous</h3>
+	<p>The argument list may always be retrieved as a list of strings.</p>
+	<pre>Object[][][] spec = {
+{ { Cli.Opt.ARGS, "foo", "bar", Cli.Opt.PLUS } },
+};
+Cli cli = new Cli(spec);
+cli.parse("a", "b", "c", "d");
+for (String s: <b>cli.argList()</b>)
+	System.out.println(s);</pre>
+	<pre class="results">a
+b
+c
+d</pre>
+	<pre>Object[][][] spec = { { { "foo" } } };
+Cli cli = new Cli(spec);
+cli.parse("a", "b", "c", "d");
+for (String s : cli.argList())
+	System.out.println(s);</pre>
+	<pre class="results">a
+b
+c
+d</pre>
+	<h3>named</h3>
+	<p>Any explicitly named argument not marked with a star is
+		required.</p>
+	<pre>{ { Cli.Opt.ARGS, "foo" } }</pre>
+	<p>as opposed to</p>
+	<pre>{ { Cli.Opt.ARGS, "foo", <b>Cli.Opt.STAR</b> } }</pre>
+	<p>Named arguments can be retrieved by their name.</p>
+	<pre>{ { Cli.Opt.ARGS, "foo" } };
+//...
+String foo = cli.argument("foo");</pre>
+	<p>As with repeatable options, this same method will retrieve the
+		first in a list of named slurped arguments (see below).
+	<h3>slurped</h3>
+	<p>
+		A slurped argument is a named argument marked with
+		<code>Cli.Opt.STAR</code>
+		or
+		<code>Cli.Opt.PLUS</code>
+		-- a repeatable argument. Such arguments are necessarily last in the
+		argument list. If you want to retrieve the first value of such an
+		argument, you can extract it by name.
+	</p>
+	<pre>Object[][][] spec = { { { Cli.Opt.ARGS, "foo", <b>"bar", Cli.Opt.STAR</b> } } };
+Cli cli = new Cli(spec);
+cli.parse("a", "b", "c", "d");
+System.out.println(<b>cli.argument("bar")</b>);</pre>
+	<pre class="results">b</pre>
+	<p>One may the entire list of slurped values.</p>
+	<pre>Object[][][] spec = { { { Cli.Opt.ARGS, "foo", "bar", Cli.Opt.STAR } } };
+Cli cli = new Cli(spec);
+cli.parse("a", "b", "c", "d");
+for (String s : <b>cli.slurpedArguments()</b>)
+	System.out.println(s);</pre>
+	<pre class="results">b
+c
+d</pre>
+	<p>
+		As long as the slurped argument is not required -- it is marked by
+		<code>Cli.Opt.STAR</code>
+		rather than
+		<code>Cli.Opt.PLUS</code>
+		-- it need not have any value. In this case
+		<code>Cli.slurpedArguments()</code>
+		will return an empty list.
+	</p>
 </body>
 </html>
