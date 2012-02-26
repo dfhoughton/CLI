@@ -13,6 +13,63 @@
 </style>
 </head>
 <body onLoad="dfh.prepare('validation', 'dfh.cli')">
-	<span id="toc"></span>
+	<h1>Validation</h1>
+	<p>Most validation is done when the arguments are parsed:</p>
+	<pre>Object[][][] spec = {
+		{ { "foo", Integer.class }, {}, { Cli.Res.REQUIRED } },
+		{ { "corge", Double.class }, {}, { Range.incl(0, 10) } },
+		{ { "bar", Integer.class } }, 
+		{ { Cli.Opt.ARGS, "baz" } }
+};
+Cli cli = new Cli(spec);
+cli.parse("--bar", "quux", "--corge", "11");</pre>
+	<pre class="results">ERRORS
+	argument 1, &lt;baz&gt;, not defined
+	--foo is required but has no defined value
+	--corge: 11.0 outside range [0, 10]
+	--bar: --bar expects an integer argument; received quux
+
+USAGE: EXECUTABLE [options] &lt;baz&gt;
+
+	--foo   &lt;val&gt;  whole number option; REQUIRED
+	--corge &lt;val&gt;  floating point numerical option
+	--bar   &lt;val&gt;  whole number option</pre>
+	<p>
+		It may still be the case, however, that after parsing some validation
+		is required. Perhaps there are interactions among options that are not
+		expressible in the specification or the arguments must be validated
+		further.
+		<code>dfh.cli.Cli</code>
+		provides three methods which are useful in this case.
+	</p>
+	<h2>
+		<code>dfh.cli.Cli.error(String)</code>
+	</h2>
+	<p>
+		As you proceed in your validation you may encounter more than one
+		error. You register each error with the
+		<code>error(String)</code>
+		method.
+	</p>
+	<pre>if (cli.argument("foo") == null && cli.bool("bar"))
+	cli.error("null --foo while --bar");</pre>
+	<h2>
+		<code>dfh.cli.Cli.errorCheck()</code>
+	</h2>
+	<p>
+		Once your validation code is done, you call
+		<code>errorCheck()</code>
+		. This will cause the executable to exit with usage information if any
+		errors were registered.
+	</p>
+	<h2>
+		<code>dfh.cli.Cli.die(String)</code>
+	</h2>
+	<p>
+		If after discovering some error you simply wish to abort further
+		processing, you call
+		<code>die(String)</code>
+		with the error message.
+	</p>
 </body>
 </html>
