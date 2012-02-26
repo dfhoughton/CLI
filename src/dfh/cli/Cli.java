@@ -188,7 +188,7 @@ public class Cli {
 			else if (m == Mod.HELP)
 				hasHelp = true;
 		}
-		if (hasHelp || versionOption != null)
+		if ((hasHelp || versionOption != null) && !options.isEmpty())
 			options.put("_" + options.size(), new DummyOption(""));
 		if (versionOption != null) {
 			boolean added = false;
