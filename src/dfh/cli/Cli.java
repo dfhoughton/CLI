@@ -90,12 +90,6 @@ public class Cli {
 		 */
 		HELP,
 		/**
-		 * Auto-generate version command. See
-		 * {@link Cli#PREFERRED_VERSION_FLAGS}. If none of these is available, a
-		 * {@link ValidationException} is thrown.
-		 */
-		VERSION,
-		/**
 		 * Throw a {@link RuntimeException} when option parsing or validation
 		 * fails rather than calling {@link System#exit(int)}.
 		 */
@@ -140,9 +134,8 @@ public class Cli {
 	public static final String[] AUXILIARY_HELP_FLAGS = { "usage", "info",
 			"how-to-use" };
 	/**
-	 * If the {@link Mod#VERSION} modifier is provided to
-	 * {@link Cli#Cli(Object[][][], Mod...)}, these are the flags to trigger the
-	 * version command.
+	 * If the executable version is provided via a {@link Opt#VERSION} line,
+	 * these are the flags to trigger the version command.
 	 */
 	public static final String[] PREFERRED_VERSION_FLAGS = { "version", "v" };
 	/**

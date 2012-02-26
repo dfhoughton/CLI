@@ -69,8 +69,7 @@
 		default.</p>
 	<pre>{ { <b>"bar", 'b', 'c'</b> } },           // <b>names</b>
 { { "foo", <b>String.class</b> } },       // <b>type</b>
-{ { "quux", Integer.class, <b>10</b> } }, // <b>default</b>
-	</pre>
+{ { "quux", Integer.class, <b>10</b> } }, // <b>default</b></pre>
 	<h4>name</h4>
 	<p>Every option requires at least one name. These can be specified
 		by string or character. One character names, whether strings or
@@ -251,8 +250,6 @@ cli.parse("--help");</pre>
 		One can retrieve the entire argument list from the
 		<code>dfh.cli.Cli</code>
 		object
-	
-	
 	<pre>List&lt;String&gt; args = cli.argList();</pre>
 	retrieve particular arguments by name (int the case of
 	<code>STAR</code>
@@ -270,11 +267,11 @@ cli.parse("--help");</pre>
 		information: an abstract, or short description, that appears right
 		before the option descriptions; and a long description that appears at
 		the end.</p>
-		<pre>Object[][][] spec = { { { Cli.Opt.USAGE, "short description",
+	<pre>Object[][][] spec = { { { Cli.Opt.USAGE, "short description",
 		"much longer description" } }, };
 Cli cli = new Cli(spec, Cli.Mod.HELP);
 cli.parse("--help");</pre>
-<pre class="results">USAGE: EXECUTABLE [options] &lt;arg&gt;*
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;arg&gt;*
 
 	short description
 
@@ -314,9 +311,59 @@ Object[][][] spec = { { { Cli.Opt.USAGE, "short description"}, { is } }, };</pre
 	<h3>
 		<code>TEXT</code>
 	</h3>
+	<p>
+		A
+		<code>TEXT</code>
+		line is useful for breaking up a long sequence of options into
+		functional blocks. The string following
+		<code>Cli.Opt.TEXT</code>
+		will be inserted into the list of option descriptions in the usage
+		text.
+	</p>
+	<pre>Object[][][] spec = {
+	{ { "foo" } },
+	{ { "bar" } },
+	{ { "baz" } },
+	{ { Cli.Opt.TEXT } },
+	{ { Cli.Opt.TEXT, "and now for something completely different" } },
+	{ { Cli.Opt.TEXT } },
+	{ { "quux", Integer.class } },
+	{ { "corge", Integer.class } },
+	};
+Cli cli = new Cli(spec, Cli.Mod.HELP);
+cli.parse("--help");</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;arg&gt;*
+
+	--foo               a boolean option
+	--bar               a boolean option
+	--baz               a boolean option
+
+and now for something completely different
+
+	--quux       &lt;val&gt;  whole number option
+	--corge      &lt;val&gt;  whole number option</pre>
 	<h3>
 		<code>NAME</code>
 	</h3>
+	<p>
+		A
+		<code>NAME</code>
+		line simply tells the
+		<code>Cli</code>
+		object what your executable is called. Ideally, this is some simple
+		executable on your binary path -- whatever the user typed to see the
+		usage information. Here's something that will work if you haven't
+		wrapped your Java executable in something more comfortable on the
+		command line:
+	</p>
+	<pre>{ { Cli.Opt.NAME, MyClass.class.toString() } }</pre>
+	<p>
+		If you provide no
+		<code>NAME</code>
+		line,
+		<code>dfh.cli</code>
+		will call your program &ldquo;EXECUTABLE&rdquo;.
+	</p>
 	<h3>
 		<code>VERSION</code>
 	</h3>
