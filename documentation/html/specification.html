@@ -367,5 +367,23 @@ and now for something completely different
 	<h3>
 		<code>VERSION</code>
 	</h3>
+	<p>
+		If you wish the user to be able to discover the version of your
+		application from the command line, use the
+		<code>VERSION</code>
+		constant. The next argument will be stringified to produce a version
+		number.
+		<pre>{ { Cli.Opt.VERSION, 1.5 } }</pre>
+		or 
+		<pre>{ { Cli.Opt.VERSION, "1.5.1" } }</pre>
+	</p>
+	<p>
+		<code>dfh.cli</code>
+		will automatically add an option to retrieve this version number. It
+		will seek a name for this version in the set
+		<code>{version,v}</code>
+		, using both if both are available, throwing an error if neither is
+		available.
+	</p>
 </body>
 </html>
