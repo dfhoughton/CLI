@@ -6,8 +6,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.regex.Pattern;
+
+import javax.imageio.stream.FileImageInputStream;
 
 import org.junit.Test;
 
@@ -581,6 +588,28 @@ public class CliTest {
 			Object[][][] spec = {
 			//
 			{ { Opt.USAGE, "foo" }, { "foo" } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("usage at end", s.trim().endsWith("bar"));
+		}
+	}
+
+	@Test
+	public void makeUsageFromExternal2() throws IOException {
+		try {
+			File f = File.createTempFile("test", null);
+			f.deleteOnExit();
+			FileWriter writer = new FileWriter(f);
+			writer.write("bar");
+			writer.close();
+			InputStream is = new FileInputStream(f);
+			Object[][][] spec = {
+			//
+			{ { Opt.USAGE, "foo" }, { is } },//
 			};
 			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
 			cli.parse("--help");

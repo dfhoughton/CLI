@@ -2,6 +2,7 @@ package dfh.cli;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -333,28 +334,36 @@ public class Cli {
 					}
 				}
 				if (!usageDefined) {
-					if (cmd.length > 1 && cmd[1].length > 0)
+					if (cmd.length > 1 && cmd[1].length > 0) {
+						InputStream is = null;
 						if (cmd[1][0] instanceof String) {
 							try {
-								InputStream is = Cli.class
+								is = Cli.class
 										.getClassLoader()
 										.getResourceAsStream((String) cmd[1][0]);
-								BufferedInputStream bis = new BufferedInputStream(
-										is);
-								ByteArrayOutputStream baos = new ByteArrayOutputStream();
-								byte[] buf = new byte[1024];
-								int count;
-								while ((count = bis.read(buf)) > -1) {
-									baos.write(buf, 0, count);
-								}
-								bis.close();
-								usage = new String(baos.toByteArray());
 							} catch (Exception e) {
 								throw new ValidationException(
 										"unable to load usage details from resource "
 												+ e);
 							}
+						} else if (cmd[1][0] instanceof InputStream) {
+							is = (InputStream) cmd[1][0];
 						}
+						try {
+							BufferedInputStream bis = new BufferedInputStream(
+									is);
+							ByteArrayOutputStream baos = new ByteArrayOutputStream();
+							byte[] buf = new byte[1024];
+							int count;
+							while ((count = bis.read(buf)) > -1) {
+								baos.write(buf, 0, count);
+							}
+							bis.close();
+							usage = new String(baos.toByteArray());
+						} catch (IOException e) {
+							throw new ValidationException(e.toString());
+						}
+					}
 				}
 				if (!usageDefined && "".equals(abstr))
 					throw new ValidationException(
