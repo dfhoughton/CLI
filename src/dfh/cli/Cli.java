@@ -558,29 +558,29 @@ public class Cli {
 
 	public void parse(String... args) {
 		argList = new ArrayList<String>(args.length);
-		boolean endCommands = false;
+		boolean endCommands = false, mustStore = false;
 		Option<?> lastCommand = null;
 		for (String s : args) {
 			try {
 				if (endCommands)
 					argList.add(s);
-				else {
+				else if (mustStore) {
+					lastCommand.store(s);
+					mustStore = false;
+				} else {
 					if (s.startsWith("-")) {
 						if (s.equals("--"))
 							endCommands = true;
-						else
+						else {
 							lastCommand = extractCommands(s);
+							mustStore = !(lastCommand instanceof BooleanOption);
+						}
 					} else if (lastCommand == null) {
 						endCommands = true;
 						argList.add(s);
 					} else {
-						if (lastCommand.hasArgument
-								&& lastCommand.stored == null)
-							lastCommand.store(s);
-						else {
-							argList.add(s);
-							endCommands = true;
-						}
+						argList.add(s);
+						endCommands = true;
 						lastCommand = null;
 					}
 				}

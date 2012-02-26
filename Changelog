@@ -1,7 +1,8 @@
-1.05
+1.05, 26 February
    * all modifiers now enums -- eliminated integer restriction modifiers
    * made restrictions apply only to non-null options (oops)
    * made it possible to read usage information from an arbitrary input stream
+   * fixed negative number bug
    
 1.04, 19 February 2012
    * added StrSet and StrRegex validation rules

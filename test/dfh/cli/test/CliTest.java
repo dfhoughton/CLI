@@ -917,4 +917,51 @@ public class CliTest {
 			assertTrue("correct usage generated", s.indexOf("default") > -1);
 		}
 	}
+
+	@Test
+	public void negativeInteger() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo", Integer.class } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--foo", "-1");
+			assertTrue("got negative number", cli.integer("foo") == -1);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void negativeDouble() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo", Double.class } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--foo", "-1");
+			assertTrue("got negative number",
+					cli.number("foo").doubleValue() == -1);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void explicitBoolean() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo" } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--foo=true");
+			assertTrue("foo set", cli.bool("foo"));
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
 }
