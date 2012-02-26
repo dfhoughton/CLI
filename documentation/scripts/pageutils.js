@@ -18,6 +18,7 @@ var dfh = {
 		this.toc();
 		this.footnotes();
 		this.mdash();
+		this.version();
 	},
 
 	/**
@@ -136,6 +137,38 @@ var dfh = {
 	},
 
 	/**
+	 * Searches the document for the string __VERSION__ in text nodes and
+	 * attributes and replaces it with the version value.
+	 */
+	version : function() {
+		// only proceed if the version variable has been set
+		if (version) {
+			var regex = /__VERSION__/g;
+			var recReplace = function(n) {
+				if (n.nodeType == 3) { // text
+					if (regex.test(n.data)) {
+						var replacement = n.data.replace(regex, version);
+						var t = document.createTextNode(replacement);
+						n.parentNode.insertBefore(t, n);
+						n.parentNode.removeChild(n);
+					}
+				} else if (n.nodeType == 1) { // element
+					for ( var i = 0; i < n.childNodes.length; i++) {
+						recReplace(n.childNodes[i]);
+					}
+					for (i = 0; i < n.attributes.length; i++) {
+						var a = n.attributes[i];
+						if (regex.test(a.nodeValue)) {
+							a.nodeValue = a.nodeValue.replace(regex, version);
+						}
+					}
+				}
+			};
+			recReplace(document.body);
+		}
+	},
+
+	/**
 	 * Inserts a table of contents in the document. Procedure:
 	 * 
 	 * 1) You optionally create a style sheet with 1 style
@@ -151,8 +184,8 @@ var dfh = {
 	 * contents, replacing the empty 'toc' span with a 'toc' div. Every header
 	 * *which is a child of the body element* will have a link in this table of
 	 * contents. The identation of this line will be a multiple of the number of
-	 * the corresponding header. The headers themselves will all have a 'top' link
-	 * which takes you back to the table of contents.
+	 * the corresponding header. The headers themselves will all have a 'top'
+	 * link which takes you back to the table of contents.
 	 */
 	toc : function() {
 		var tocSpan = document.getElementById("toc");
@@ -236,9 +269,8 @@ var dfh = {
 	},
 
 	/**
-	 * we look for -- and replace it with an em dash
-	 * except in pre and code elements
-	 * only -- is transformed, not ---, etc.
+	 * we look for -- and replace it with an em dash except in pre and code
+	 * elements only -- is transformed, not ---, etc.
 	 */
 	mdash : function() {
 		var walker = document.createTreeWalker(document.body,

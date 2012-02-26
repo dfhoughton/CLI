@@ -69,11 +69,13 @@
 		default.</p>
 	<pre>{ { <b>"bar", 'b', 'c'</b> } },           // <b>names</b>
 { { "foo", <b>String.class</b> } },       // <b>type</b>
-{ { "quux", Integer.class, <b>10</b> } }, // <b>default</b></pre>
+{ { "quux", Integer.class, <b>10</b> } }, // <b>default</b>
+	</pre>
 	<h4>name</h4>
 	<p>Every option requires at least one name. These can be specified
 		by string or character. One character names, whether strings or
-		characters, will be short options with a single hyphen prefix. Such features may be bundled. For example</p>
+		characters, will be short options with a single hyphen prefix. Such
+		features may be bundled. For example</p>
 	<pre>foo -bar quux</pre>
 	<p>is the same as</p>
 	<pre>foo -b -a -r quux</pre>
@@ -125,24 +127,24 @@
 		construction of usage information. It provides a description of the
 		option and possibly, if the option is non-boolean, a name for its
 		argument.</p>
-		<pre>// <b>only a description, default name "val" used</b>
+	<pre>// <b>only a description, default name "val" used</b>
 { { "foo", String.class }, { <b>"description"</b> } },
 // this one has an argument name
 { { "bar", String.class }, { "another description", <b>"baz"</b> } },</pre>
-<p>produces</p>
-<pre>	--foo     &lt;val&gt;  description
+	<p>produces</p>
+	<pre>	--foo     &lt;val&gt;  description
 	--bar     &lt;baz&gt;  another description</pre>
 	<p>If you don't wish to provide any of this information, a simple
 		description will be generated indicating the option type. If you wish
 		to provide some restriction but are satisfied with the default
 		description, you must provide an empty array for the second item in
 		the option specification line.</p>
-		<pre>{ { "foo", Integer.class }, <b>{}</b>, { Range.positive() } }</pre>
+	<pre>{ { "foo", Integer.class }, <b>{}</b>, { Range.positive() } }</pre>
 	<h3>Third Array</h3>
 	<p>The third array in an option specification line provides
 		restrictions on the possible values of the option and/or indicates
 		that it may be repeated.</p>
-		<pre>{ { 'a', Integer.class }, {}, { Cli.Res.REQUIRED } },
+	<pre>{ { 'a', Integer.class }, {}, { Cli.Res.REQUIRED } },
 { { 'b', Integer.class }, {}, { Cli.Res.REPEATABLE } },
 { { 'c', Integer.class }, {}, { Cli.Res.SET } },
 { { 'd', Integer.class }, {}, { Range.nonNegative() } },
@@ -164,9 +166,12 @@
 		validation rules being applied to an option. Validation rules can be
 		generated ad hoc like this, but a number of useful rules are provided
 		in the package
-		<code>dfh.cli.rules</code> among these are
+		<code>dfh.cli.rules</code>
+		among these are
 	</p>
-	<h4><code>dfh.cli.rules.Range</code></h4>
+	<h4>
+		<code>dfh.cli.rules.Range</code>
+	</h4>
 	<p>This class specifies ranges of the number line that a numeric
 		option's value must fall within. The easiest way to use this is via
 		factory methods that generate various sorts of ranges:</p>
@@ -174,16 +179,19 @@
 		<li><code>Range.positive()</code>: positive numbers</li>
 		<li><code>Range.negative()</code>: negative numbers</li>
 		<li><code>Range.nonNegative()</code>: non-negative numbers</li>
-		<li><code>Range.incl(Number, Number)</code>: a range including its enpoints</li>
+		<li><code>Range.incl(Number, Number)</code>: a range including
+			its enpoints</li>
 		<li>etc.</li>
 	</ul>
-	<h4><code>dfh.cli.rules.IntSet</code></h4>
-	<p>
-		This class is useful if the value must fall within some set not
-		equivalent to a range.
-	</p>
+	<h4>
+		<code>dfh.cli.rules.IntSet</code>
+	</h4>
+	<p>This class is useful if the value must fall within some set not
+		equivalent to a range.</p>
 	<pre>{ { 'a', Integer.class }, {}, { new IntSet(1, 5, 28) } }</pre>
-	<h4><code>dfh.cli.rules.StrRegex</code></h4>
+	<h4>
+		<code>dfh.cli.rules.StrRegex</code>
+	</h4>
 	<p>This rule validates a string value against a pattern:</p>
 	<pre>{ { 'a', String.class }, {}, { new StrRegex("[^e]+") } }</pre>
 	<p>
@@ -196,5 +204,121 @@
 		<code>dfh.cli.Cli.Opt</code>
 		Lines
 	</h2>
+	<h3>
+		<code>ARGS</code>
+	</h3>
+	<p>
+		The
+		<code>ARGS</code>
+		line is probably the most useful of the
+		<code>dfh.cli.Cli.Opt</code>
+		lines. You use it to specify what arguments the executable expects
+		after the options. If the arguments on the command line doesn't
+		provide all the required options, a validation error will be thrown.
+		Some examples:
+	</p>
+	<pre>Object[][][] spec = { { { Cli.Opt.ARGS } } };
+Cli cli = new Cli(spec, Cli.Mod.HELP);
+cli.parse("--help");</pre>
+	<pre class="results">USAGE: EXECUTABLE [options]
+
+	--help -? -h    print usage information</pre>
+	<pre>Object[][][] spec = { { { Cli.Opt.ARGS, "foo" } } };
+Cli cli = new Cli(spec, Cli.Mod.HELP);
+cli.parse("--help");</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;foo&gt;
+
+	--help -? -h    print usage information</pre>
+	<pre>Object[][][] spec = { { { Cli.Opt.ARGS, "foo", "bar" } } };
+Cli cli = new Cli(spec, Cli.Mod.HELP);
+cli.parse("--help");</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;foo&gt; &lt;bar&gt;
+
+	--help -? -h    print usage information</pre>
+	<pre>Object[][][] spec = { { { Cli.Opt.ARGS, "foo", "bar", Cli.Opt.STAR } } };
+Cli cli = new Cli(spec, Cli.Mod.HELP);
+cli.parse("--help");</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;foo&gt; &lt;bar&gt;*
+
+	--help -? -h    print usage information</pre>
+	<pre>Object[][][] spec = { { { Cli.Opt.ARGS, "foo", Cli.Opt.PLUS } } };
+Cli cli = new Cli(spec, Cli.Mod.HELP);
+cli.parse("--help");</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;foo&gt;+
+
+	--help -? -h    print usage information</pre>
+	<p>
+		One can retrieve the entire argument list from the
+		<code>dfh.cli.Cli</code>
+		object
+	
+	
+	<pre>List&lt;String&gt; args = cli.argList();</pre>
+	retrieve particular arguments by name (int the case of
+	<code>STAR</code>
+	, or
+	<code>PLUS</code>
+	arguments this is lust the first argument in the list)
+	<pre>String arg = cli.argument("foo");</pre>
+	or the list of the arguments slurped into any final argument name
+	<pre>List&lt;String&gt; args = cli.slurpedArguments();</pre>
+	</p>
+	<h3>
+		<code>USAGE</code>
+	</h3>
+	<p>A usage line provides text that will only by shown with usage
+		information: an abstract, or short description, that appears right
+		before the option descriptions; and a long description that appears at
+		the end.</p>
+		<pre>Object[][][] spec = { { { Cli.Opt.USAGE, "short description",
+		"much longer description" } }, };
+Cli cli = new Cli(spec, Cli.Mod.HELP);
+cli.parse("--help");</pre>
+<pre class="results">USAGE: EXECUTABLE [options] &lt;arg&gt;*
+
+	short description
+
+	--help -? -h    print usage information
+
+much longer description</pre>
+	<p>
+		<code>dfh.cli</code>
+		makes no attempt to wrap this text; this is entirely up to you. If you
+		prefer to keep your long usage text in a separate text file or
+		otherwise apart from your code, you can specify an input stream in a
+		second array.
+	</p>
+	<h4>
+		load usage via
+		<code>dfh.cli.Cli.class.getClassLoader()</code>
+	</h4>
+	<p>
+		If you specify the resource as a string in the second array,
+		<code>dfh.cli.Cli</code>
+		will attempt to use its class loader to load the text in as a stream.
+	</p>
+	<pre>Object[][][] spec = { { { Cli.Opt.USAGE, "short description"},
+		{ "usage.txt" } }, };</pre>
+	<h4>
+		load usage via
+		<code>java.io.InputStream</code>
+	</h4>
+	<p>
+		If you provide an
+		<code>InputStream</code>
+		object in the second array, it will attempt to load your usage text
+		from here.
+	</p>
+	<pre>InputStream is = new FileInputStream(f);
+Object[][][] spec = { { { Cli.Opt.USAGE, "short description"}, { is } }, };</pre>
+	<h3>
+		<code>TEXT</code>
+	</h3>
+	<h3>
+		<code>NAME</code>
+	</h3>
+	<h3>
+		<code>VERSION</code>
+	</h3>
 </body>
 </html>

@@ -12,3 +12,5 @@ var hdrs = {
 	"use" : "values.html",
 	"validation" : "validation.html",
 };
+
+var version = "1.05";

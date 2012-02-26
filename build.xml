@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="utf-8"?>
 <project name="dfh.Cli" basedir="." default="jar">
-	<description>Declarative, non-intrustive CLI command parser.</description>
+	<description>Declarative, non-intrustive CLI command
+  parser.</description>
 	<property name="src.dir" value="${basedir}/src" />
 	<property name="build.dir" value="${basedir}/build" />
 	<property name="test.dir" value="${basedir}/test" />
@@ -9,6 +9,17 @@
 	<property name="test.classes.dir" value="${build.dir}/test-classes" />
 	<property name="jar.dir" value="${build.dir}/jar" />
 	<property name="doc.dir" value="${basedir}/documentation/html/api" />
+	<loadfile property="version" srcFile="VERSION">
+		<filterchain>
+			<linecontainsregexp>
+				<regexp pattern="[0-9]" />
+			</linecontainsregexp>
+			<striplinecomments>
+				<comment value="#" />
+			</striplinecomments>
+			<striplinebreaks />
+		</filterchain>
+	</loadfile>
 	<path id="junit.path">
 		<pathelement location="/usr/share/java/junit4.jar" />
 	</path>
@@ -18,23 +29,19 @@
 		<pathelement location="${test.classes.dir}" />
 		<path refid="junit.path" />
 	</path>
-
 	<target name="clean" description="removes anything created by any other ant task">
 		<delete dir="${build.dir}" />
 		<delete dir="${doc.dir}" />
 	</target>
-
 	<target name="compile" description="compile source to bytecode">
 		<mkdir dir="${classes.dir}" />
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">
 		</javac>
 	</target>
-
-	<target name="jar" depends="compile" description="packages code into jar">
+	<target name="jar" depends="udv" description="packages code into jar">
 		<mkdir dir="${jar.dir}" />
-		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}-${version}.jar" basedir="${classes.dir}" />
 	</target>
-
 	<target name="javadoc" description="API for public and protected methods">
 		<mkdir dir="${doc.dir}" />
 		<javadoc access="protected" destdir="${doc.dir}" author="true" version="true" use="true" windowtitle="dfh.cli">
@@ -45,12 +52,35 @@
 		</javadoc>
 	</target>
 
+	<target name="tar" depends="udv" description="bundle up the source and documentation">
+		<tar destfile="${build.dir}/cli-${version}.tgz" compression="gzip">
+			<tarfileset dir="${basedir}">
+				<include name="README" />
+				<include name="VERSION" />
+				<include name="TODO" />
+				<include name="lgpl.txt" />
+				<include name="build.xml" />
+				<include name="test/**/*.java" />
+				<include name="src/**/*.java" />
+				<include name="documentation/**/*.txt" />
+				<include name="documentation/**/*.html" />
+				<include name="documentation/html/img/*" />
+				<include name="documentation/html/scripts/*.js" />
+			</tarfileset>
+		</tar>
+	</target>
+
+	<target name="udv" depends="compile" description="updates version number used in HTML documentation">
+		<replaceregexp match='version\s+=\s+".*"' replace='version = "${version}"' file="documentation/html/headers.json" />
+	</target>
+
 	<target name="test-compile" depends="compile" description="compiles junit tests">
 		<mkdir dir="${test.classes.dir}" />
 		<javac srcdir="${test.dir}" destdir="${test.classes.dir}" includeantruntime="false">
 			<classpath refid="classpath.test" />
 		</javac>
 	</target>
+
 	<target name="test" depends="test-compile" description="runs junit tests">
 		<junit>
 			<classpath refid="classpath.test" />
