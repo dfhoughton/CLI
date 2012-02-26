@@ -17,7 +17,6 @@ public interface ValidationRule<K> {
 	 * 
 	 * @param arg
 	 *            command line argument
-	 * @return result of parsing the argument
 	 * @throws ValidationException
 	 *             any error message generated if validation fails
 	 */

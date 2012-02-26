@@ -1,8 +1,8 @@
 package dfh.cli;
 
 /**
- * Exception thrown when {@link ValidationRule#test(String)} fails. The error
- * message will be collected and added to an error list.
+ * Exception thrown when validation fails. The error message will be collected
+ * and added to an error list.
  * <p>
  * <b>Creation date:</b> Nov 4, 2011
  * 

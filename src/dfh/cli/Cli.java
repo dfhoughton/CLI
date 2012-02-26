@@ -49,9 +49,12 @@ public class Cli {
 		 */
 		PLUS,
 		/**
-		 * The next string will be taken as usage text in addition to whatever
-		 * is automatically generated, unless the next argument is
-		 * {@link #useResource}.
+		 * The next string will be taken as a usage abstract. If a third element
+		 * appears in the array, it will be taken as the long usage text.
+		 * Otherwise, if a second array is provided, usage text will be sought
+		 * here. A string will be taken as a resource name. This resource will
+		 * be loaded via the class's class loader. Alternatively, an
+		 * {@link InputStream} may be provided as the usage text source.
 		 */
 		USAGE,
 		/**
