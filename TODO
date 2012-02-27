@@ -11,16 +11,19 @@ historical holding pen at the end.
 TODO
 ====
 
-* move Modifiers into dfh.cli.Cli to minimize import statements
-* automatically note required options
-* create die method that dies with an error statement and usage
 . make internationalizable
 . add coercion of arbitrary types from strings
-* add number set validation rule
 . create unit tests for more of the validation rules
-* fix bug where negative numbers are interpreted as options
+. make dfh.cli.Cli object reusable -- add clear() method
+. remove unnecessary IntSet?
 
 RELICS
 ======
 
 Things swept out of TODO list:
+
+* move Modifiers into dfh.cli.Cli to minimize import statements
+* automatically note required options
+* create die method that dies with an error statement and usage
+* add number set validation rule
+* fix bug where negative numbers are interpreted as options
