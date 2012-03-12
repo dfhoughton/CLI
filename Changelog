@@ -1,3 +1,6 @@
+1.06
+   * added some javadocs
+
 1.05, 26 February
    * all modifiers now enums -- eliminated integer restriction modifiers
    * made restrictions apply only to non-null options (oops)
