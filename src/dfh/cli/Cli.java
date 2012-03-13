@@ -165,6 +165,7 @@ public class Cli {
 	private boolean slurpRequired = false;
 	private boolean throwException = false;
 	private String version = "undefined";
+	private boolean parsed = false;
 
 	public Cli(Object[][][] spec, Mod... mods) {
 		for (Object[][] cmd : spec) {
@@ -637,6 +638,7 @@ public class Cli {
 		}
 		if (!errors.isEmpty())
 			usage(1);
+		parsed = true;
 	}
 
 	/**
@@ -814,6 +816,7 @@ public class Cli {
 	}
 
 	public Boolean bool(String string) {
+		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
 			try {
@@ -827,6 +830,7 @@ public class Cli {
 	}
 
 	public Integer integer(String string) {
+		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
 			try {
@@ -839,7 +843,13 @@ public class Cli {
 		throw new RuntimeException("unknown option --" + string);
 	}
 
+	private void parseCheck() {
+		if (!parsed)
+			throw new RuntimeException("no arguments have been parsed");
+	}
+
 	public Collection<Integer> integerCollection(String string) {
+		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
 			if (opt instanceof IntegerListOption)
@@ -853,6 +863,7 @@ public class Cli {
 	}
 
 	public Number number(String string) {
+		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
 			if (opt instanceof NumberOption)
@@ -865,6 +876,7 @@ public class Cli {
 	}
 
 	public Collection<? extends Number> numberCollection(String string) {
+		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
 			if (opt instanceof IntegerListOption)
@@ -890,6 +902,7 @@ public class Cli {
 	 * @return set of type-erased values
 	 */
 	public Collection<?> collection(String string) {
+		parseCheck();
 		Option<?> opt = options.get(string);
 		if (opt != null) {
 			if (opt instanceof IntegerListOption
@@ -906,6 +919,7 @@ public class Cli {
 	}
 
 	public String string(String string) {
+		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
 			try {
@@ -919,6 +933,7 @@ public class Cli {
 	}
 
 	public Collection<String> stringCollection(String string) {
+		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
 			if (opt instanceof StringListOption)
@@ -938,6 +953,7 @@ public class Cli {
 	 * @return all arguments left after option parsing
 	 */
 	public List<String> argList() {
+		parseCheck();
 		return argList;
 	}
 
@@ -949,6 +965,7 @@ public class Cli {
 	 * @return value of a given argument
 	 */
 	public String argument(String name) {
+		parseCheck();
 		Integer i = argNames.get(name);
 		if (i == null)
 			throw new RuntimeException("unknown argument: " + name);
@@ -959,6 +976,7 @@ public class Cli {
 	 * @return all non-unique arguments
 	 */
 	public List<String> slurpedArguments() {
+		parseCheck();
 		if (!isSlurpy)
 			throw new RuntimeException("not slurpy argument list");
 		if (argNames.isEmpty())
