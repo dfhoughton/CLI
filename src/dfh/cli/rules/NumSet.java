@@ -19,7 +19,7 @@ public class NumSet implements ValidationRule<Number> {
 	private final Set<Double> set;
 
 	public NumSet(double... nums) {
-		set = new HashSet<Double>(nums.length);
+		set = new HashSet<Double>(nums.length * 2);
 		for (double i : nums)
 			set.add(i);
 	}

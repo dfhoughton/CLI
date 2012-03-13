@@ -18,7 +18,7 @@ public class IntSet implements ValidationRule<Integer> {
 	private final Set<Integer> set;
 
 	public IntSet(int... ints) {
-		set = new HashSet<Integer>(ints.length);
+		set = new HashSet<Integer>(ints.length * 2);
 		for (int i : ints)
 			set.add(i);
 	}

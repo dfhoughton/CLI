@@ -19,7 +19,7 @@ public class StrSet implements ValidationRule<String> {
 	private final Set<String> set;
 
 	public StrSet(String... strings) {
-		set = new HashSet<String>(strings.length);
+		set = new HashSet<String>(strings.length * 2);
 		for (String s : strings)
 			set.add(s);
 	}
