@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -762,6 +763,13 @@ public class Cli {
 		return b.toString();
 	}
 
+	/**
+	 * @return whether cli takes any arguments after the options
+	 */
+	private boolean hasArguments() {
+		return isSlurpy || !argNames.isEmpty();
+	}
+
 	private String name() {
 		return name;
 	}
@@ -1020,17 +1028,57 @@ public class Cli {
 	 * 
 	 * @return a string representation of all the options and their values
 	 */
+	@SuppressWarnings("rawtypes")
 	public String dump() {
 		StringBuilder b = new StringBuilder();
-		for (@SuppressWarnings("rawtypes")
-		Option o : options.values()) {
-			if (o == helpOption)
-				continue;
-			b.append(o.name).append(": ");
-			if (o == versionOption)
-				b.append(version);
-			else
-				b.append(o.value());
+		if (!options.isEmpty()) {
+			boolean firstOption = true;
+			for (Option o : new LinkedHashSet<Option>(options.values())) {
+				if (o == helpOption || o instanceof DummyOption)
+					continue;
+				if (firstOption) {
+					b.append("options:\n");
+					firstOption = false;
+				}
+				b.append(o.name).append(": ");
+				if (o == versionOption)
+					b.append(version);
+				else if (o instanceof CollectionOption) {
+					Collection c = (Collection) o.value();
+					boolean first = true;
+					for (Object obj : c) {
+						if (first)
+							first = false;
+						else
+							b.append(", ");
+						b.append(obj);
+					}
+				} else
+					b.append(o.value());
+				b.append('\n');
+			}
+		}
+		if (hasArguments()) {
+			boolean firstArgument = true;
+			boolean commas = argNames.size() < argList.size();
+			for (Entry<String, Integer> e : argNames.entrySet()) {
+				if (firstArgument) {
+					b.append("arguments:\n");
+					firstArgument = false;
+				}
+				b.append(e.getKey()).append(": ");
+				b.append(argList.get(e.getValue()));
+				if (!commas || e.getValue() + 1 < argNames.size())
+					b.append('\n');
+			}
+			for (int i = argNames.size(); i < argList.size(); i++) {
+				if (firstArgument) {
+					b.append("arguments:\n");
+					firstArgument = false;
+				} else
+					b.append(", ");
+				b.append(argList.get(i));
+			}
 			b.append('\n');
 		}
 		return b.toString();

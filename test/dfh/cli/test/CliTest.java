@@ -1,5 +1,6 @@
 package dfh.cli.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -964,4 +965,197 @@ public class CliTest {
 		}
 	}
 
+	@Test
+	public void dumpTest1() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo" } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse("--foo=true");
+			String s = cli.dump().trim();
+			assertEquals("options:\nfoo: true", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void dumpTest2() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo" } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse();
+			String s = cli.dump().trim();
+			assertEquals("options:\nfoo: false", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void dumpTest3() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo" } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.HELP);
+			cli.parse();
+			String s = cli.dump().trim();
+			assertEquals("options:\nfoo: false", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void dumpTest4() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.VERSION, 1 } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse();
+			String s = cli.dump().trim();
+			assertEquals("options:\nversion: 1", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void dumpTest5() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo", 'f' } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse();
+			String s = cli.dump().trim();
+			assertEquals("options:\nfoo: false", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void dumpTest6() {
+		try {
+			Object[][][] spec = {
+					//
+					{ { "foo" } },//
+					{ { Opt.TEXT } },//
+					{ { "bar" } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse();
+			String s = cli.dump().trim();
+			assertEquals("options:\nfoo: false\nbar: false", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void dumpTest7() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo", Integer.class }, {}, { Res.REPEATABLE } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse("--foo", "1", "--foo", "2");
+			String s = cli.dump().trim();
+			assertEquals("options:\nfoo: 1, 2", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void dumpTest8() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { "foo", Integer.class }, {}, { Res.SET } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse("--foo", "1", "--foo", "2", "--foo", "1");
+			String s = cli.dump().trim();
+			assertEquals("options:\nfoo: 1, 2", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void dumpTest9() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.ARGS, Opt.STAR } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse("a", "b");
+			String s = cli.dump().trim();
+			assertEquals("arguments:\na, b", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void dumpTest10() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.ARGS, "foo", Opt.STAR } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse("a", "b");
+			String s = cli.dump().trim();
+			assertEquals("arguments:\nfoo: a, b", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void dumpTest11() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.ARGS, "foo", "bar", Opt.STAR } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse("a", "b");
+			String s = cli.dump().trim();
+			assertEquals("arguments:\nfoo: a\nbar: b", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
+	public void dumpTest12() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.ARGS, "foo", "bar", Opt.STAR } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse("a", "b", "c");
+			String s = cli.dump().trim();
+			assertEquals("arguments:\nfoo: a\nbar: b, c", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
 }
