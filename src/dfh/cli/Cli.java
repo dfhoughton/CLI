@@ -1013,4 +1013,26 @@ public class Cli {
 	public boolean hasErrors() {
 		return !errors.isEmpty();
 	}
+
+	/**
+	 * Returns a string representation of all the options and their values. This
+	 * may be useful in debugging or logging.
+	 * 
+	 * @return a string representation of all the options and their values
+	 */
+	public String dump() {
+		StringBuilder b = new StringBuilder();
+		for (@SuppressWarnings("rawtypes")
+		Option o : options.values()) {
+			if (o == helpOption)
+				continue;
+			b.append(o.name).append(": ");
+			if (o == versionOption)
+				b.append(version);
+			else
+				b.append(o.value());
+			b.append('\n');
+		}
+		return b.toString();
+	}
 }

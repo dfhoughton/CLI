@@ -2,6 +2,7 @@
    * added some javadocs
    * added checking for argument parsing at beginning of all methods meant to
      return parsed options
+   * added dump() method to Cli
 
 1.05, 26 February
    * all modifiers now enums -- eliminated integer restriction modifiers
