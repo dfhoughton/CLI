@@ -1127,6 +1127,8 @@ public class Cli {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void clear() {
+		if (!parsed)
+			return;
 		parsed = false;
 		argList.clear();
 		for (Option o : new HashSet<Option>(options.values())) {
