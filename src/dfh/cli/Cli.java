@@ -1147,4 +1147,12 @@ public class Cli {
 			}
 		}
 	}
+
+	/**
+	 * Delegates to {@link #dump()}.
+	 */
+	@Override
+	public String toString() {
+		return dump();
+	}
 }
