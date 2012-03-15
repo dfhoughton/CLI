@@ -19,6 +19,10 @@ import java.util.regex.Pattern;
 /**
  * For parsing CLI ARGS.
  * <p>
+ * Note that this object is reusable but not synchronized. If you're going to be
+ * parsing and reparsing in different threads, you'll need to add some
+ * synchronization.
+ * <p>
  * <b>Creation date:</b> Nov 4, 2011
  * 
  * @author David Houghton
@@ -1122,7 +1126,7 @@ public class Cli {
 	 * Resets everything to its state prior to command line parsing.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public synchronized void clear() {
+	public void clear() {
 		parsed = false;
 		argList.clear();
 		for (Option o : new HashSet<Option>(options.values())) {
