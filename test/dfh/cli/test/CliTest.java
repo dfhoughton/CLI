@@ -1158,4 +1158,38 @@ public class CliTest {
 			fail("should not have thrown exception");
 		}
 	}
+
+	@Test
+	public void clearTest1() {
+		Object[][][] spec = {
+				//
+				{ { "foo" } },//
+				{ { "bar" } },//
+		};
+		Cli cli = new Cli(spec);
+		cli.parse("--foo", "--bar");
+		assertTrue(cli.bool("foo"));
+		assertTrue(cli.bool("bar"));
+		cli.clear();
+		cli.parse();
+		assertFalse(cli.bool("foo"));
+		assertFalse(cli.bool("bar"));
+	}
+
+	@Test
+	public void clearTest2() {
+		Object[][][] spec = {
+				//
+				{ { "foo", String.class } },//
+				{ { "bar", Integer.class } },//
+		};
+		Cli cli = new Cli(spec);
+		cli.parse("--foo=a", "--bar=1");
+		assertEquals("a", cli.string("foo"));
+		assertEquals(1, cli.integer("bar").intValue());
+		cli.clear();
+		cli.parse();
+		assertNull(cli.string("foo"));
+		assertNull(cli.integer("bar"));
+	}
 }

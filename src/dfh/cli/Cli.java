@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -558,7 +559,17 @@ public class Cli {
 		return opt;
 	}
 
+	/**
+	 * Parse the command line arguments into a set of option values and named
+	 * arguments.
+	 * 
+	 * @param args
+	 *            command line arguments
+	 */
 	public void parse(String... args) {
+		if (parsed)
+			throw new IllegalStateException(
+					"parse called twice without clearing Cli");
 		argList = new ArrayList<String>(args.length);
 		boolean endCommands = false, mustStore = false;
 		Option<?> lastCommand = null;
@@ -574,8 +585,9 @@ public class Cli {
 						if (s.equals("--"))
 							endCommands = true;
 						else {
-							lastCommand = extractCommands(s);
-							mustStore = !(lastCommand instanceof BooleanOption);
+							ExtractedCommand ec = extractCommands(s);
+							lastCommand = ec.opt;
+							mustStore = !ec.stored;
 						}
 					} else if (lastCommand == null) {
 						endCommands = true;
@@ -774,7 +786,25 @@ public class Cli {
 		return name;
 	}
 
-	private Option<?> extractCommands(String s) throws ValidationException {
+	/**
+	 * Return value for {@link Cli#extractCommands(String)}.
+	 * <p>
+	 * 
+	 * @author David F. Houghton - Mar 15, 2012
+	 * 
+	 */
+	private class ExtractedCommand {
+		Option<?> opt;
+		boolean stored;
+
+		ExtractedCommand(Option<?> opt, boolean stored) {
+			this.opt = opt;
+			this.stored = stored;
+		}
+	}
+
+	private ExtractedCommand extractCommands(String s)
+			throws ValidationException {
 		Option<?> c = null;
 		String arg = null;
 		if (s.startsWith("--")) {
@@ -806,10 +836,12 @@ public class Cli {
 					throw new ValidationException("unknown option -" + sc);
 			}
 		}
+		boolean stored = c instanceof BooleanOption;
 		if (arg != null) {
+			stored = true;
 			c.store(arg);
 		}
-		return c;
+		return new ExtractedCommand(c, stored);
 	}
 
 	/**
@@ -1082,5 +1114,28 @@ public class Cli {
 			b.append('\n');
 		}
 		return b.toString();
+	}
+
+	/**
+	 * Resets everything to its state prior to command line parsing.
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public synchronized void clear() {
+		parsed = false;
+		for (Option o : new HashSet<Option>(options.values())) {
+			if (o == helpOption || o == versionOption)
+				continue;
+			if (o instanceof DummyOption)
+				continue;
+			o.found = false;
+			if (o instanceof CollectionOption) {
+				CollectionOption co = (CollectionOption) o;
+				co.storageList.clear();
+				((Collection) co.value).clear();
+			} else {
+				o.value = null;
+				o.stored = null;
+			}
+		}
 	}
 }
