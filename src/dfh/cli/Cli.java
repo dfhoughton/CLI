@@ -154,7 +154,7 @@ public class Cli {
 			.compile("[\\p{L}\\p{N}_\\s]$");
 
 	private List<String> argList;
-	private Map<String, Integer> argNames = new LinkedHashMap<String, Integer>();
+	private LinkedHashMap<String, Integer> argNames = new LinkedHashMap<String, Integer>();
 	private boolean isSlurpy = true;
 	private Map<String, Option<?>> options = new LinkedHashMap<String, Option<?>>();
 	private BooleanOption helpOption = null, versionOption = null;
@@ -1009,6 +1009,8 @@ public class Cli {
 		Integer i = argNames.get(name);
 		if (i == null)
 			throw new RuntimeException("unknown argument: " + name);
+		if (isSlurpy && i.intValue() == argList.size())
+			return null;
 		return argList.get(i);
 	}
 
@@ -1122,6 +1124,7 @@ public class Cli {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public synchronized void clear() {
 		parsed = false;
+		argList.clear();
 		for (Option o : new HashSet<Option>(options.values())) {
 			if (o == helpOption || o == versionOption)
 				continue;

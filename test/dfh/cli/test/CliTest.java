@@ -1192,4 +1192,39 @@ public class CliTest {
 		assertNull(cli.string("foo"));
 		assertNull(cli.integer("bar"));
 	}
+
+	@Test
+	public void clearTest3() {
+		Object[][][] spec = {
+				//
+				{ { "foo", String.class }, {}, { Res.REPEATABLE } },//
+				{ { "bar", Integer.class }, {}, { Res.SET } },//
+		};
+		Cli cli = new Cli(spec);
+		cli.parse("--foo=a", "--foo=b", "--bar=1", "--bar=1", "--bar=2");
+		assertEquals(2, cli.stringCollection("foo").size());
+		assertEquals(2, cli.integerCollection("bar").size());
+		cli.clear();
+		cli.parse("--bar=3");
+		assertEquals(0, cli.stringCollection("foo").size());
+		assertEquals(1, cli.integerCollection("bar").size());
+	}
+
+	@Test
+	public void clearTest4() {
+		Object[][][] spec = {
+		//
+		{ { Opt.ARGS, "foo", "bar", Opt.STAR } },//
+		};
+		Cli cli = new Cli(spec);
+		cli.parse("a", "b", "c");
+		assertEquals("a", cli.argument("foo"));
+		assertEquals("b", cli.argument("bar"));
+		assertEquals(2, cli.slurpedArguments().size());
+		cli.clear();
+		cli.parse("d");
+		assertEquals("d", cli.argument("foo"));
+		assertNull(cli.argument("bar"));
+		assertEquals(0, cli.slurpedArguments().size());
+	}
 }
