@@ -20,6 +20,7 @@ TODO
 * add license file to jar
 . add default collection capability
 . add word wrapping
+. add boolean Cli.defined(String) to see whether an option has been set
 
 RELICS
 ======
