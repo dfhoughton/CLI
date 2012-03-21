@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -172,6 +173,9 @@ public class Cli {
 	private boolean throwException = false;
 	private String version = "undefined";
 	private boolean parsed = false;
+	private static Pattern linePattern = Pattern.compile("^.*$",
+			Pattern.MULTILINE);
+	private int margin = 80;
 
 	public Cli(Object[][][] spec, Mod... mods) {
 		for (Object[][] cmd : spec) {
@@ -716,8 +720,12 @@ public class Cli {
 	public void usage(int status, PrintStream out) {
 		if (!(status == 0 || errors.isEmpty())) {
 			out.println("ERRORS");
-			for (String error : errors)
-				out.printf("\t%s%n", error);
+			for (String error : errors) {
+				List<String> list = prefix(error, margin() - 4);
+				out.printf("    %s%n", list.get(0));
+				if (list.size() == 2)
+					out.println(wrap(list.get(1), 6, margin()));
+			}
 			out.println();
 		}
 		int c1 = 1, c2 = 1;
@@ -733,14 +741,28 @@ public class Cli {
 			if (argDescription.length() > c2)
 				c2 = argDescription.length();
 		}
-		String format = "\t%-" + c1 + "s %-" + c2 + "s  %s%s%n";
-		out.printf("USAGE: %s%s%s%n%n", name(), optDigest(), argDigest());
-		if (!"".equals(abstr))
-			out.printf("\t%s%n%n", abstr);
+		String format = "    %-" + c1 + "s %-" + c2 + "s  %s%s";
+		int indent = 4 + c1 + c2 + 3;
+		String u = String.format("USAGE: %s%s%s", name(), optDigest(),
+				argDigest());
+		List<String> header = prefix(u, margin());
+		out.println(header.get(0));
+		if (header.size() == 2)
+			out.println(wrap(header.get(1), 4, margin()));
+		out.println();
+		if (!"".equals(abstr)) {
+			out.println(wrap(abstr, 2, margin()));
+			out.println();
+		}
 		for (Option<?> c : optionSet) {
-			if (c instanceof DummyOption)
-				out.println(c.description());
-			else {
+			if (c instanceof DummyOption) {
+				String s = c.description().trim();
+				if (s.length() == 0)
+					out.println();
+				else {
+					out.println(wrap(s, 4, margin()));
+				}
+			} else {
 				String optDesc = c.optionDescription();
 				String argDescription = c.argDescription();
 				String suffix = "";
@@ -754,12 +776,25 @@ public class Cli {
 						b.append(" default: ").append(c.def);
 					suffix = b.toString();
 				}
-				out.printf(format, optDesc, argDescription, c.description(),
-						suffix);
+				String line = String.format(format, optDesc, argDescription,
+						c.description(), suffix);
+				List<String> parts = prefix(line, margin());
+				out.println(parts.get(0));
+				if (parts.size() == 2)
+					out.println(wrap(parts.get(1), indent, margin()));
 			}
 		}
 		if (status == 0 && !"".equals(usage))
-			out.printf("%n%s%n", usage);
+			out.println(wrap(usage, 0, margin()));
+	}
+
+	/**
+	 * Column width at which {@link Cli} will attempt to wrap usage information.
+	 * 
+	 * @return word wrapping width
+	 */
+	public int margin() {
+		return margin;
 	}
 
 	private String optDigest() {
@@ -1154,5 +1189,91 @@ public class Cli {
 	@Override
 	public String toString() {
 		return dump();
+	}
+
+	private static List<String> prefix(CharSequence s, int length) {
+		List<String> list = new ArrayList<String>(2);
+		if (s.length() > length) {
+			String s1 = null, s2 = null;
+			for (int i = length; i < s.length(); i++) {
+				char c = s.charAt(i);
+				if (Character.isWhitespace(c)) {
+					s1 = s.subSequence(0, i).toString();
+					s2 = s.subSequence(i, s.length()).toString().trim();
+					break;
+				}
+			}
+			if (s1 == null)
+				list.add(s.toString());
+			else {
+				list.add(s1);
+				list.add(s2);
+			}
+		} else {
+			list.add(s.toString());
+		}
+		return list;
+	}
+
+	private static String wrap(CharSequence s, int left, int right) {
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < left; i++)
+			b.append(' ');
+		String indent = b.toString();
+		b = new StringBuilder();
+		Matcher m = linePattern.matcher(s);
+		boolean needsBreak = false;
+		int x = 0;
+		while (m.find()) {
+			String line = m.group();
+			if (line.length() == 0) {
+				if (needsBreak)
+					b.append("\n\n");
+				else
+					b.append('\n');
+				needsBreak = false;
+			} else if (Character.isWhitespace(line.charAt(0))) {
+				if (needsBreak)
+					b.append('\n');
+				b.append(line).append('\n');
+				needsBreak = false;
+			} else {
+				line = line.trim().replaceAll("\\s++", " ");
+				if (needsBreak) {
+					if (x >= right) {
+						b.append('\n').append(indent);
+						x = left;
+					} else {
+						b.append(' ');
+						x++;
+					}
+				} else {
+					b.append(indent);
+					x = left;
+					needsBreak = true;
+				}
+				for (int i = 0; i < line.length(); i++) {
+					char c = line.charAt(i);
+					if (Character.isWhitespace(c) && x >= right) {
+						b.append('\n').append(indent);
+						x = left;
+					} else {
+						b.append(c);
+						x++;
+					}
+				}
+			}
+		}
+		return b.toString();
+	}
+
+	/**
+	 * Sets column width at which {@link Cli} will attempt to wrap usage
+	 * information.
+	 * 
+	 * @param margin
+	 */
+	public void setMargin(int margin) {
+		this.margin = margin;
 	}
 }

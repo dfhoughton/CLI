@@ -6,6 +6,7 @@
    * fixed bug where --foo=a --bar=b was storing "--bar=b" as value of --foo
    * added clear() method
    * added toString() method to Cli
+   * added word wrapping to usage information
 
 1.05, 26 February 2012
    * all modifiers now enums -- eliminated integer restriction modifiers

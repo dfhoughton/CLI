@@ -654,10 +654,11 @@ public class CliTest {
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
+			System.out.println(s);
 			assertTrue(
 					"added quux line",
 					Pattern.compile(
-							"--foo\\s++a boolean option\\s*$\\nquux$\\s*--bar",
+							"--foo\\s++a boolean option\\s*$\\n    quux$\\s*--bar",
 							Pattern.MULTILINE).matcher(s).find());
 		}
 	}
