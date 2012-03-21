@@ -1,3 +1,11 @@
+/*
+ * dfh.cli -- a command line argument parsing library for Java
+ * 
+ * Copyright (C) 2012 David F. Houghton
+ * 
+ * This software is licensed under the LGPL. Please see accompanying NOTICE file
+ * and lgpl.txt.
+ */
 package dfh.cli;
 
 import java.io.BufferedInputStream;
@@ -864,7 +872,7 @@ public class Cli {
 				throw new ValidationException("unknown option --" + s);
 		} else {
 			String bundle = s.substring(1);
-			if (bundle.equals(""))
+			if (bundle.length() == 0)
 				throw new ValidationException("malformed option '-'");
 			for (int i = 0; i < bundle.length(); i++) {
 				String sc = bundle.substring(i, i + 1);
@@ -1204,7 +1212,9 @@ public class Cli {
 	private static List<String> split(CharSequence s, int length) {
 		List<String> list = new ArrayList<String>(2);
 		if (s.length() > length) {
+			// try to split
 			String s1 = null, s2 = null;
+			// try to split inside the margin
 			for (int i = length - 1; i >= 0; i--) {
 				char c = s.charAt(i);
 				if (Character.isWhitespace(c)) {
@@ -1214,6 +1224,7 @@ public class Cli {
 				}
 			}
 			if (s1 == null) {
+				// okay, try to split *outside* the margin
 				for (int i = length; i < s.length(); i++) {
 					char c = s.charAt(i);
 					if (Character.isWhitespace(c)) {
@@ -1224,23 +1235,39 @@ public class Cli {
 				}
 			}
 			if (s1 == null)
+				// it was all one big word
 				list.add(s.toString());
 			else {
 				list.add(s1);
 				list.add(s2);
 			}
 		} else {
+			// no need to split
 			list.add(s.toString());
 		}
 		return list;
 	}
 
+	/**
+	 * Used in word-wrapping state machine.
+	 */
 	private enum State {
 		afterBreak, firstWord, inWord, whitespace
 	};
 
+	/**
+	 * Format a column of text, breaking only on whitespace.
+	 * 
+	 * @param s
+	 *            text to format
+	 * @param left
+	 *            left margin
+	 * @param right
+	 *            right margin
+	 * @return text formatted as well as possible to fit inside the margins
+	 */
 	private static String wrap(CharSequence s, int left, int right) {
-		StringBuilder b = new StringBuilder();
+		StringBuilder b = new StringBuilder(s.length() * 2);
 		Matcher m = linePattern.matcher(s);
 		State state = State.afterBreak;
 		int x = 0;
