@@ -721,7 +721,7 @@ public class Cli {
 		if (!(status == 0 || errors.isEmpty())) {
 			out.println("ERRORS");
 			for (String error : errors) {
-				List<String> list = prefix(error, margin() - 4);
+				List<String> list = split(error, margin() - 4);
 				out.printf("    %s%n", list.get(0));
 				if (list.size() == 2)
 					out.println(wrap(list.get(1), 6, margin()));
@@ -742,10 +742,10 @@ public class Cli {
 				c2 = argDescription.length();
 		}
 		String format = "    %-" + c1 + "s %-" + c2 + "s  %s%s";
-		int indent = 4 + c1 + c2 + 3;
+		int indent = 4 + c1 + c2 + 3, splitIndent = Math.max(margin(), indent);
 		String u = String.format("USAGE: %s%s%s", name(), optDigest(),
 				argDigest());
-		List<String> header = prefix(u, margin());
+		List<String> header = split(u, margin());
 		out.println(header.get(0));
 		if (header.size() == 2)
 			out.println(wrap(header.get(1), 4, margin()));
@@ -778,14 +778,16 @@ public class Cli {
 				}
 				String line = String.format(format, optDesc, argDescription,
 						c.description(), suffix);
-				List<String> parts = prefix(line, margin());
+				List<String> parts = split(line, splitIndent);
 				out.println(parts.get(0));
 				if (parts.size() == 2)
 					out.println(wrap(parts.get(1), indent, margin()));
 			}
 		}
-		if (status == 0 && !"".equals(usage))
+		if (status == 0 && !"".equals(usage)) {
+			out.println();
 			out.println(wrap(usage, 0, margin()));
+		}
 	}
 
 	/**
@@ -1191,16 +1193,34 @@ public class Cli {
 		return dump();
 	}
 
-	private static List<String> prefix(CharSequence s, int length) {
+	/**
+	 * Breaks a formatted line into a pre-formatted part and possibly a part
+	 * that requires wrapping.
+	 * 
+	 * @param s
+	 * @param length
+	 * @return
+	 */
+	private static List<String> split(CharSequence s, int length) {
 		List<String> list = new ArrayList<String>(2);
 		if (s.length() > length) {
 			String s1 = null, s2 = null;
-			for (int i = length; i < s.length(); i++) {
+			for (int i = length - 1; i >= 0; i--) {
 				char c = s.charAt(i);
 				if (Character.isWhitespace(c)) {
 					s1 = s.subSequence(0, i).toString();
 					s2 = s.subSequence(i, s.length()).toString().trim();
 					break;
+				}
+			}
+			if (s1 == null) {
+				for (int i = length; i < s.length(); i++) {
+					char c = s.charAt(i);
+					if (Character.isWhitespace(c)) {
+						s1 = s.subSequence(0, i).toString();
+						s2 = s.subSequence(i, s.length()).toString().trim();
+						break;
+					}
 				}
 			}
 			if (s1 == null)
@@ -1215,56 +1235,119 @@ public class Cli {
 		return list;
 	}
 
+	private enum State {
+		afterBreak, firstWord, inWord, whitespace
+	};
+
 	private static String wrap(CharSequence s, int left, int right) {
 		StringBuilder b = new StringBuilder();
-		for (int i = 0; i < left; i++)
-			b.append(' ');
-		String indent = b.toString();
-		b = new StringBuilder();
 		Matcher m = linePattern.matcher(s);
-		boolean needsBreak = false;
+		State state = State.afterBreak;
 		int x = 0;
 		while (m.find()) {
 			String line = m.group();
 			if (line.length() == 0) {
-				if (needsBreak)
-					b.append("\n\n");
-				else
+				// paragraph break
+				if (state == State.afterBreak)
 					b.append('\n');
-				needsBreak = false;
+				else
+					b.append("\n\n");
+				state = State.afterBreak;
 			} else if (Character.isWhitespace(line.charAt(0))) {
-				if (needsBreak)
+				// preformatted line
+				if (state != State.afterBreak)
 					b.append('\n');
 				b.append(line).append('\n');
-				needsBreak = false;
+				state = State.afterBreak;
 			} else {
+				// text block
 				line = line.trim().replaceAll("\\s++", " ");
-				if (needsBreak) {
+				if (state == State.afterBreak) {
+					indent(b, left);
+					x = left;
+					state = State.firstWord;
+				} else {
 					if (x >= right) {
-						b.append('\n').append(indent);
+						b.append('\n');
+						indent(b, left);
 						x = left;
+						state = State.firstWord;
 					} else {
 						b.append(' ');
 						x++;
+						state = State.whitespace;
 					}
-				} else {
-					b.append(indent);
-					x = left;
-					needsBreak = true;
 				}
 				for (int i = 0; i < line.length(); i++) {
 					char c = line.charAt(i);
-					if (Character.isWhitespace(c) && x >= right) {
-						b.append('\n').append(indent);
-						x = left;
+					if (Character.isWhitespace(c)) {
+						if (x >= right) {
+							b.append('\n');
+							indent(b, left);
+							x = left;
+							state = State.afterBreak;
+						} else {
+							b.append(c);
+							x++;
+							state = State.whitespace;
+						}
 					} else {
-						b.append(c);
-						x++;
+						switch (state) {
+						case afterBreak:
+							state = State.firstWord;
+						case inWord:
+						case firstWord:
+							b.append(c);
+							x++;
+							break;
+						case whitespace:
+							if (x >= right) {
+								b.append('\n');
+								indent(b, left);
+								x = left;
+								state = State.afterBreak;
+							} else if (x == s.length()) {
+								b.append(c);
+								b.append('\n');
+								indent(b, left);
+								x = left;
+								state = State.afterBreak;
+							} else {
+								// see whether the current word can fit inside
+								// the margin
+								boolean breaks = false;
+								for (int j = i + 1, y = x + 1; j < s.length(); j++, y++) {
+									char c2 = s.charAt(j);
+									if (Character.isWhitespace(c2))
+										break;
+									if (y > right) {
+										breaks = true;
+										break;
+									}
+								}
+								if (breaks) {
+									b.append('\n');
+									indent(b, left);
+									b.append(c);
+									x = left + 1;
+									state = State.firstWord;
+								} else {
+									b.append(c);
+									state = State.inWord;
+									x++;
+								}
+							}
+						}
 					}
 				}
 			}
 		}
 		return b.toString();
+	}
+
+	private static void indent(StringBuilder b, int left) {
+		for (int i = 0; i < left; i++)
+			b.append(' ');
 	}
 
 	/**
