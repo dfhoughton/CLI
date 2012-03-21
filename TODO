@@ -17,7 +17,7 @@ TODO
 * make dfh.cli.Cli object reusable -- add clear() method
 . remove unnecessary IntSet?
 . make it possible to query for default values
-. add license file to jar
+* add license file to jar
 
 RELICS
 ======
