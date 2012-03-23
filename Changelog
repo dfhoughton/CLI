@@ -1,4 +1,4 @@
-1.06
+1.06, 15 March 2012
    * added some javadocs
    * added checking for argument parsing at beginning of all methods meant to
      return parsed options
@@ -6,8 +6,9 @@
    * fixed bug where --foo=a --bar=b was storing "--bar=b" as value of --foo
    * added clear() method
    * added toString() method to Cli
+   * added word wrapping to usage information
 
-1.05, 26 February
+1.05, 26 February 2012
    * all modifiers now enums -- eliminated integer restriction modifiers
    * made restrictions apply only to non-null options (oops)
    * made it possible to read usage information from an arbitrary input stream

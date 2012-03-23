@@ -1,3 +1,11 @@
+/*
+ * dfh.cli -- a command line argument parsing library for Java
+ * 
+ * Copyright (C) 2012 David F. Houghton
+ * 
+ * This software is licensed under the LGPL. Please see accompanying NOTICE file
+ * and lgpl.txt.
+ */
 package dfh.cli;
 
 import java.io.BufferedInputStream;
@@ -14,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -172,6 +181,9 @@ public class Cli {
 	private boolean throwException = false;
 	private String version = "undefined";
 	private boolean parsed = false;
+	private static Pattern linePattern = Pattern.compile("^.*$",
+			Pattern.MULTILINE);
+	private int margin = 80;
 
 	public Cli(Object[][][] spec, Mod... mods) {
 		for (Object[][] cmd : spec) {
@@ -716,8 +728,12 @@ public class Cli {
 	public void usage(int status, PrintStream out) {
 		if (!(status == 0 || errors.isEmpty())) {
 			out.println("ERRORS");
-			for (String error : errors)
-				out.printf("\t%s%n", error);
+			for (String error : errors) {
+				List<String> list = split(error, margin() - 4);
+				out.printf("    %s%n", list.get(0));
+				if (list.size() == 2)
+					out.println(wrap(list.get(1), 6, margin()));
+			}
 			out.println();
 		}
 		int c1 = 1, c2 = 1;
@@ -733,14 +749,28 @@ public class Cli {
 			if (argDescription.length() > c2)
 				c2 = argDescription.length();
 		}
-		String format = "\t%-" + c1 + "s %-" + c2 + "s  %s%s%n";
-		out.printf("USAGE: %s%s%s%n%n", name(), optDigest(), argDigest());
-		if (!"".equals(abstr))
-			out.printf("\t%s%n%n", abstr);
+		String format = "    %-" + c1 + "s %-" + c2 + "s  %s%s";
+		int indent = 4 + c1 + c2 + 3, splitIndent = Math.max(margin(), indent);
+		String u = String.format("USAGE: %s%s%s", name(), optDigest(),
+				argDigest());
+		List<String> header = split(u, margin());
+		out.println(header.get(0));
+		if (header.size() == 2)
+			out.println(wrap(header.get(1), 4, margin()));
+		out.println();
+		if (!"".equals(abstr)) {
+			out.println(wrap(abstr, 2, margin()));
+			out.println();
+		}
 		for (Option<?> c : optionSet) {
-			if (c instanceof DummyOption)
-				out.println(c.description());
-			else {
+			if (c instanceof DummyOption) {
+				String s = c.description().trim();
+				if (s.length() == 0)
+					out.println();
+				else {
+					out.println(wrap(s, 4, margin()));
+				}
+			} else {
 				String optDesc = c.optionDescription();
 				String argDescription = c.argDescription();
 				String suffix = "";
@@ -754,12 +784,27 @@ public class Cli {
 						b.append(" default: ").append(c.def);
 					suffix = b.toString();
 				}
-				out.printf(format, optDesc, argDescription, c.description(),
-						suffix);
+				String line = String.format(format, optDesc, argDescription,
+						c.description(), suffix);
+				List<String> parts = split(line, splitIndent);
+				out.println(parts.get(0));
+				if (parts.size() == 2)
+					out.println(wrap(parts.get(1), indent, margin()));
 			}
 		}
-		if (status == 0 && !"".equals(usage))
-			out.printf("%n%s%n", usage);
+		if (status == 0 && !"".equals(usage)) {
+			out.println();
+			out.println(wrap(usage, 0, margin()));
+		}
+	}
+
+	/**
+	 * Column width at which {@link Cli} will attempt to wrap usage information.
+	 * 
+	 * @return word wrapping width
+	 */
+	public int margin() {
+		return margin;
 	}
 
 	private String optDigest() {
@@ -827,7 +872,7 @@ public class Cli {
 				throw new ValidationException("unknown option --" + s);
 		} else {
 			String bundle = s.substring(1);
-			if (bundle.equals(""))
+			if (bundle.length() == 0)
 				throw new ValidationException("malformed option '-'");
 			for (int i = 0; i < bundle.length(); i++) {
 				String sc = bundle.substring(i, i + 1);
@@ -1154,5 +1199,191 @@ public class Cli {
 	@Override
 	public String toString() {
 		return dump();
+	}
+
+	/**
+	 * Breaks a formatted line into a pre-formatted part and possibly a part
+	 * that requires wrapping.
+	 * 
+	 * @param s
+	 * @param length
+	 * @return
+	 */
+	private static List<String> split(CharSequence s, int length) {
+		List<String> list = new ArrayList<String>(2);
+		if (s.length() > length) {
+			// try to split
+			String s1 = null, s2 = null;
+			// try to split inside the margin
+			for (int i = length - 1; i >= 0; i--) {
+				char c = s.charAt(i);
+				if (Character.isWhitespace(c)) {
+					s1 = s.subSequence(0, i).toString();
+					s2 = s.subSequence(i, s.length()).toString().trim();
+					break;
+				}
+			}
+			if (s1 == null) {
+				// okay, try to split *outside* the margin
+				for (int i = length; i < s.length(); i++) {
+					char c = s.charAt(i);
+					if (Character.isWhitespace(c)) {
+						s1 = s.subSequence(0, i).toString();
+						s2 = s.subSequence(i, s.length()).toString().trim();
+						break;
+					}
+				}
+			}
+			if (s1 == null)
+				// it was all one big word
+				list.add(s.toString());
+			else {
+				list.add(s1);
+				list.add(s2);
+			}
+		} else {
+			// no need to split
+			list.add(s.toString());
+		}
+		return list;
+	}
+
+	/**
+	 * Used in word-wrapping state machine.
+	 */
+	private enum State {
+		afterBreak, firstWord, inWord, whitespace
+	};
+
+	/**
+	 * Format a column of text, breaking only on whitespace.
+	 * 
+	 * @param s
+	 *            text to format
+	 * @param left
+	 *            left margin
+	 * @param right
+	 *            right margin
+	 * @return text formatted as well as possible to fit inside the margins
+	 */
+	private static String wrap(CharSequence s, int left, int right) {
+		StringBuilder b = new StringBuilder(s.length() * 2);
+		Matcher m = linePattern.matcher(s);
+		State state = State.afterBreak;
+		int x = 0;
+		while (m.find()) {
+			String line = m.group();
+			if (line.length() == 0) {
+				// paragraph break
+				if (state == State.afterBreak)
+					b.append('\n');
+				else
+					b.append("\n\n");
+				state = State.afterBreak;
+			} else if (Character.isWhitespace(line.charAt(0))) {
+				// preformatted line
+				if (state != State.afterBreak)
+					b.append('\n');
+				b.append(line).append('\n');
+				state = State.afterBreak;
+			} else {
+				// text block
+				line = line.trim().replaceAll("\\s++", " ");
+				if (state == State.afterBreak) {
+					indent(b, left);
+					x = left;
+					state = State.firstWord;
+				} else {
+					if (x >= right) {
+						b.append('\n');
+						indent(b, left);
+						x = left;
+						state = State.firstWord;
+					} else {
+						b.append(' ');
+						x++;
+						state = State.whitespace;
+					}
+				}
+				for (int i = 0; i < line.length(); i++) {
+					char c = line.charAt(i);
+					if (Character.isWhitespace(c)) {
+						if (x >= right) {
+							b.append('\n');
+							indent(b, left);
+							x = left;
+							state = State.afterBreak;
+						} else {
+							b.append(c);
+							x++;
+							state = State.whitespace;
+						}
+					} else {
+						switch (state) {
+						case afterBreak:
+							state = State.firstWord;
+						case inWord:
+						case firstWord:
+							b.append(c);
+							x++;
+							break;
+						case whitespace:
+							if (x >= right) {
+								b.append('\n');
+								indent(b, left);
+								x = left;
+								state = State.afterBreak;
+							} else if (x == s.length()) {
+								b.append(c);
+								b.append('\n');
+								indent(b, left);
+								x = left;
+								state = State.afterBreak;
+							} else {
+								// see whether the current word can fit inside
+								// the margin
+								boolean breaks = false;
+								for (int j = i + 1, y = x + 1; j < s.length(); j++, y++) {
+									char c2 = s.charAt(j);
+									if (Character.isWhitespace(c2))
+										break;
+									if (y > right) {
+										breaks = true;
+										break;
+									}
+								}
+								if (breaks) {
+									b.append('\n');
+									indent(b, left);
+									b.append(c);
+									x = left + 1;
+									state = State.firstWord;
+								} else {
+									b.append(c);
+									state = State.inWord;
+									x++;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return b.toString();
+	}
+
+	private static void indent(StringBuilder b, int left) {
+		for (int i = 0; i < left; i++)
+			b.append(' ');
+	}
+
+	/**
+	 * Sets column width at which {@link Cli} will attempt to wrap usage
+	 * information.
+	 * 
+	 * @param margin
+	 */
+	public void setMargin(int margin) {
+		this.margin = margin;
 	}
 }
