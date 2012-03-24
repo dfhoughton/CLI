@@ -29,10 +29,12 @@
 		<pathelement location="${test.classes.dir}" />
 		<path refid="junit.path" />
 	</path>
+
 	<target name="clean" description="removes anything created by any other ant task">
 		<delete dir="${build.dir}" />
 		<delete dir="${doc.dir}" />
 	</target>
+
 	<target name="compile" description="compile source to bytecode">
 		<mkdir dir="${classes.dir}" />
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">
@@ -45,6 +47,7 @@
 		<copy file="NOTICE" tofile="${classes.dir}/META-INF/NOTICE" />
 		<jar destfile="${jar.dir}/${ant.project.name}-${version}.jar" basedir="${classes.dir}" />
 	</target>
+
 	<target name="javadoc" description="API for public and protected methods">
 		<mkdir dir="${doc.dir}" />
 		<javadoc access="protected" destdir="${doc.dir}" author="true" version="true" use="true" windowtitle="dfh.cli">
