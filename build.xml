@@ -40,6 +40,7 @@
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">
 		</javac>
 	</target>
+
 	<target name="jar" depends="udv" description="packages code into jar">
 		<mkdir dir="${jar.dir}" />
 		<mkdir dir="${classes.dir}/META-INF" />
