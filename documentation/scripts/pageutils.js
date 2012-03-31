@@ -116,8 +116,6 @@ var dfh = {
 				"margin: 1.5em auto; text-align: center; white-space: nowrap");
 		var nonInitial = false;
 		for ( var key in hdrs) {
-			if (key == self)
-				continue;
 			if (nonInitial) {
 				var span = document.createElement("span");
 				span.setAttribute('style', "margin: 0 1em");
@@ -125,10 +123,16 @@ var dfh = {
 				div.appendChild(span);
 			} else
 				nonInitial = true;
-			var a = document.createElement("a");
-			a.setAttribute("href", hdrs[key]);
-			a.appendChild(document.createTextNode(key));
-			div.appendChild(a);
+			var e;
+			if (key == self)
+				e = document.createTextNode(key);
+			else {
+				var a = document.createElement("a");
+				a.setAttribute("href", hdrs[key]);
+				a.appendChild(document.createTextNode(key));
+				e = a;
+			}
+			div.appendChild(e);
 		}
 		if (document.body.childNodes.length)
 			document.body.insertBefore(div, document.body.firstChild);
@@ -273,8 +277,9 @@ var dfh = {
 	},
 
 	/**
-	 * we look for -- and replace it with an em dash except in pre and code
-	 * elements only -- is transformed, not ---, etc.
+	 * we look for -- and replace it with an em dash
+	 * except in pre and code elements
+	 * only -- is transformed, not ---, etc.
 	 */
 	mdash : function() {
 		var walker = document.createTreeWalker(document.body,

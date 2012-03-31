@@ -7,5 +7,4 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ CliTest.class, NumSetTest.class })
 public class AllTests {
-
 }

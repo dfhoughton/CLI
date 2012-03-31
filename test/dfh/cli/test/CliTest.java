@@ -654,7 +654,6 @@ public class CliTest {
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
-			System.out.println(s);
 			assertTrue(
 					"added quux line",
 					Pattern.compile(
@@ -675,7 +674,7 @@ public class CliTest {
 			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			fail("should have thrown error");
 		} catch (RuntimeException e) {
-			String s = e.getMessage();
+			String s = e.getMessage().trim().replaceAll("\\s++", " ");
 			assertTrue("found error", s.startsWith("ERRORS"));
 			assertTrue("correct error",
 					s.indexOf("cannot have more than 2 elements") > -1);
