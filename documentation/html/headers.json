@@ -3,14 +3,14 @@
  */
 
 var hdrs = {
-	"home" : "http://dfhoughton.com",
+	"home" : "/",
 	"CLI" : "index.html",
-	"API" : "api/index.html",
-	"download" : "download.html",
 	"spec" : "specification.html",
 	"modifiers" : "modifiers.html",
 	"use" : "values.html",
 	"validation" : "validation.html",
+	"API" : "api/index.html",
+	"download" : "download.html",
 };
 
 var version = "1.06";
