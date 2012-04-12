@@ -14,13 +14,11 @@ TODO
 . make internationalizable
 . add coercion of arbitrary types from strings
 . create unit tests for more of the validation rules
-* make dfh.cli.Cli object reusable -- add clear() method
 . remove unnecessary IntSet?
 . make it possible to query for default values
-* add license file to jar
 . add default collection capability
-* add word wrapping
 . add boolean Cli.defined(String) to see whether an option has been set
+. let an empty array create a blank line in the usage info
 
 RELICS
 ======
@@ -32,3 +30,6 @@ Things swept out of TODO list:
 * create die method that dies with an error statement and usage
 * add number set validation rule
 * fix bug where negative numbers are interpreted as options
+* make dfh.cli.Cli object reusable -- add clear() method
+* add license file to jar
+* add word wrapping
