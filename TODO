@@ -15,7 +15,7 @@ TODO
 . add coercion of arbitrary types from strings
 . create unit tests for more of the validation rules
 . remove unnecessary IntSet?
-. make it possible to query for default values
+* make it possible to query for default values
 . add default collection capability
 . add boolean Cli.defined(String) to see whether an option has been set
 * let an empty array create a blank line in the usage info

@@ -1273,4 +1273,21 @@ public class CliTest {
 		assertNull(cli.argument("bar"));
 		assertEquals(0, cli.slurpedArguments().size());
 	}
+
+	@Test
+	public void defaultTest1() {
+		Object[][][] spec = { { { "foo", Integer.class, 1 } } };
+		Cli cli = new Cli(spec);
+		cli.parse();
+		assertEquals(new Integer(1), cli.def("foo"));
+	}
+
+	@Test
+	public void defaultTest2() {
+		Object[][][] spec = { { { "foo", Integer.class, 1 } } };
+		Cli cli = new Cli(spec);
+		cli.parse("--foo", "2");
+		assertEquals(new Integer(1), cli.def("foo"));
+	}
+
 }

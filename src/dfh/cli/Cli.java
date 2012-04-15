@@ -1389,4 +1389,20 @@ public class Cli {
 	public void setMargin(int margin) {
 		this.margin = margin;
 	}
+
+	/**
+	 * Returns the default value, if any, of an option. <em>Note</em>,
+	 * <code>null</code> is also returned if there is no such option.
+	 * 
+	 * @param string
+	 *            option name
+	 * @return default value of option; <code>null</code> if option has no
+	 *         default
+	 */
+	public Object def(String string) {
+		Option<?> opt = options.get(string);
+		if (opt == null)
+			return null;
+		return opt.def;
+	}
 }
