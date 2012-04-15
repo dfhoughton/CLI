@@ -274,9 +274,11 @@ public class Cli {
 	}
 
 	private void parseSpec(Object[][] cmd) throws ValidationException {
-		if (cmd.length == 0)
-			throw new ValidationException("empty specification row");
-		if (cmd[0][0] instanceof Opt) {
+		if (cmd.length == 0) {
+			options.put("_" + options.size(), DummyOption.blankLine);
+		} else if (cmd[0].length == 0) {
+			options.put("_" + options.size(), DummyOption.blankLine);
+		} else if (cmd[0][0] instanceof Opt) {
 			Opt o = (Opt) cmd[0][0];
 			switch (o) {
 			case NAME:
@@ -392,7 +394,7 @@ public class Cli {
 							+ " line should consist of a single element array");
 				DummyOption dummy = null;
 				if (cmd[0].length == 1) {
-					dummy = new DummyOption("");
+					dummy = DummyOption.blankLine;
 				} else if (cmd[0].length == 2) {
 					Object obj = cmd[0][1];
 					if (obj instanceof String)

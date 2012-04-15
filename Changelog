@@ -1,3 +1,6 @@
+1.07
+   * an empty array in the spec now creates a blank line
+
 1.06, 15 March 2012
    * added some javadocs
    * added checking for argument parsing at beginning of all methods meant to

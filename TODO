@@ -18,7 +18,8 @@ TODO
 . make it possible to query for default values
 . add default collection capability
 . add boolean Cli.defined(String) to see whether an option has been set
-. let an empty array create a blank line in the usage info
+* let an empty array create a blank line in the usage info
+. document new blank line syntax
 . create an example directory
 . document how to produce a branching branching CLI such as you have in git
   and cvs

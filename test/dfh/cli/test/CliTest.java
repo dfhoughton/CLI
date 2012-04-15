@@ -641,6 +641,52 @@ public class CliTest {
 	}
 
 	@Test
+	public void emptyAr1() {
+		try {
+			Object[][][] spec = {
+					//
+					{ { "foo" } },//
+					{},//
+					{ { "bar" } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertFalse(s.startsWith("ERRORS"));
+			assertTrue(
+					"empty array also adds blank line",
+					Pattern.compile(
+							"--foo\\s++a boolean option\\s*$\\s*$\\s*--bar",
+							Pattern.MULTILINE).matcher(s).find());
+		}
+	}
+
+	@Test
+	public void emptyAr2() {
+		try {
+			Object[][][] spec = {
+					//
+					{ { "foo" } },//
+					{ {} },//
+					{ { "bar" } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertFalse(s.startsWith("ERRORS"));
+			assertTrue(
+					"array containing only an empty array adds a blank line",
+					Pattern.compile(
+							"--foo\\s++a boolean option\\s*$\\s*$\\s*--bar",
+							Pattern.MULTILINE).matcher(s).find());
+		}
+	}
+
+	@Test
 	public void textTest2() {
 		try {
 			Object[][][] spec = {

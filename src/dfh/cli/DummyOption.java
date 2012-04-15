@@ -18,6 +18,11 @@ package dfh.cli;
  * 
  */
 public class DummyOption extends Option<String> {
+	
+	/**
+	 * Cached blank line.
+	 */
+	static DummyOption blankLine = new DummyOption("");
 
 	public DummyOption(String string) {
 		stored = string;
