@@ -1290,4 +1290,35 @@ public class CliTest {
 		assertEquals(new Integer(1), cli.def("foo"));
 	}
 
+	@Test
+	public void isSetTest1() {
+		Object[][][] spec = { { { "foo", Integer.class, 1 } } };
+		Cli cli = new Cli(spec);
+		cli.parse("--foo", "2");
+		assertTrue(cli.isSet("foo"));
+	}
+
+	@Test
+	public void isSetTest2() {
+		Object[][][] spec = { { { "foo", Integer.class, 1 } } };
+		Cli cli = new Cli(spec);
+		cli.parse();
+		assertFalse(cli.isSet("foo"));
+	}
+
+	@Test
+	public void isSetTest3() {
+		Object[][][] spec = { { { "foo", Integer.class } } };
+		Cli cli = new Cli(spec);
+		cli.parse("--foo", "2");
+		assertTrue(cli.isSet("foo"));
+	}
+
+	@Test
+	public void isSetTest4() {
+		Object[][][] spec = { { { "foo", Integer.class } } };
+		Cli cli = new Cli(spec);
+		cli.parse();
+		assertFalse(cli.isSet("foo"));
+	}
 }

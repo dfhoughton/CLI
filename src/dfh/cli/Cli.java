@@ -1405,4 +1405,18 @@ public class Cli {
 			return null;
 		return opt.def;
 	}
+
+	/**
+	 * Returns whether the given option has been set by the command line.
+	 * 
+	 * @param string
+	 *            option name
+	 * @return whether the given option has been set by the command line
+	 */
+	public boolean isSet(String string) {
+		Option<?> opt = options.get(string);
+		if (opt == null)
+			return false;
+		return opt.value != null;
+	}
 }

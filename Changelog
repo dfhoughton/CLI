@@ -1,6 +1,8 @@
 1.07
    * an empty array in the spec now creates a blank line
    * one can now query a Cli for default values
+   * added method to Cli to test whether an option has been set by command
+     line arguments
 
 1.06, 15 March 2012
    * added some javadocs
