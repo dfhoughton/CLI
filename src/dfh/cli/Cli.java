@@ -1336,12 +1336,6 @@ public class Cli {
 								b.append(c);
 								x = left + 1;
 								state = State.firstWord;
-							} else if (x == s.length()) {
-								b.append('\n');
-								indent(b, left);
-								b.append(c);
-								x = left + 1;
-								state = State.firstWord;
 							} else {
 								// see whether the current word can fit inside
 								// the margin

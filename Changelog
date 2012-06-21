@@ -1,8 +1,10 @@
-1.07
+1.07, 21 June 2012
    * an empty array in the spec now creates a blank line
    * one can now query a Cli for default values
    * added method to Cli to test whether an option has been set by command
      line arguments
+   * fixed word wrapping bug which was causing lines to be wrapped too 
+     early in some cases
 
 1.06, 15 March 2012
    * added some javadocs
