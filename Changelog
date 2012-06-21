@@ -1,3 +1,5 @@
+1.08
+
 1.07, 21 June 2012
    * an empty array in the spec now creates a blank line
    * one can now query a Cli for default values
