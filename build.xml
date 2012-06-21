@@ -59,7 +59,7 @@
 		</javadoc>
 	</target>
 
-	<target name="tar" depends="udv" description="bundle up the source and documentation">
+	<target name="tar" depends="udv,javadoc" description="bundle up the source and documentation">
 		<tar destfile="${build.dir}/cli-${version}.tgz" compression="gzip">
 			<tarfileset dir="${basedir}">
 				<include name="README" />
