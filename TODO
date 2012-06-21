@@ -21,8 +21,9 @@ TODO
 * let an empty array create a blank line in the usage info
 . document new blank line syntax
 . create an example directory
-. document how to produce a branching branching CLI such as you have in git
+. document how to produce a branching CLI such as you have in git
   and cvs
+. document changes listed in change log for version 1.07
 
 RELICS
 ======
