@@ -775,28 +775,30 @@ public class Cli {
 			} else {
 				String optDesc = c.optionDescription();
 				String argDescription = c.argDescription();
-				String suffix = "";
+				StringBuilder b = new StringBuilder();
+				CharSequence cs = c.description();
+				if (c instanceof CollectionOption<?>) {
+					addDelimiter(b, cs);
+					b.append(" repeatable");
+				}
+				for (ValidationRule<?> vr: c.validationRules) {
+					String s = vr.describe().trim();
+					if (s.length() == 0)
+						continue;
+					if (b.length() > 0)
+						cs = b;
+					addDelimiter(b, cs);
+					b.append(' ').append(s);
+				}
 				if (c.def != null || c.isRequired()) {
-					StringBuilder b = new StringBuilder();
-					CharSequence cs = c.description();
-					for (ValidationRule<?> vr: c.validationRules) {
-						String s = vr.describe().trim();
-						if (s.length() == 0)
-							continue;
-						if (b.length() > 0)
-							cs = b;
-						addDelimiter(b, cs);
-						b.append(' ').append(s);
-					}
 					addDelimiter(b, cs);
 					if (c.isRequired())
 						b.append(" REQUIRED");
 					else
 						b.append(" default: ").append(c.def);
-					suffix = b.toString();
 				}
 				String line = String.format(format, optDesc, argDescription,
-						c.description(), suffix);
+						c.description(), b);
 				List<String> parts = split(line, splitIndent);
 				out.println(parts.get(0));
 				if (parts.size() == 2)

@@ -26,6 +26,7 @@ TODO
 . document changes listed in change log for version 1.07
 . document ValidationRule.shh()
 . let ValidationRules apply to repeated arguments
+. document automatic addition of "repeatable" to option descriptions
 
 RELICS
 ======

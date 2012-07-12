@@ -1,6 +1,7 @@
 1.08
    * made ValidationRule an abstract class and added a describe() method to
      automatically append descriptions of restrictions to option descriptions
+   * repeatability of options now automatically reported
 
 1.07, 21 June 2012
    * an empty array in the spec now creates a blank line
