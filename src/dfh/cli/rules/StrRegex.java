@@ -18,7 +18,7 @@ import dfh.cli.ValidationRule;
  * 
  * @author David Houghton
  */
-public class StrRegex implements ValidationRule<String> {
+public class StrRegex extends ValidationRule<String> {
 
 	private final Pattern re;
 
@@ -30,6 +30,11 @@ public class StrRegex implements ValidationRule<String> {
 		this.re = re;
 		if (re == null)
 			throw new RuntimeException("regex must be non-null");
+	}
+
+	@Override
+	public String description() {
+		return "value must match " + re;
 	}
 
 	@Override

@@ -778,8 +778,17 @@ public class Cli {
 				String suffix = "";
 				if (c.def != null || c.isRequired()) {
 					StringBuilder b = new StringBuilder();
-					if (NEEDS_SEMICOLON.matcher(c.description()).find())
-						b.append(';');
+					CharSequence cs = c.description();
+					for (ValidationRule<?> vr: c.validationRules) {
+						String s = vr.describe().trim();
+						if (s.length() == 0)
+							continue;
+						if (b.length() > 0)
+							cs = b;
+						addDelimiter(b, cs);
+						b.append(' ').append(s);
+					}
+					addDelimiter(b, cs);
 					if (c.isRequired())
 						b.append(" REQUIRED");
 					else
@@ -798,6 +807,18 @@ public class Cli {
 			out.println();
 			out.println(wrap(usage, 0, margin()));
 		}
+	}
+
+	/**
+	 * Adds a clause delimiter as necessary when appending information to an
+	 * option description.
+	 * 
+	 * @param b buffer receiving additional text
+	 * @param s text preceding potential boundary
+	 */
+	private void addDelimiter(StringBuilder b, CharSequence s) {
+		if (NEEDS_SEMICOLON.matcher(s).find())
+			b.append(';');
 	}
 
 	/**

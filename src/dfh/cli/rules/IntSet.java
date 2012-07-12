@@ -22,13 +22,29 @@ import dfh.cli.ValidationRule;
  * @author David F. Houghton - Feb 23, 2012
  * 
  */
-public class IntSet implements ValidationRule<Integer> {
+public class IntSet extends ValidationRule<Integer> {
 	private final Set<Integer> set;
 
 	public IntSet(int... ints) {
 		set = new HashSet<Integer>(ints.length * 2);
 		for (int i : ints)
 			set.add(i);
+	}
+
+	@Override
+	public String description() {
+		StringBuilder b = new StringBuilder();
+		b.append("value must be in {");
+		boolean initial = true;
+		for (Integer s : new TreeSet<Integer>(set)) {
+			if (initial)
+				initial = false;
+			else
+				b.append(", ");
+			b.append(s);
+		}
+		b.append('}');
+		return b.toString();
 	}
 
 	@Override

@@ -23,13 +23,29 @@ import dfh.cli.ValidationRule;
  * @author David F. Houghton - Feb 23, 2012
  * 
  */
-public class NumSet implements ValidationRule<Number> {
+public class NumSet extends ValidationRule<Number> {
 	private final Set<Double> set;
 
 	public NumSet(double... nums) {
 		set = new HashSet<Double>(nums.length * 2);
 		for (double i : nums)
 			set.add(i);
+	}
+
+	@Override
+	public String description() {
+		StringBuilder b = new StringBuilder();
+		b.append("value must be in {");
+		boolean initial = true;
+		for (Double s : new TreeSet<Double>(set)) {
+			if (initial)
+				initial = false;
+			else
+				b.append(", ");
+			b.append(s);
+		}
+		b.append('}');
+		return b.toString();
 	}
 
 	@Override

@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import dfh.cli.ValidationException;
 import dfh.cli.ValidationRule;
@@ -22,7 +23,7 @@ import dfh.cli.ValidationRule;
  * 
  * @author David Houghton
  */
-public class StrSet implements ValidationRule<String> {
+public class StrSet extends ValidationRule<String> {
 
 	private final Set<String> set;
 
@@ -30,6 +31,22 @@ public class StrSet implements ValidationRule<String> {
 		set = new HashSet<String>(strings.length * 2);
 		for (String s : strings)
 			set.add(s);
+	}
+
+	@Override
+	public String description() {
+		StringBuilder b = new StringBuilder();
+		b.append("value must be in {");
+		boolean initial = true;
+		for (String s : new TreeSet<String>(set)) {
+			if (initial)
+				initial = false;
+			else
+				b.append(", ");
+			b.append(s);
+		}
+		b.append('}');
+		return b.toString();
 	}
 
 	@Override

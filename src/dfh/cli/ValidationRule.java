@@ -19,7 +19,9 @@ package dfh.cli;
  *            the type of object parsed out of the argument if validation
  *            succeeds
  */
-public interface ValidationRule<K> {
+public abstract class ValidationRule<K> {
+	protected boolean quiet = false;
+
 	/**
 	 * Applies the validation test to a particular argument.
 	 * 
@@ -28,5 +30,38 @@ public interface ValidationRule<K> {
 	 * @throws ValidationException
 	 *             any error message generated if validation fails
 	 */
-	public void test(K arg) throws ValidationException;
+	public abstract void test(K arg) throws ValidationException;
+
+	/**
+	 * Keeps rule from contributing its description to the option(s) it applies
+	 * to.
+	 * 
+	 * @return the {@link ValidationRule} itself
+	 */
+	public ValidationRule<K> shh() {
+		quiet = true;
+		return this;
+	}
+
+	/**
+	 * Returns the text this validation rule will contribute to an option
+	 * description. This will be the empty string if the rule has been
+	 * {@link #shh() shushed} or {@link #description()} has not be overridden.
+	 * 
+	 * @return the text this validation rule will contribute to an option
+	 *         description
+	 */
+	public String describe() {
+		return quiet ? "" : description();
+	}
+
+	/**
+	 * Returns a description of this validation rule. Override this for
+	 * particular rules to give them meaningful descriptions.
+	 * 
+	 * @return a description of this validation rule
+	 */
+	protected String description() {
+		return "";
+	}
 }

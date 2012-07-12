@@ -8,6 +8,8 @@
  */
 package dfh.cli.rules;
 
+import java.text.DecimalFormat;
+
 import dfh.cli.ValidationException;
 import dfh.cli.ValidationRule;
 
@@ -20,10 +22,10 @@ import dfh.cli.ValidationRule;
  * 
  * @param <K>
  */
-public class Range<K extends Number> implements ValidationRule<K> {
+public class Range<K extends Number> extends ValidationRule<K> {
 
-	private final double low;
-	private final double high;
+	protected final double low;
+	protected final double high;
 	private final String rangeName;
 	private final boolean lowInc;
 	private final boolean highInc;
@@ -35,6 +37,11 @@ public class Range<K extends Number> implements ValidationRule<K> {
 		this.high = high.doubleValue();
 		this.lowInc = lowInc;
 		this.highInc = highInc;
+	}
+
+	@Override
+	public String description() {
+		return "value must be in interval " + rangeName;
 	}
 
 	/**
@@ -92,7 +99,12 @@ public class Range<K extends Number> implements ValidationRule<K> {
 	 * @return a range of the form (0,&infin;]
 	 */
 	public static Range<? extends Number> positive() {
-		return highIncl(0, Double.POSITIVE_INFINITY);
+		return new Range<Double>(0D, Double.POSITIVE_INFINITY, false, true) {
+			@Override
+			public String description() {
+				return "value > 0";
+			}
+		};
 	}
 
 	/**
@@ -103,7 +115,12 @@ public class Range<K extends Number> implements ValidationRule<K> {
 	 * @return a range of the form (low,&infin;]
 	 */
 	public static Range<Double> greater(double low) {
-		return highIncl(low, Double.POSITIVE_INFINITY);
+		return new Range<Double>(low, Double.POSITIVE_INFINITY, false, true) {
+			@Override
+			public String description() {
+				return "value > " + new DecimalFormat().format(low);
+			}
+		};
 	}
 
 	/**
@@ -114,7 +131,12 @@ public class Range<K extends Number> implements ValidationRule<K> {
 	 * @return a range of the form [low,&infin;]
 	 */
 	public static Range<Double> greaterOrEq(double low) {
-		return incl(low, Double.POSITIVE_INFINITY);
+		return new Range<Double>(low, Double.POSITIVE_INFINITY, true, true) {
+			@Override
+			public String description() {
+				return "value >= " + new DecimalFormat().format(low);
+			}
+		};
 	}
 
 	/**
@@ -124,7 +146,12 @@ public class Range<K extends Number> implements ValidationRule<K> {
 	 * @return a range of the form [-&infin;,0)
 	 */
 	public static Range<? extends Number> negative() {
-		return lowIncl(Double.NEGATIVE_INFINITY, 0);
+		return new Range<Double>(Double.NEGATIVE_INFINITY, 0D, true, false) {
+			@Override
+			public String description() {
+				return "value < 0";
+			}
+		};
 	}
 
 	/**
@@ -135,7 +162,12 @@ public class Range<K extends Number> implements ValidationRule<K> {
 	 * @return a range of the form [-&infin;,high)
 	 */
 	public static Range<Double> less(double high) {
-		return lowIncl(Double.NEGATIVE_INFINITY, high);
+		return new Range<Double>(Double.NEGATIVE_INFINITY, high, true, false) {
+			@Override
+			public String description() {
+				return "value < " + new DecimalFormat().format(high);
+			}
+		};
 	}
 
 	/**
@@ -146,7 +178,12 @@ public class Range<K extends Number> implements ValidationRule<K> {
 	 * @return a range of the form [-&infin;,high]
 	 */
 	public static Range<Double> lessOrEq(double high) {
-		return incl(Double.NEGATIVE_INFINITY, high);
+		return new Range<Double>(Double.NEGATIVE_INFINITY, high, true, true) {
+			@Override
+			public String description() {
+				return "value <= " + new DecimalFormat().format(high);
+			}
+		};
 	}
 
 	/**
@@ -156,7 +193,12 @@ public class Range<K extends Number> implements ValidationRule<K> {
 	 * @return a range of the form [0,&infin;]
 	 */
 	public static Range<? extends Number> nonNegative() {
-		return incl(0, Double.POSITIVE_INFINITY);
+		return new Range<Double>(0D, Double.POSITIVE_INFINITY, true, true) {
+			@Override
+			public String description() {
+				return "value >= 0";
+			}
+		};
 	}
 
 	/**
@@ -166,7 +208,12 @@ public class Range<K extends Number> implements ValidationRule<K> {
 	 * @return a range of the form [-&infin;,0]
 	 */
 	public static Range<? extends Number> nonPositive() {
-		return incl(Double.NEGATIVE_INFINITY, 0);
+		return new Range<Double>(Double.NEGATIVE_INFINITY, 0D, true, true) {
+			@Override
+			public String description() {
+				return "value <= 0";
+			}
+		};
 	}
 
 	@Override
