@@ -131,7 +131,13 @@ public class Cli {
 		/**
 		 * Option so marked defines a unique member of a collection
 		 */
-		SET
+		SET,
+		/**
+		 * Option so marked will not augment its description by automatically
+		 * noting its default, that is' repeatable, and/or the descriptions of
+		 * its various restrictions.
+		 */
+		BRIEF
 	}
 
 	/**
@@ -470,7 +476,7 @@ public class Cli {
 
 	private Option<?> optionForType(Object[] base, Object[] restrictions)
 			throws ValidationException {
-		boolean isSet = false, isRepeatable = false, isRequired = false;
+		boolean isSet = false, isRepeatable = false, isRequired = false, isBrief = false;
 		if (restrictions != null) {
 			for (Object o : restrictions) {
 				if (o instanceof Res) {
@@ -482,6 +488,9 @@ public class Cli {
 						break;
 					case REQUIRED:
 						isRequired = true;
+						break;
+					case BRIEF:
+						isBrief = true;
 						break;
 					default:
 						throw new ValidationException(
@@ -537,6 +546,7 @@ public class Cli {
 					"spec parser cannot parse arguments of type " + cz);
 		}
 		opt.setRequired(isRequired);
+		opt.setBrief(isBrief);
 		for (Object o : base) {
 			if (o instanceof String || o instanceof Character)
 				opt.addName(o);
@@ -776,26 +786,28 @@ public class Cli {
 				String optDesc = c.optionDescription();
 				String argDescription = c.argDescription();
 				StringBuilder b = new StringBuilder();
-				CharSequence cs = c.description();
-				if (c instanceof CollectionOption<?>) {
-					addDelimiter(b, cs);
-					b.append(" repeatable");
-				}
-				for (ValidationRule<?> vr: c.validationRules) {
-					String s = vr.describe().trim();
-					if (s.length() == 0)
-						continue;
-					if (b.length() > 0)
-						cs = b;
-					addDelimiter(b, cs);
-					b.append(' ').append(s);
-				}
-				if (c.def != null || c.isRequired()) {
-					addDelimiter(b, cs);
-					if (c.isRequired())
-						b.append(" REQUIRED");
-					else
-						b.append(" default: ").append(c.def);
+				if (!c.isBrief()) {
+					CharSequence cs = c.description();
+					if (c instanceof CollectionOption<?>) {
+						addDelimiter(b, cs);
+						b.append(" repeatable");
+					}
+					for (ValidationRule<?> vr : c.validationRules) {
+						String s = vr.describe().trim();
+						if (s.length() == 0)
+							continue;
+						if (b.length() > 0)
+							cs = b;
+						addDelimiter(b, cs);
+						b.append(' ').append(s);
+					}
+					if (c.def != null || c.isRequired()) {
+						addDelimiter(b, cs);
+						if (c.isRequired())
+							b.append(" REQUIRED");
+						else
+							b.append(" default: ").append(c.def);
+					}
 				}
 				String line = String.format(format, optDesc, argDescription,
 						c.description(), b);
@@ -815,8 +827,10 @@ public class Cli {
 	 * Adds a clause delimiter as necessary when appending information to an
 	 * option description.
 	 * 
-	 * @param b buffer receiving additional text
-	 * @param s text preceding potential boundary
+	 * @param b
+	 *            buffer receiving additional text
+	 * @param s
+	 *            text preceding potential boundary
 	 */
 	private void addDelimiter(StringBuilder b, CharSequence s) {
 		if (NEEDS_SEMICOLON.matcher(s).find())

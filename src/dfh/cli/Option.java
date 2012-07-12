@@ -40,6 +40,7 @@ public abstract class Option<K> {
 	protected String description;
 	protected boolean hasArgument = true;
 	protected boolean required = false;
+	protected boolean brief = false;
 
 	public boolean isRequired() {
 		return required;
@@ -171,5 +172,13 @@ public abstract class Option<K> {
 
 	public void setDescription(String string) {
 		this.description = string;
+	}
+
+	public boolean isBrief() {
+		return brief;
+	}
+
+	public void setBrief(boolean brief) {
+		this.brief = brief;
 	}
 }

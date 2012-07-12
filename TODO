@@ -27,7 +27,7 @@ TODO
 . document ValidationRule.shh()
 . let ValidationRules apply to repeated arguments
 . document automatic addition of "repeatable" to option descriptions
-. add item to Res turning off automatic addition of information to option description
+* add item to Res turning off automatic addition of information to option description
 
 RELICS
 ======
