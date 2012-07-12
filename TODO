@@ -24,6 +24,8 @@ TODO
 . document how to produce a branching CLI such as you have in git
   and cvs
 . document changes listed in change log for version 1.07
+. document ValidationRule.shh()
+. let ValidationRules apply to repeated arguments
 
 RELICS
 ======
