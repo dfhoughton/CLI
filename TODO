@@ -28,6 +28,7 @@ TODO
 . let ValidationRules apply to repeated arguments
 . document automatic addition of "repeatable" to option descriptions
 * add item to Res turning off automatic addition of information to option description
+. make sure -? is working; and set up a test for this
 
 RELICS
 ======
