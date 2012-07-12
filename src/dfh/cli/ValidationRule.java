@@ -51,7 +51,7 @@ public abstract class ValidationRule<K> {
 	 * @return the text this validation rule will contribute to an option
 	 *         description
 	 */
-	public String describe() {
+	public final String describe() {
 		return quiet ? "" : description();
 	}
 
