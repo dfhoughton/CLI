@@ -143,17 +143,10 @@ public class Cli {
 	/**
 	 * If the {@link Mod#HELP} modifier is provided to
 	 * {@link Cli#Cli(Object[][][], Mod...)}, these are the preferred flags to
-	 * trigger help.
+	 * trigger help. Since the last, <code>-?</code>, violates
+	 * {@link #COMMAND_NAME_PATTERN}, it should always be available.
 	 */
-	public static final String[] PREFERRED_HELP_FLAGS = { "help", "h", "?" };
-	/**
-	 * If the {@link Mod#HELP} modifier is provided to
-	 * {@link Cli#Cli(Object[][][], Mod...)} and none of
-	 * {@link #PREFERRED_HELP_FLAGS} is available, these are the preferred flags
-	 * to trigger help.
-	 */
-	public static final String[] AUXILIARY_HELP_FLAGS = { "usage", "info",
-			"how-to-use" };
+	public static final String[] HELP_FLAGS = { "help", "h", "?" };
 	/**
 	 * If the executable version is provided via a {@link Opt#VERSION} line,
 	 * these are the flags to trigger the version command.
@@ -237,32 +230,14 @@ public class Cli {
 			helpOption = new BooleanOption();
 			helpOption.setDescription("print usage information");
 			try {
-				for (String s : PREFERRED_HELP_FLAGS)
+				for (String s : HELP_FLAGS)
 					added = addAuxiliary(helpOption, s) || added;
 				if (!added) {
-					for (String auxHelp : AUXILIARY_HELP_FLAGS) {
-						added = addAuxiliary(helpOption, auxHelp) || added;
-						if (added)
-							break;
-					}
+					throw new RuntimeException(
+							"Bug detected! No help flag could be added. This should be impossible. Please report this bug!");
 				}
 			} catch (ValidationException e) {
 				errors.add(e.getMessage());
-			}
-			if (!added) {
-				StringBuilder b = new StringBuilder();
-				b.append("could not add help command under any of the following names: ");
-				boolean nonInitial = false;
-				for (String s : PREFERRED_HELP_FLAGS) {
-					if (nonInitial)
-						b.append(", ");
-					else
-						nonInitial = true;
-					b.append(s);
-				}
-				for (String s : AUXILIARY_HELP_FLAGS)
-					b.append(", ").append(s);
-				errors.add(b.toString());
 			}
 		}
 		if (!errors.isEmpty())
@@ -902,26 +877,20 @@ public class Cli {
 				arg = s.substring(i + 1);
 				s = s.substring(0, i);
 			}
-			if (COMMAND_NAME_PATTERN.matcher(s).matches()) {
-				c = options.get(s);
-				if (c == null)
-					throw new ValidationException("unknown option --" + s);
-				c.mark();
-			} else
+			c = options.get(s);
+			if (c == null)
 				throw new ValidationException("unknown option --" + s);
+			c.mark();
 		} else {
 			String bundle = s.substring(1);
 			if (bundle.length() == 0)
 				throw new ValidationException("malformed option '-'");
 			for (int i = 0; i < bundle.length(); i++) {
 				String sc = bundle.substring(i, i + 1);
-				if (COMMAND_NAME_PATTERN.matcher(sc).matches()) {
-					c = options.get(sc);
-					if (c == null)
-						throw new ValidationException("unknown option -" + sc);
-					c.mark();
-				} else
+				c = options.get(sc);
+				if (c == null)
 					throw new ValidationException("unknown option -" + sc);
+				c.mark();
 			}
 		}
 		boolean stored = c instanceof BooleanOption;

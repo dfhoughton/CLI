@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 
 import dfh.cli.Cli;
+import dfh.cli.Cli.Mod;
 import dfh.cli.Cli.Opt;
 import dfh.cli.Cli.Res;
 
@@ -1320,5 +1321,28 @@ public class CliTest {
 		Cli cli = new Cli(spec);
 		cli.parse();
 		assertFalse(cli.isSet("foo"));
+	}
+
+	@Test
+	public void qmarkHelp() {
+		Object[][][] spec = { { {} } };
+		Cli cli = new Cli(spec, Mod.HELP, Mod.THROW_EXCEPTION);
+		try {
+			cli.parse("-?");
+		} catch (RuntimeException e) {
+			assertTrue(e.getMessage().startsWith("USAGE"));
+		}
+	}
+
+	@Test
+	public void qmarkFlagImpossible() {
+		Object[][][] spec = { { { '?' } } };
+		try {
+			new Cli(spec, Mod.THROW_EXCEPTION);
+			fail("-? flag should have thrown an exception");
+		} catch (RuntimeException e) {
+			assertTrue(e.getMessage().indexOf(
+					"option name ? violates option name pattern") > -1);
+		}
 	}
 }

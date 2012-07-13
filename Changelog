@@ -3,6 +3,7 @@
      automatically append descriptions of restrictions to option descriptions
    * repeatability of options now automatically reported
    * made automatic description augmentations shushable
+   * fixed error thrown when -? help flag was used
 
 1.07, 21 June 2012
    * an empty array in the spec now creates a blank line
