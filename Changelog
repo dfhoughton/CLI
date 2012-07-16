@@ -1,4 +1,4 @@
-1.08
+1.08, 16 July 2012
    * made ValidationRule an abstract class and added a describe() method to
      automatically append descriptions of restrictions to option descriptions
    * repeatability of options now automatically reported
