@@ -24,6 +24,8 @@ TODO
 . document ValidationRule.shh()
 * let ValidationRules apply to repeated arguments
 . document automatic addition of "repeatable" to option descriptions
+. make inclusion of help option a default
+. improve validation rule descriptions
 
 RELICS
 ======
