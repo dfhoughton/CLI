@@ -1,4 +1,6 @@
-1.09
+1.09, 17 July 2012
+   * can apply ordinary validation rules -- Range.positive(), etc. -- to
+     repeated items
 
 1.08, 16 July 2012
    * made ValidationRule an abstract class and added a describe() method to

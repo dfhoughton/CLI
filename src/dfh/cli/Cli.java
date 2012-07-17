@@ -763,7 +763,7 @@ public class Cli {
 				StringBuilder b = new StringBuilder();
 				if (!c.isBrief()) {
 					CharSequence cs = c.description();
-					if (c instanceof CollectionOption<?>) {
+					if (c instanceof CollectionOption<?, ?>) {
 						addDelimiter(b, cs);
 						b.append(" repeatable");
 					}

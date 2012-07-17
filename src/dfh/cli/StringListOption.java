@@ -11,7 +11,7 @@ package dfh.cli;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StringListOption extends CollectionOption<List<String>> {
+public class StringListOption extends CollectionOption<String, List<String>> {
 	{
 		value = new ArrayList<String>();
 	}

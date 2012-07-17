@@ -18,7 +18,7 @@ import java.util.Set;
  * @author David F. Houghton
  * 
  */
-public class IntegerSetOption extends CollectionOption<Set<Integer>> {
+public class IntegerSetOption extends CollectionOption<Integer, Set<Integer>> {
 	{
 		value = new LinkedHashSet<Integer>();
 	}

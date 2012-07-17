@@ -18,7 +18,7 @@ import java.util.List;
  * @author David F. Houghton
  * 
  */
-public class IntegerListOption extends CollectionOption<List<Integer>> {
+public class IntegerListOption extends CollectionOption<Integer, List<Integer>> {
 	{
 		value = new ArrayList<Integer>();
 	}

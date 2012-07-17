@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
@@ -20,6 +21,9 @@ import dfh.cli.Cli;
 import dfh.cli.Cli.Mod;
 import dfh.cli.Cli.Opt;
 import dfh.cli.Cli.Res;
+import dfh.cli.ValidationException;
+import dfh.cli.ValidationRule;
+import dfh.cli.rules.Range;
 
 public class CliTest {
 	@Test
@@ -1343,6 +1347,64 @@ public class CliTest {
 		} catch (RuntimeException e) {
 			assertTrue(e.getMessage().indexOf(
 					"option name ? violates option name pattern") > -1);
+		}
+	}
+
+	@Test
+	public void setRestriction1() {
+		Object[][][] spec = { { { "foo", Integer.class }, {},
+				{ Res.REPEATABLE, Range.positive() } } };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		cli.parse("--foo", "1");
+	}
+
+	@Test
+	public void setRestriction2() {
+		Object[][][] spec = { { { "foo", Integer.class }, {},
+				{ Res.REPEATABLE, Range.positive() } } };
+		try {
+			Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+			cli.parse("--foo", "-1");
+			fail("should have thrown exception");
+		} catch (RuntimeException e) {
+			assertTrue(e.getMessage().indexOf("outside range") > -1);
+		}
+	}
+
+	@Test
+	public void setRestriction3() {
+		Object[][][] spec = { { { "foo", Integer.class }, {},
+				{ Res.REPEATABLE, new ValidationRule<Collection<Integer>>() {
+
+					@Override
+					public void test(Collection<Integer> arg)
+							throws ValidationException {
+						if (arg.size() < 2)
+							throw new ValidationException("too few foos");
+					}
+				} } } };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		cli.parse("--foo", "1", "--foo", "2");
+	}
+
+	@Test
+	public void setRestriction4() {
+		Object[][][] spec = { { { "foo", Integer.class }, {},
+				{ Res.REPEATABLE, new ValidationRule<Collection<Integer>>() {
+
+					@Override
+					public void test(Collection<Integer> arg)
+							throws ValidationException {
+						if (arg.size() < 2)
+							throw new ValidationException("too few foos");
+					}
+				} } } };
+		try {
+			Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+			cli.parse("--foo", "-1");
+			fail("should have thrown exception");
+		} catch (RuntimeException e) {
+			assertTrue(e.getMessage().indexOf("too few foos") > -1);
 		}
 	}
 }

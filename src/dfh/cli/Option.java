@@ -133,7 +133,7 @@ public abstract class Option<K> {
 
 	public abstract void validate() throws ValidationException;
 
-	final void terminalValidation() throws ValidationException {
+	 void terminalValidation() throws ValidationException {
 		if (value() != null) {
 			for (ValidationRule<K> v : validationRules) {
 				v.test(value());

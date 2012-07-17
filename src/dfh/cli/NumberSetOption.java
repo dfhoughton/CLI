@@ -11,7 +11,7 @@ package dfh.cli;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class NumberSetOption extends CollectionOption<Set<Double>> {
+public class NumberSetOption extends CollectionOption<Double, Set<Double>> {
 	{
 		value = new LinkedHashSet<Double>();
 	}
