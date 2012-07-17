@@ -1,4 +1,5 @@
 1.11
+   * improved descriptions of range validation rules
 
 1.10, 17 July 2012
    * fixed --help for repeatable options
