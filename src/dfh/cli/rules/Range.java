@@ -102,7 +102,7 @@ public class Range<K extends Number> extends ValidationRule<K> {
 		return new Range<Double>(0D, Double.POSITIVE_INFINITY, false, true) {
 			@Override
 			public String description() {
-				return "value > 0";
+				return "value must be > 0";
 			}
 		};
 	}
@@ -118,7 +118,7 @@ public class Range<K extends Number> extends ValidationRule<K> {
 		return new Range<Double>(low, Double.POSITIVE_INFINITY, false, true) {
 			@Override
 			public String description() {
-				return "value > " + new DecimalFormat().format(low);
+				return "value must be > " + new DecimalFormat().format(low);
 			}
 		};
 	}
@@ -134,7 +134,7 @@ public class Range<K extends Number> extends ValidationRule<K> {
 		return new Range<Double>(low, Double.POSITIVE_INFINITY, true, true) {
 			@Override
 			public String description() {
-				return "value >= " + new DecimalFormat().format(low);
+				return "value must be >= " + new DecimalFormat().format(low);
 			}
 		};
 	}
@@ -149,7 +149,7 @@ public class Range<K extends Number> extends ValidationRule<K> {
 		return new Range<Double>(Double.NEGATIVE_INFINITY, 0D, true, false) {
 			@Override
 			public String description() {
-				return "value < 0";
+				return "value must be < 0";
 			}
 		};
 	}
@@ -165,7 +165,7 @@ public class Range<K extends Number> extends ValidationRule<K> {
 		return new Range<Double>(Double.NEGATIVE_INFINITY, high, true, false) {
 			@Override
 			public String description() {
-				return "value < " + new DecimalFormat().format(high);
+				return "value must be < " + new DecimalFormat().format(high);
 			}
 		};
 	}
@@ -181,7 +181,7 @@ public class Range<K extends Number> extends ValidationRule<K> {
 		return new Range<Double>(Double.NEGATIVE_INFINITY, high, true, true) {
 			@Override
 			public String description() {
-				return "value <= " + new DecimalFormat().format(high);
+				return "value must be <= " + new DecimalFormat().format(high);
 			}
 		};
 	}
@@ -196,7 +196,7 @@ public class Range<K extends Number> extends ValidationRule<K> {
 		return new Range<Double>(0D, Double.POSITIVE_INFINITY, true, true) {
 			@Override
 			public String description() {
-				return "value >= 0";
+				return "value must be >= 0";
 			}
 		};
 	}
@@ -211,7 +211,7 @@ public class Range<K extends Number> extends ValidationRule<K> {
 		return new Range<Double>(Double.NEGATIVE_INFINITY, 0D, true, true) {
 			@Override
 			public String description() {
-				return "value <= 0";
+				return "value must be <= 0";
 			}
 		};
 	}
