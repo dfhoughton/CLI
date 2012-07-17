@@ -1,3 +1,5 @@
+1.10
+
 1.09, 17 July 2012
    * can apply ordinary validation rules -- Range.positive(), etc. -- to
      repeated items
