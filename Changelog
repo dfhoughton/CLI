@@ -1,4 +1,5 @@
-1.10
+1.10, 17 July 2012
+   * fixed --help for repeatable options
 
 1.09, 17 July 2012
    * can apply ordinary validation rules -- Range.positive(), etc. -- to

@@ -767,14 +767,12 @@ public class Cli {
 						addDelimiter(b, cs);
 						b.append(" repeatable");
 					}
-					for (ValidationRule<?> vr : c.validationRules) {
-						String s = vr.describe().trim();
-						if (s.length() == 0)
-							continue;
-						if (b.length() > 0)
-							cs = b;
-						addDelimiter(b, cs);
-						b.append(' ').append(s);
+					for (ValidationRule<?> vr : c.validationRules)
+						cs = addValidationRuleTerms(b, cs, vr);
+					if (c instanceof CollectionOption<?, ?>) {
+						CollectionOption<?, ?> co = (CollectionOption<?, ?>) c;
+						for (ValidationRule<?> vr : co.itemValidationRules)
+							cs = addValidationRuleTerms(b, cs, vr);
 					}
 					if (c.def != null || c.isRequired()) {
 						addDelimiter(b, cs);
@@ -796,6 +794,18 @@ public class Cli {
 			out.println();
 			out.println(wrap(usage, 0, margin()));
 		}
+	}
+
+	public CharSequence addValidationRuleTerms(StringBuilder b,
+			CharSequence cs, ValidationRule<?> vr) {
+		String s = vr.describe().trim();
+		if (s.length() == 0)
+			return cs;
+		if (b.length() > 0)
+			cs = b;
+		addDelimiter(b, cs);
+		b.append(' ').append(s);
+		return cs;
 	}
 
 	/**

@@ -1407,4 +1407,17 @@ public class CliTest {
 			assertTrue(e.getMessage().indexOf("too few foos") > -1);
 		}
 	}
+
+	@Test
+	public void setRestriction5() {
+		Object[][][] spec = { { { "foo", Integer.class }, {},
+				{ Res.REPEATABLE, Range.positive() } } };
+		try {
+			Cli cli = new Cli(spec, Mod.HELP, Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+			fail("should have thrown exception");
+		} catch (RuntimeException e) {
+			assertTrue(e.getMessage().indexOf("value > 0") > -1);
+		}
+	}
 }
