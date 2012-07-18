@@ -99,11 +99,17 @@ public class Cli {
 	 */
 	public enum Mod {
 		/**
-		 * Auto-generate help text. See {@link Cli#PREFERRED_HELP_FLAGS} and
-		 * {@link Cli#AUXILIARY_HELP_FLAGS}. If none of these is available, a
-		 * {@link ValidationException} is thrown.
+		 * Auto-generate help text. See {@link Cli#HELP_FLAGS}. The
+		 * auto-generation of help has become the default so this modifier is
+		 * deprecated and is ignored during parsing.
+		 * 
+		 * @deprecated
 		 */
 		HELP,
+		/**
+		 * Do not auto-generate a help option.
+		 */
+		NO_HELP,
 		/**
 		 * Throw a {@link RuntimeException} when option parsing or validation
 		 * fails rather than calling {@link System#exit(int)}.
@@ -192,12 +198,12 @@ public class Cli {
 				errors.add(e.getMessage());
 			}
 		}
-		boolean hasHelp = false;
+		boolean hasHelp = true;
 		for (Mod m : mods) {
 			if (m == Mod.THROW_EXCEPTION)
 				throwException = true;
-			else if (m == Mod.HELP)
-				hasHelp = true;
+			else if (m == Mod.NO_HELP)
+				hasHelp = false;
 		}
 		// add blank line
 		if ((hasHelp || versionOption != null) && !options.isEmpty())
@@ -645,6 +651,11 @@ public class Cli {
 									+ " is required but has no defined value");
 						else
 							opt.assignDefault();
+					} else if (opt instanceof CollectionOption<?, ?>) {
+						CollectionOption<?, ?> co = (CollectionOption<?, ?>) opt;
+						if (co.value().isEmpty())
+							errors.add("--" + opt.name
+									+ " is required but has no defined values");
 					}
 				}
 				opt.terminalValidation();

@@ -1,5 +1,7 @@
-1.11
+1.11, 18 July 2012
    * improved descriptions of range validation rules
+   * auto-generation of --help now default
+   * fixed failure to validate presence of required repeatable options
 
 1.10, 17 July 2012
    * fixed --help for repeatable options

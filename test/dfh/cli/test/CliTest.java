@@ -239,7 +239,7 @@ public class CliTest {
 			//
 			{ { "foo" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("should have thrown error when help called");
 		} catch (RuntimeException e) {
@@ -420,7 +420,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", "bar" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -437,7 +437,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", "bar", Opt.PLUS } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -454,7 +454,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, "foo", "bar", Opt.STAR } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -470,7 +470,7 @@ public class CliTest {
 			Object[][][] spec = {
 			//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -487,7 +487,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, Opt.PLUS } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -504,7 +504,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS, Opt.STAR } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -521,7 +521,7 @@ public class CliTest {
 			//
 			{ { Opt.ARGS } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -538,7 +538,7 @@ public class CliTest {
 			//
 			{ { Opt.NAME, "foo" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -554,7 +554,7 @@ public class CliTest {
 			//
 			{ { Opt.USAGE, "foo" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -576,7 +576,7 @@ public class CliTest {
 			//
 			{ { Opt.USAGE, "foo", "bar" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -592,7 +592,7 @@ public class CliTest {
 			//
 			{ { Opt.USAGE, "foo" }, { "foo" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -614,7 +614,7 @@ public class CliTest {
 			//
 			{ { Opt.USAGE, "foo" }, { is } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -632,7 +632,7 @@ public class CliTest {
 					{ { Opt.TEXT } },//
 					{ { "bar" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -654,7 +654,7 @@ public class CliTest {
 					{},//
 					{ { "bar" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -677,7 +677,7 @@ public class CliTest {
 					{ {} },//
 					{ { "bar" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -700,7 +700,7 @@ public class CliTest {
 					{ { Opt.TEXT, "quux" } },//
 					{ { "bar" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -945,7 +945,7 @@ public class CliTest {
 			//
 			{ { "foo", String.class }, {}, { Res.REQUIRED } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -961,7 +961,7 @@ public class CliTest {
 			//
 			{ { "foo", String.class, "foo" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION, Cli.Mod.HELP);
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("--help failed to throw exception");
 		} catch (RuntimeException e) {
@@ -1055,7 +1055,7 @@ public class CliTest {
 			//
 			{ { "foo" } },//
 			};
-			Cli cli = new Cli(spec, Cli.Mod.HELP);
+			Cli cli = new Cli(spec);
 			cli.parse();
 			String s = cli.dump().trim();
 			assertEquals("options:\nfoo: false", s);
@@ -1330,7 +1330,7 @@ public class CliTest {
 	@Test
 	public void qmarkHelp() {
 		Object[][][] spec = { { {} } };
-		Cli cli = new Cli(spec, Mod.HELP, Mod.THROW_EXCEPTION);
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
 		try {
 			cli.parse("-?");
 		} catch (RuntimeException e) {
@@ -1413,11 +1413,35 @@ public class CliTest {
 		Object[][][] spec = { { { "foo", Integer.class }, {},
 				{ Res.REPEATABLE, Range.positive() } } };
 		try {
-			Cli cli = new Cli(spec, Mod.HELP, Mod.THROW_EXCEPTION);
+			Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
 			cli.parse("--help");
 			fail("should have thrown exception");
 		} catch (RuntimeException e) {
-			assertTrue(e.getMessage().indexOf("value > 0") > -1);
+			assertTrue(e.getMessage().indexOf("value must be > 0") > -1);
+		}
+	}
+
+	@Test
+	public void requiredRepeatable() {
+		Object[][][] spec = { { { "foo", Integer.class }, {},
+				{ Res.REPEATABLE, Res.REQUIRED } }, };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		try {
+			cli.parse();
+			fail("failed to detect lack of any required repeatable options --foo");
+		} catch (RuntimeException e) {
+			assertTrue(e.getMessage().indexOf("defined values") > -1);
+		}
+	}
+
+	@Test
+	public void noHelp() {
+		Cli cli = new Cli(new Object[][][] {}, Mod.NO_HELP, Mod.THROW_EXCEPTION);
+		try {
+			cli.parse("--help");
+			fail("should have thrown exception");
+		} catch (RuntimeException e) {
+			assertTrue(e.getMessage().indexOf("unknown option --help") > -1);
 		}
 	}
 }
