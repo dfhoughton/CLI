@@ -22,11 +22,9 @@ TODO
   and cvs
 . document changes listed in change log for version 1.07
 . document ValidationRule.shh()
-* let ValidationRules apply to repeated arguments
 . document automatic addition of "repeatable" to option descriptions
-* make inclusion of help option a default
-* improve validation rule descriptions
 . document Mod.NO_HELP
+. improve detection of when to insert semicolons during option description generation
 
 RELICS
 ======
@@ -46,3 +44,6 @@ Things swept out of TODO list:
 * let an empty array create a blank line in the usage info
 * add item to Res turning off automatic addition of information to option description
 * make sure -? is working; and set up a test for this
+* let ValidationRules apply to repeated arguments
+* make inclusion of help option a default
+* improve validation rule descriptions
