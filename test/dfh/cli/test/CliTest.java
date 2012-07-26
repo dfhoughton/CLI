@@ -1444,4 +1444,28 @@ public class CliTest {
 			assertTrue(e.getMessage().indexOf("unknown option --help") > -1);
 		}
 	}
+
+	@Test
+	public void twoEmptyRowsInHelp() {
+		Cli cli = new Cli(new Object[][][] {
+				//
+				{ { "foo" }, { "" } },//
+				{},//
+				{ { "bar" }, { "" } },//
+				{},//
+				{ { "quux" }, { "" } },//
+		}, Mod.THROW_EXCEPTION);
+		try {
+			cli.parse("--help");
+			fail("should have thrown exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			Pattern p = Pattern.compile("--foo\\s*?$^$^\\s++--bar",
+					Pattern.MULTILINE);
+			assertTrue(p.matcher(s).find());
+			p = Pattern.compile("--bar\\s*?$^$^\\s++--quux", Pattern.MULTILINE);
+			assertTrue(p.matcher(s).find());
+			 System.out.println(s);
+		}
+	}
 }

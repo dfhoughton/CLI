@@ -1,4 +1,5 @@
-1.12
+1.12, 26 July 2012
+   * fixed failure to inject blank lines into help
 
 1.11, 18 July 2012
    * improved descriptions of range validation rules

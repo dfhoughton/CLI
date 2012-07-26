@@ -207,7 +207,7 @@ public class Cli {
 		}
 		// add blank line
 		if ((hasHelp || versionOption != null) && !options.isEmpty())
-			options.put("_" + options.size(), new DummyOption(""));
+			options.put("_" + options.size(), new DummyOption());
 		if (versionOption != null) {
 			boolean added = false;
 			versionOption.setDescription("print " + name + " version");
@@ -262,9 +262,9 @@ public class Cli {
 
 	private void parseSpec(Object[][] cmd) throws ValidationException {
 		if (cmd.length == 0) {
-			options.put("_" + options.size(), DummyOption.blankLine);
+			options.put("_" + options.size(), new DummyOption());
 		} else if (cmd[0].length == 0) {
-			options.put("_" + options.size(), DummyOption.blankLine);
+			options.put("_" + options.size(), new DummyOption());
 		} else if (cmd[0][0] instanceof Opt) {
 			Opt o = (Opt) cmd[0][0];
 			switch (o) {
@@ -381,7 +381,7 @@ public class Cli {
 							+ " line should consist of a single element array");
 				DummyOption dummy = null;
 				if (cmd[0].length == 1) {
-					dummy = DummyOption.blankLine;
+					dummy = new DummyOption();
 				} else if (cmd[0].length == 2) {
 					Object obj = cmd[0][1];
 					if (obj instanceof String)
