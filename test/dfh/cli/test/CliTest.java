@@ -1465,7 +1465,6 @@ public class CliTest {
 			assertTrue(p.matcher(s).find());
 			p = Pattern.compile("--bar\\s*?$^$^\\s++--quux", Pattern.MULTILINE);
 			assertTrue(p.matcher(s).find());
-			 System.out.println(s);
 		}
 	}
 }
