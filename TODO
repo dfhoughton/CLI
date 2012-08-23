@@ -25,6 +25,7 @@ TODO
 . document automatic addition of "repeatable" to option descriptions
 . document Mod.NO_HELP
 . improve detection of when to insert semicolons during option description generation
+. check error reporting when first option is unknown and other options are required
 
 RELICS
 ======
