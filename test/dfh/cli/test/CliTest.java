@@ -1211,6 +1211,22 @@ public class CliTest {
 	}
 
 	@Test
+	public void dumpTest13() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.ARGS, "foo", "bar", Opt.STAR } },//
+			};
+			Cli cli = new Cli(spec);
+			cli.parse("a");
+			String s = cli.dump().trim();
+			assertEquals("arguments:\nfoo: a", s);
+		} catch (RuntimeException e) {
+			fail("should not have thrown exception");
+		}
+	}
+
+	@Test
 	public void clearTest1() {
 		Object[][][] spec = {
 				//

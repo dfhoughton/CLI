@@ -1174,6 +1174,8 @@ public class Cli {
 			boolean firstArgument = true;
 			boolean commas = argNames.size() < argList.size();
 			for (Entry<String, Integer> e : argNames.entrySet()) {
+				if (argList.size() == e.getValue())
+					break;
 				if (firstArgument) {
 					b.append("arguments:\n");
 					firstArgument = false;

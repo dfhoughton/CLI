@@ -1,4 +1,5 @@
 1.13
+   * fixed but where dump() was breaking on empty slurpy arguments
 
 1.12, 26 July 2012
    * fixed failure to inject blank lines into help
