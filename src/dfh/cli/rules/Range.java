@@ -216,6 +216,15 @@ public class Range<K extends Number> extends ValidationRule<K> {
 		};
 	}
 
+	/**
+	 * Generates the range <code>[0,1]</code>, the unit interval.
+	 * 
+	 * @return the range [0,1].
+	 */
+	public static Range<? extends Number> unit() {
+		return incl(0, 1);
+	}
+
 	@Override
 	public void test(K arg) throws ValidationException {
 		double d = arg.doubleValue();
