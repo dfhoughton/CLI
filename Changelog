@@ -1,4 +1,6 @@
 1.14
+   * fixed bug that was causing line breaks at inappropriate places during
+     word wrap
 
 1.13, 4 September 2012
    * fixed but where dump() was breaking on empty slurpy arguments

@@ -1369,8 +1369,8 @@ public class Cli {
 								// see whether the current word can fit inside
 								// the margin
 								boolean breaks = false;
-								for (int j = i + 1, y = x + 1; j < s.length(); j++, y++) {
-									char c2 = s.charAt(j);
+								for (int j = i + 1, y = x + 1; j < line.length(); j++, y++) {
+									char c2 = line.charAt(j);
 									if (Character.isWhitespace(c2))
 										break;
 									if (y > right) {

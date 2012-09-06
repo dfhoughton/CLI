@@ -1483,4 +1483,30 @@ public class CliTest {
 			assertTrue(p.matcher(s).find());
 		}
 	}
+
+	@Test
+	public void wordWrapPre() {
+		Cli cli = new Cli(
+				new Object[][][] {
+				//
+				{ {
+						Opt.USAGE,
+						"",
+						"This class reads in a TMS-to-ROVI match list, trains up a "
+								+ "com.streamsage.idmapping.ml.EntityMatcher"
+								+ " identifcation string. The default arguments are \n  "
+								+ "foo"
+								+ "\nThis defines both a fine and a coarse classifier. "
+								+ "New arguments you pass in." } },//
+				}, Mod.THROW_EXCEPTION);
+		try {
+			cli.parse("--help");
+			fail("should have thrown exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			Pattern p = Pattern
+					.compile("New arguments\\s*$", Pattern.MULTILINE);
+			assertTrue(!p.matcher(s).find());
+		}
+	}
 }
