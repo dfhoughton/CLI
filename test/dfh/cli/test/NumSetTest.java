@@ -37,7 +37,7 @@ public class NumSetTest {
 			Cli cli = new Cli(new Object[][][] { { { "foo", Double.class }, {},
 					{ new NumSet(1, 3) } } }, Mod.THROW_EXCEPTION);
 			cli.parse("--foo", "1");
-			assertTrue("correct value for --foo", cli.number("foo").equals(1D));
+			assertTrue("correct value for --foo", cli.dbl("foo").equals(1D));
 		} catch (Exception e) {
 			fail("threw exception " + e);
 		}
@@ -49,7 +49,7 @@ public class NumSetTest {
 			Cli cli = new Cli(new Object[][][] { { { "foo", Float.class }, {},
 					{ new NumSet(1, 3) } } }, Mod.THROW_EXCEPTION);
 			cli.parse("--foo", "1");
-			assertTrue("correct value for --foo", cli.number("foo").equals(1D));
+			assertTrue("correct value for --foo", cli.dbl("foo").equals(1D));
 		} catch (Exception e) {
 			fail("threw exception " + e);
 		}
@@ -87,8 +87,7 @@ public class NumSetTest {
 			Cli cli = new Cli(new Object[][][] { { { "foo", Double.class }, {},
 					{ new NumSet(1.5, 3.1415926) } } }, Mod.THROW_EXCEPTION);
 			cli.parse("--foo", "3.1415926");
-			assertTrue("no precision error", cli.number("foo")
-					.equals(3.1415926));
+			assertTrue("no precision error", cli.dbl("foo").equals(3.1415926));
 		} catch (Exception e) {
 			fail("threw exception " + e);
 		}

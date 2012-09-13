@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,8 +26,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import sun.security.util.BigInt;
 
 /**
  * For parsing CLI ARGS.
@@ -507,21 +506,15 @@ public class Cli {
 						"boolean options are not repeatable");
 			opt = new BooleanOption();
 		} else if (cz.equals(Integer.class) || cz.equals(Short.class)
-				|| cz.equals(Long.class) || cz.equals(BigInteger.class)) {
+				|| cz.equals(Long.class) || cz.equals(BigInteger.class)
+				|| cz.equals(Float.class) || cz.equals(Double.class)
+				|| cz.equals(BigDecimal.class) || cz.equals(Number.class)) {
 			if (isSet)
 				opt = new IntegerSetOption(cz);
 			else if (isRepeatable)
 				opt = new IntegerListOption(cz);
 			else
 				opt = new IntegerOption(cz);
-		} else if (cz.equals(Number.class) || cz.equals(Double.class)
-				|| cz.equals(Float.class)) {
-			if (isSet)
-				opt = new NumberSetOption();
-			else if (isRepeatable)
-				opt = new NumberListOption();
-			else
-				opt = new NumberOption();
 		} else if (cz.equals(String.class)) {
 			if (isSet)
 				opt = new StringSetOption();
@@ -960,26 +953,12 @@ public class Cli {
 		throw new RuntimeException("unknown option --" + string);
 	}
 
-	public Integer integer(String string) {
-		parseCheck();
-		if (options.containsKey(string)) {
-			Option<?> opt = options.get(string);
-			try {
-				IntegerOption iopt = (IntegerOption) opt;
-				return iopt.value() == null ? null : iopt.value().intValue();
-			} catch (ClassCastException e) {
-				throw new RuntimeException("--" + opt.name + " not integer");
-			}
-		}
-		throw new RuntimeException("unknown option --" + string);
-	}
-
 	private void parseCheck() {
 		if (!parsed)
 			throw new RuntimeException("no arguments have been parsed");
 	}
 
-	public Collection<Integer> integerCollection(String string) {
+	public Collection<? extends Number> numberCollection(String string) {
 		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
@@ -993,33 +972,33 @@ public class Cli {
 		throw new RuntimeException("unknown option --" + string);
 	}
 
-	public Number number(String string) {
+	/**
+	 * Returns the value of an option as a raw object.
+	 * 
+	 * @param string
+	 *            option name
+	 * @return the value of the option, erasing any type information
+	 */
+	public Object object(String string) {
 		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
-			if (opt instanceof NumberOption)
-				return ((NumberOption) opt).value();
-			if (opt instanceof IntegerOption)
-				return ((IntegerOption) opt).value();
-			throw new RuntimeException("--" + opt.name + " not number");
+			return opt.value();
 		}
 		throw new RuntimeException("unknown option --" + string);
 	}
 
-	public Collection<? extends Number> numberCollection(String string) {
+	public Short ishort(String string) {
 		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
-			if (opt instanceof IntegerListOption)
-				return ((IntegerListOption) opt).value();
-			if (opt instanceof IntegerSetOption)
-				return ((IntegerSetOption) opt).value();
-			if (opt instanceof NumberListOption)
-				return ((NumberListOption) opt).value();
-			if (opt instanceof NumberSetOption)
-				return ((NumberSetOption) opt).value();
-			throw new RuntimeException("--" + opt.name
-					+ " not number collection");
+			if (opt instanceof IntegerOption) {
+				Number n = ((IntegerOption) opt).value();
+				if (n != null)
+					return n.shortValue();
+				return null;
+			} else
+				throw new RuntimeException("--" + opt.name + " is not numeric");
 		}
 		throw new RuntimeException("unknown option --" + string);
 	}
@@ -1039,9 +1018,7 @@ public class Cli {
 			if (opt instanceof IntegerListOption
 					|| opt instanceof IntegerSetOption
 					|| opt instanceof StringListOption
-					|| opt instanceof StringSetOption
-					|| opt instanceof NumberListOption
-					|| opt instanceof NumberSetOption)
+					|| opt instanceof StringSetOption)
 				return (Collection<?>) opt.value();
 			throw new RuntimeException("--" + opt.name
 					+ " is not a repeatable option");
@@ -1455,5 +1432,65 @@ public class Cli {
 		if (opt == null)
 			return false;
 		return opt.value != null;
+	}
+
+	public Integer integer(String string) {
+		parseCheck();
+		if (options.containsKey(string)) {
+			Option<?> opt = options.get(string);
+			if (opt instanceof IntegerOption) {
+				Number n = ((IntegerOption) opt).value();
+				if (n != null)
+					return n.intValue();
+				return null;
+			} else
+				throw new RuntimeException("--" + opt.name + " is not numeric");
+		}
+		throw new RuntimeException("unknown option --" + string);
+	}
+
+	public Long ilong(String string) {
+		parseCheck();
+		if (options.containsKey(string)) {
+			Option<?> opt = options.get(string);
+			if (opt instanceof IntegerOption) {
+				Number n = ((IntegerOption) opt).value();
+				if (n != null)
+					return n.longValue();
+				return null;
+			} else
+				throw new RuntimeException("--" + opt.name + " is not numeric");
+		}
+		throw new RuntimeException("unknown option --" + string);
+	}
+
+	public Float flt(String string) {
+		parseCheck();
+		if (options.containsKey(string)) {
+			Option<?> opt = options.get(string);
+			if (opt instanceof IntegerOption) {
+				Number n = ((IntegerOption) opt).value();
+				if (n != null)
+					return n.floatValue();
+				return null;
+			} else
+				throw new RuntimeException("--" + opt.name + " is not numeric");
+		}
+		throw new RuntimeException("unknown option --" + string);
+	}
+
+	public Double dbl(String string) {
+		parseCheck();
+		if (options.containsKey(string)) {
+			Option<?> opt = options.get(string);
+			if (opt instanceof IntegerOption) {
+				Number n = ((IntegerOption) opt).value();
+				if (n != null)
+					return n.doubleValue();
+				return null;
+			} else
+				throw new RuntimeException("--" + opt.name + " is not numeric");
+		}
+		throw new RuntimeException("unknown option --" + string);
 	}
 }

@@ -8,7 +8,6 @@
  */
 package dfh.cli;
 
-import java.math.BigInteger;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -21,60 +20,37 @@ import dfh.cli.IntegerOption.NumType;
  * @author David F. Houghton
  * 
  */
-public class IntegerSetOption extends
-		CollectionOption<BigInteger, Set<BigInteger>> {
+public class IntegerSetOption extends CollectionOption<Number, Set<Number>> {
 	private final NumType it;
 
 	{
-		value = new LinkedHashSet<BigInteger>();
+		value = new LinkedHashSet<Number>();
 	}
 
 	public IntegerSetOption(Object cz) {
-		if (cz.equals(Short.class))
-			it = NumType.shrt;
-		else if (cz.equals(Integer.class))
-			it = NumType.integer;
-		else if (cz.equals(Long.class))
-			it = NumType.lng;
-		else if (cz.equals(BigInteger.class))
-			it = NumType.bigint;
-		else
-			throw new RuntimeException("unexpected class: " + cz);
+		it = NumType.obj2type(cz);
+		argDescription = it.arg;
 	}
 
 	@Override
 	public String description() {
-		if (description == null)
-			return "a set of integers";
+		if (description == null) {
+			switch (it) {
+			case flt:
+			case dbl:
+			case bigdec:
+				return "a set of floating point numbers";
+			default:
+				return "a set of integers";
+			}
+		}
 		return description;
 	}
 
 	@Override
 	public void validate() throws ValidationException {
 		for (String stored : storageList) {
-			try {
-				switch (it) {
-				case bigint:
-					value.add(new BigInteger(stored));
-					break;
-				case integer:
-					value.add(new BigInteger(new Integer(stored).toString()));
-					break;
-				case lng:
-					value.add(new BigInteger(new Long(stored).toString()));
-					break;
-				case shrt:
-					value.add(new BigInteger(new Short(stored).toString()));
-					break;
-				default:
-					throw new RuntimeException(
-							"CLI is broken; unexpected integer type: " + it);
-				}
-			} catch (NumberFormatException e) {
-				throw new ValidationException("--" + name
-						+ " must be parsable as " + it.s + "; received "
-						+ stored);
-			}
+			value.add(NumType.parse(it, stored));
 		}
 	}
 

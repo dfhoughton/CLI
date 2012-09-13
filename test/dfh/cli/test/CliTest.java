@@ -121,9 +121,8 @@ public class CliTest {
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
 			assertTrue("errors listed", s.startsWith("ERRORS"));
-			assertTrue(
-					"correct error message",
-					s.indexOf("--foo expects an integer argument; received 3.3") > -1);
+			assertTrue("correct error message",
+					s.indexOf("must be parsable as int; received 3.3") > -1);
 		}
 	}
 
@@ -228,7 +227,7 @@ public class CliTest {
 			assertTrue("errors listed", s.startsWith("ERRORS"));
 			assertTrue(
 					"correct error message",
-					s.indexOf("--foo expects a numerical argument; received blort") > -1);
+					s.indexOf("must be parsable as double; received blort") > -1);
 		}
 	}
 
@@ -319,8 +318,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "2");
-		assertTrue("contains 1", cli.integerCollection("foo").contains(1));
-		assertTrue("contains 2", cli.integerCollection("foo").contains(2));
+		assertTrue("contains 1", cli.numberCollection("foo").contains(1));
+		assertTrue("contains 2", cli.numberCollection("foo").contains(2));
 	}
 
 	@Test
@@ -331,15 +330,15 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "1");
-		assertTrue("contains 1", cli.integerCollection("foo").contains(1));
-		assertTrue("contains 2 items", cli.integerCollection("foo").size() == 2);
+		assertTrue("contains 1", cli.numberCollection("foo").contains(1));
+		assertTrue("contains 2 items", cli.numberCollection("foo").size() == 2);
 	}
 
 	@Test
 	public void doubleSet() {
 		Object[][][] spec = {
 		//
-		{ { "foo", Number.class }, null, { Res.SET } },//
+		{ { "foo", Double.class }, null, { Res.SET } },//
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "2");
@@ -351,7 +350,7 @@ public class CliTest {
 	public void doubleList() {
 		Object[][][] spec = {
 		//
-		{ { "foo", Number.class }, null, { Res.REPEATABLE } },//
+		{ { "foo", Double.class }, null, { Res.REPEATABLE } },//
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "1");
@@ -994,8 +993,7 @@ public class CliTest {
 			};
 			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--foo", "-1");
-			assertTrue("got negative number",
-					cli.number("foo").doubleValue() == -1);
+			assertTrue("got negative number", cli.dbl("foo") == -1);
 		} catch (RuntimeException e) {
 			fail("should not have thrown exception");
 		}
@@ -1270,11 +1268,11 @@ public class CliTest {
 		Cli cli = new Cli(spec);
 		cli.parse("--foo=a", "--foo=b", "--bar=1", "--bar=1", "--bar=2");
 		assertEquals(2, cli.stringCollection("foo").size());
-		assertEquals(2, cli.integerCollection("bar").size());
+		assertEquals(2, cli.numberCollection("bar").size());
 		cli.clear();
 		cli.parse("--bar=3");
 		assertEquals(0, cli.stringCollection("foo").size());
-		assertEquals(1, cli.integerCollection("bar").size());
+		assertEquals(1, cli.numberCollection("bar").size());
 	}
 
 	@Test

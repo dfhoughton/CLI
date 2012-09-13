@@ -8,7 +8,6 @@
  */
 package dfh.cli;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,60 +20,37 @@ import dfh.cli.IntegerOption.NumType;
  * @author David F. Houghton
  * 
  */
-public class IntegerListOption extends
-		CollectionOption<BigInteger, List<BigInteger>> {
+public class IntegerListOption extends CollectionOption<Number, List<Number>> {
 	private final NumType it;
 
 	{
-		value = new ArrayList<BigInteger>();
+		value = new ArrayList<Number>();
 	}
 
 	public IntegerListOption(Object cz) {
-		if (cz.equals(Short.class))
-			it = NumType.shrt;
-		else if (cz.equals(Integer.class))
-			it = NumType.integer;
-		else if (cz.equals(Long.class))
-			it = NumType.lng;
-		else if (cz.equals(BigInteger.class))
-			it = NumType.bigint;
-		else
-			throw new RuntimeException("unexpected class: " + cz);
+		it = NumType.obj2type(cz);
+		argDescription = it.arg;
 	}
 
 	@Override
 	public String description() {
-		if (description == null)
-			return "a list of integers";
+		if (description == null) {
+			switch (it) {
+			case flt:
+			case dbl:
+			case bigdec:
+				return "a list of floating point numbers";
+			default:
+				return "a list of integers";
+			}
+		}
 		return description;
 	}
 
 	@Override
 	public void validate() throws ValidationException {
 		for (String stored : storageList) {
-			try {
-				switch (it) {
-				case bigint:
-					value.add(new BigInteger(stored));
-					break;
-				case integer:
-					value.add(new BigInteger(new Integer(stored).toString()));
-					break;
-				case lng:
-					value.add(new BigInteger(new Long(stored).toString()));
-					break;
-				case shrt:
-					value.add(new BigInteger(new Short(stored).toString()));
-					break;
-				default:
-					throw new RuntimeException(
-							"CLI is broken; unexpected integer type: " + it);
-				}
-			} catch (NumberFormatException e) {
-				throw new ValidationException("--" + name
-						+ " must be parsable as " + it.s + "; received "
-						+ stored);
-			}
+			value.add(NumType.parse(it, stored));
 		}
 	}
 
