@@ -1507,4 +1507,20 @@ public class CliTest {
 			assertTrue(!p.matcher(s).find());
 		}
 	}
+
+	@Test
+	public void shortTest() {
+		Cli cli = new Cli(new Object[][][] { { { "foo", Short.class } } });
+		cli.parse("--foo", "1");
+		Object o = cli.object("foo");
+		assertTrue(o instanceof Short);
+	}
+
+	@Test
+	public void longTest() {
+		Cli cli = new Cli(new Object[][][] { { { "foo", Long.class } } });
+		cli.parse("--foo", "1");
+		Object o = cli.object("foo");
+		assertTrue(o instanceof Long);
+	}
 }

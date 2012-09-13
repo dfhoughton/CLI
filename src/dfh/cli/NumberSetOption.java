@@ -8,26 +8,26 @@
  */
 package dfh.cli;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import dfh.cli.IntegerOption.NumType;
+import dfh.cli.NumberOption.NumType;
 
 /**
- * Option holding repeated integer values.
+ * Option holding repeated, unique integer values.
  * <p>
  * 
  * @author David F. Houghton
  * 
  */
-public class IntegerListOption extends CollectionOption<Number, List<Number>> {
+public class NumberSetOption extends CollectionOption<Number, Set<Number>> {
 	private final NumType it;
 
 	{
-		value = new ArrayList<Number>();
+		value = new LinkedHashSet<Number>();
 	}
 
-	public IntegerListOption(Object cz) {
+	public NumberSetOption(Object cz) {
 		it = NumType.obj2type(cz);
 		argDescription = it.arg;
 	}
@@ -39,9 +39,9 @@ public class IntegerListOption extends CollectionOption<Number, List<Number>> {
 			case flt:
 			case dbl:
 			case bigdec:
-				return "a list of floating point numbers";
+				return "a set of floating point numbers";
 			default:
-				return "a list of integers";
+				return "a set of integers";
 			}
 		}
 		return description;

@@ -510,11 +510,11 @@ public class Cli {
 				|| cz.equals(Float.class) || cz.equals(Double.class)
 				|| cz.equals(BigDecimal.class) || cz.equals(Number.class)) {
 			if (isSet)
-				opt = new IntegerSetOption(cz);
+				opt = new NumberSetOption(cz);
 			else if (isRepeatable)
-				opt = new IntegerListOption(cz);
+				opt = new NumberListOption(cz);
 			else
-				opt = new IntegerOption(cz);
+				opt = new NumberOption(cz);
 		} else if (cz.equals(String.class)) {
 			if (isSet)
 				opt = new StringSetOption();
@@ -962,10 +962,10 @@ public class Cli {
 		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
-			if (opt instanceof IntegerListOption)
-				return ((IntegerListOption) opt).value();
-			else if (opt instanceof IntegerSetOption)
-				return ((IntegerSetOption) opt).value();
+			if (opt instanceof NumberListOption)
+				return ((NumberListOption) opt).value();
+			else if (opt instanceof NumberSetOption)
+				return ((NumberSetOption) opt).value();
 			throw new RuntimeException("--" + opt.name
 					+ " not collection of integers");
 		}
@@ -992,8 +992,8 @@ public class Cli {
 		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
-			if (opt instanceof IntegerOption) {
-				Number n = ((IntegerOption) opt).value();
+			if (opt instanceof NumberOption) {
+				Number n = ((NumberOption) opt).value();
 				if (n != null)
 					return n.shortValue();
 				return null;
@@ -1015,8 +1015,8 @@ public class Cli {
 		parseCheck();
 		Option<?> opt = options.get(string);
 		if (opt != null) {
-			if (opt instanceof IntegerListOption
-					|| opt instanceof IntegerSetOption
+			if (opt instanceof NumberListOption
+					|| opt instanceof NumberSetOption
 					|| opt instanceof StringListOption
 					|| opt instanceof StringSetOption)
 				return (Collection<?>) opt.value();
@@ -1438,8 +1438,8 @@ public class Cli {
 		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
-			if (opt instanceof IntegerOption) {
-				Number n = ((IntegerOption) opt).value();
+			if (opt instanceof NumberOption) {
+				Number n = ((NumberOption) opt).value();
 				if (n != null)
 					return n.intValue();
 				return null;
@@ -1453,8 +1453,8 @@ public class Cli {
 		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
-			if (opt instanceof IntegerOption) {
-				Number n = ((IntegerOption) opt).value();
+			if (opt instanceof NumberOption) {
+				Number n = ((NumberOption) opt).value();
 				if (n != null)
 					return n.longValue();
 				return null;
@@ -1468,8 +1468,8 @@ public class Cli {
 		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
-			if (opt instanceof IntegerOption) {
-				Number n = ((IntegerOption) opt).value();
+			if (opt instanceof NumberOption) {
+				Number n = ((NumberOption) opt).value();
 				if (n != null)
 					return n.floatValue();
 				return null;
@@ -1483,8 +1483,8 @@ public class Cli {
 		parseCheck();
 		if (options.containsKey(string)) {
 			Option<?> opt = options.get(string);
-			if (opt instanceof IntegerOption) {
-				Number n = ((IntegerOption) opt).value();
+			if (opt instanceof NumberOption) {
+				Number n = ((NumberOption) opt).value();
 				if (n != null)
 					return n.doubleValue();
 				return null;

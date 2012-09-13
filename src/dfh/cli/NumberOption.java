@@ -5,7 +5,7 @@ import java.math.BigInteger;
 
 import sun.security.util.BigInt;
 
-public class IntegerOption extends Option<Number> {
+public class NumberOption extends Option<Number> {
 
 	/**
 	 * Helps with parsing and display of numeric options.
@@ -88,7 +88,7 @@ public class IntegerOption extends Option<Number> {
 
 	private final NumType it;
 
-	IntegerOption(Object cz) {
+	NumberOption(Object cz) {
 		it = NumType.obj2type(cz);
 		argDescription = it.arg;
 	}
