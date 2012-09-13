@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -24,6 +25,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import sun.security.util.BigInt;
 
 /**
  * For parsing CLI ARGS.
@@ -457,6 +460,7 @@ public class Cli {
 
 	private Option<?> optionForType(Object[] base, Object[] restrictions)
 			throws ValidationException {
+		// examine restrictions
 		boolean isSet = false, isRepeatable = false, isRequired = false, isBrief = false;
 		if (restrictions != null) {
 			for (Object o : restrictions) {
@@ -480,7 +484,8 @@ public class Cli {
 				}
 			}
 		}
-		Class<?> cz = Boolean.class;
+		// determine type of option
+		Object cz = Boolean.class;
 		Object def = null;
 		boolean findDefault = false;
 		for (Object o : base) {
@@ -489,24 +494,26 @@ public class Cli {
 					throw new ValidationException(
 							"base spec can contain only a single default value after the type specification");
 				def = o;
-			} else if (o instanceof Class) {
-				cz = (Class<?>) o;
+			} else if (o instanceof Class || o instanceof Coercion) {
+				cz = o;
 				findDefault = true;
 			}
 		}
+		// create the option
 		Option<?> opt = null;
 		if (cz.equals(Boolean.class)) {
 			if (isRepeatable)
 				throw new ValidationException(
 						"boolean options are not repeatable");
 			opt = new BooleanOption();
-		} else if (cz.equals(Integer.class)) {
+		} else if (cz.equals(Integer.class) || cz.equals(Short.class)
+				|| cz.equals(Long.class) || cz.equals(BigInteger.class)) {
 			if (isSet)
-				opt = new IntegerSetOption();
+				opt = new IntegerSetOption(cz);
 			else if (isRepeatable)
-				opt = new IntegerListOption();
+				opt = new IntegerListOption(cz);
 			else
-				opt = new IntegerOption();
+				opt = new IntegerOption(cz);
 		} else if (cz.equals(Number.class) || cz.equals(Double.class)
 				|| cz.equals(Float.class)) {
 			if (isSet)
@@ -522,22 +529,27 @@ public class Cli {
 				opt = new StringListOption();
 			else
 				opt = new StringOption();
+		} else if (cz instanceof Coercion) {
+			Coercion<?> c = (Coercion<?>) cz;
+			opt = c.option();
 		} else {
 			throw new ValidationException(
 					"spec parser cannot parse arguments of type " + cz);
 		}
 		opt.setRequired(isRequired);
 		opt.setBrief(isBrief);
+		// teach the option its names
 		for (Object o : base) {
 			if (o instanceof String || o instanceof Character)
 				opt.addName(o);
-			else if (o instanceof Class)
+			else if (o instanceof Class || o instanceof Coercion)
 				break;
 			else {
 				throw new ValidationException(
 						"spec base must consist of strings or characters, optionally followed by a class, optionally followed by a default value");
 			}
 		}
+		// some consistency checks
 		if (isRequired && cz.equals(Boolean.class))
 			throw new ValidationException(
 					"--"
@@ -548,6 +560,7 @@ public class Cli {
 					"--"
 							+ opt.name
 							+ " is marked as required and has a default value; these are incompatible");
+		// add default and restrictions
 		opt.setDefault(def);
 		if (restrictions != null) {
 			for (Object o : restrictions) {
@@ -953,7 +966,7 @@ public class Cli {
 			Option<?> opt = options.get(string);
 			try {
 				IntegerOption iopt = (IntegerOption) opt;
-				return iopt.value();
+				return iopt.value() == null ? null : iopt.value().intValue();
 			} catch (ClassCastException e) {
 				throw new RuntimeException("--" + opt.name + " not integer");
 			}
@@ -1369,7 +1382,8 @@ public class Cli {
 								// see whether the current word can fit inside
 								// the margin
 								boolean breaks = false;
-								for (int j = i + 1, y = x + 1; j < line.length(); j++, y++) {
+								for (int j = i + 1, y = x + 1; j < line
+										.length(); j++, y++) {
 									char c2 = line.charAt(j);
 									if (Character.isWhitespace(c2))
 										break;

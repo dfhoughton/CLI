@@ -8,8 +8,11 @@
  */
 package dfh.cli;
 
+import java.math.BigInteger;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import dfh.cli.IntegerOption.NumType;
 
 /**
  * Option holding repeated, unique integer values.
@@ -18,9 +21,25 @@ import java.util.Set;
  * @author David F. Houghton
  * 
  */
-public class IntegerSetOption extends CollectionOption<Integer, Set<Integer>> {
+public class IntegerSetOption extends
+		CollectionOption<BigInteger, Set<BigInteger>> {
+	private final NumType it;
+
 	{
-		value = new LinkedHashSet<Integer>();
+		value = new LinkedHashSet<BigInteger>();
+	}
+
+	public IntegerSetOption(Object cz) {
+		if (cz.equals(Short.class))
+			it = NumType.shrt;
+		else if (cz.equals(Integer.class))
+			it = NumType.integer;
+		else if (cz.equals(Long.class))
+			it = NumType.lng;
+		else if (cz.equals(BigInteger.class))
+			it = NumType.bigint;
+		else
+			throw new RuntimeException("unexpected class: " + cz);
 	}
 
 	@Override
@@ -32,12 +51,29 @@ public class IntegerSetOption extends CollectionOption<Integer, Set<Integer>> {
 
 	@Override
 	public void validate() throws ValidationException {
-		for (String s : storageList) {
+		for (String stored : storageList) {
 			try {
-				value.add(new Integer(s));
+				switch (it) {
+				case bigint:
+					value.add(new BigInteger(stored));
+					break;
+				case integer:
+					value.add(new BigInteger(new Integer(stored).toString()));
+					break;
+				case lng:
+					value.add(new BigInteger(new Long(stored).toString()));
+					break;
+				case shrt:
+					value.add(new BigInteger(new Short(stored).toString()));
+					break;
+				default:
+					throw new RuntimeException(
+							"CLI is broken; unexpected integer type: " + it);
+				}
 			} catch (NumberFormatException e) {
 				throw new ValidationException("--" + name
-						+ " expects integer arguments; received " + s);
+						+ " must be parsable as " + it.s + "; received "
+						+ stored);
 			}
 		}
 	}

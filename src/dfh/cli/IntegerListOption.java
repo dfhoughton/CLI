@@ -8,8 +8,11 @@
  */
 package dfh.cli;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
+import dfh.cli.IntegerOption.NumType;
 
 /**
  * Option holding repeated integer values.
@@ -18,9 +21,25 @@ import java.util.List;
  * @author David F. Houghton
  * 
  */
-public class IntegerListOption extends CollectionOption<Integer, List<Integer>> {
+public class IntegerListOption extends
+		CollectionOption<BigInteger, List<BigInteger>> {
+	private final NumType it;
+
 	{
-		value = new ArrayList<Integer>();
+		value = new ArrayList<BigInteger>();
+	}
+
+	public IntegerListOption(Object cz) {
+		if (cz.equals(Short.class))
+			it = NumType.shrt;
+		else if (cz.equals(Integer.class))
+			it = NumType.integer;
+		else if (cz.equals(Long.class))
+			it = NumType.lng;
+		else if (cz.equals(BigInteger.class))
+			it = NumType.bigint;
+		else
+			throw new RuntimeException("unexpected class: " + cz);
 	}
 
 	@Override
@@ -32,12 +51,29 @@ public class IntegerListOption extends CollectionOption<Integer, List<Integer>> 
 
 	@Override
 	public void validate() throws ValidationException {
-		for (String s : storageList) {
+		for (String stored : storageList) {
 			try {
-				value.add(new Integer(s));
+				switch (it) {
+				case bigint:
+					value.add(new BigInteger(stored));
+					break;
+				case integer:
+					value.add(new BigInteger(new Integer(stored).toString()));
+					break;
+				case lng:
+					value.add(new BigInteger(new Long(stored).toString()));
+					break;
+				case shrt:
+					value.add(new BigInteger(new Short(stored).toString()));
+					break;
+				default:
+					throw new RuntimeException(
+							"CLI is broken; unexpected integer type: " + it);
+				}
 			} catch (NumberFormatException e) {
 				throw new ValidationException("--" + name
-						+ " expects integer arguments; received " + s);
+						+ " must be parsable as " + it.s + "; received "
+						+ stored);
 			}
 		}
 	}
