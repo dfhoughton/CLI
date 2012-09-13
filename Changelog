@@ -1,4 +1,10 @@
-1.15
+2.0
+   * NOT BACKWARDS COMPATIBLE!
+   * improved handling of numeric options:
+      size restrictions for all basic types respected
+      default argument names improved
+      added BigInteger and BigDecimal as possible types
+      added convenience methods to extract numeric values
 
 1.14, 7 September 2012
    * fixed bug that was causing line breaks at inappropriate places during
