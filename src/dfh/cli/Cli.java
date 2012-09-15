@@ -457,6 +457,7 @@ public class Cli {
 					+ " violates option name pattern " + COMMAND_NAME_PATTERN);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Option<?> optionForType(Object[] base, Object[] restrictions)
 			throws ValidationException {
 		// examine restrictions
@@ -524,7 +525,12 @@ public class Cli {
 				opt = new StringOption();
 		} else if (cz instanceof Coercion) {
 			Coercion<?> c = (Coercion<?>) cz;
-			opt = c.option();
+			if (isSet)
+				opt = new CoercedSet(c);
+			else if (isRepeatable)
+				opt = new CoercedList(c);
+			else
+				opt = new CoercedOption(c);
 		} else {
 			throw new ValidationException(
 					"spec parser cannot parse arguments of type " + cz);
@@ -784,6 +790,8 @@ public class Cli {
 						addDelimiter(b, cs);
 						b.append(" repeatable");
 					}
+					for (String nc : c.nativeConstraints)
+						cs = addConstraint(b, cs, nc);
 					for (ValidationRule<?> vr : c.validationRules)
 						cs = addValidationRuleTerms(b, cs, vr);
 					if (c instanceof CollectionOption<?, ?>) {
@@ -813,9 +821,9 @@ public class Cli {
 		}
 	}
 
-	public CharSequence addValidationRuleTerms(StringBuilder b,
-			CharSequence cs, ValidationRule<?> vr) {
-		String s = vr.describe().trim();
+	private CharSequence addConstraint(StringBuilder b, CharSequence cs,
+			String nc) {
+		String s = nc.trim();
 		if (s.length() == 0)
 			return cs;
 		if (b.length() > 0)
@@ -823,6 +831,12 @@ public class Cli {
 		addDelimiter(b, cs);
 		b.append(' ').append(s);
 		return cs;
+	}
+
+	private CharSequence addValidationRuleTerms(StringBuilder b,
+			CharSequence cs, ValidationRule<?> vr) {
+		String s = vr.describe().trim();
+		return addConstraint(b, cs, s);
 	}
 
 	/**
@@ -1015,10 +1029,7 @@ public class Cli {
 		parseCheck();
 		Option<?> opt = options.get(string);
 		if (opt != null) {
-			if (opt instanceof NumberListOption
-					|| opt instanceof NumberSetOption
-					|| opt instanceof StringListOption
-					|| opt instanceof StringSetOption)
+			if (opt instanceof CollectionOption<?, ?>)
 				return (Collection<?>) opt.value();
 			throw new RuntimeException("--" + opt.name
 					+ " is not a repeatable option");

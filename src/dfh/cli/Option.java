@@ -9,6 +9,7 @@
 package dfh.cli;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -41,6 +42,11 @@ public abstract class Option<K> {
 	protected boolean hasArgument = true;
 	protected boolean required = false;
 	protected boolean brief = false;
+	/**
+	 * Description of constraints native to the option itself, not added by
+	 * validation rules.
+	 */
+	protected List<String> nativeConstraints = new LinkedList<String>();
 
 	public boolean isRequired() {
 		return required;
@@ -133,7 +139,7 @@ public abstract class Option<K> {
 
 	public abstract void validate() throws ValidationException;
 
-	 void terminalValidation() throws ValidationException {
+	void terminalValidation() throws ValidationException {
 		if (value() != null) {
 			for (ValidationRule<K> v : validationRules) {
 				v.test(value());

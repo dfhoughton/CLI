@@ -5,6 +5,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ CliTest.class, NumSetTest.class })
+@SuiteClasses({ CliTest.class, NumSetTest.class, CoercionTest.class })
 public class AllTests {
 }

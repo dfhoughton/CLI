@@ -1,5 +1,8 @@
 package dfh.cli;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * A factory class that coerces strings into objects of a particular type.
  * <p>
@@ -20,11 +23,29 @@ public abstract class Coercion<K> {
 	public abstract K coerce(String s);
 
 	/**
-	 * Returns {@link Option} that provides objects of the type this
-	 * {@link Coercion} generates.
+	 * Override to generate a more explanatory argument name.
 	 * 
-	 * @return {@link Option} that provides objects of the type this
-	 *         {@link Coercion} generates
+	 * @return
 	 */
-	public abstract CoercionOption<K> option();
+	public String argName() {
+		return "val";
+	}
+
+	/**
+	 * @return some description of the object type this coerces strings into
+	 */
+	public String type() {
+		return "object";
+	}
+
+	/**
+	 * Returns a list of descriptions of constraints on coerceable strings. By
+	 * default this returns an empty list. Override this to provide more
+	 * informative descriptions of constraints on the input to a coercion.
+	 * 
+	 * @return a list of descriptions of constraints on coerceable strings
+	 */
+	public Collection<String> constraintDescriptions() {
+		return Collections.emptyList();
+	}
 }
