@@ -12,7 +12,7 @@ TODO
 ====
 
 . make internationalizable
-. add coercion of arbitrary types from strings
+* add coercion of arbitrary types from strings
 . create unit tests for more of the validation rules
 . remove unnecessary IntSet?
 . add default collection capability
@@ -29,9 +29,9 @@ TODO
 * add unit Range
 * keep dump from breaking on slurpy arguments
 . create Cli.Opt.QMARK for an optional argument
-. improve precision handling of numbers
-. improve number retrieval, adding BigInt and BigDecimal
-. make assignment of argument name more intelligent, reflecting the type of argument expected
+* improve precision handling of numbers
+* improve number retrieval, adding BigInt and BigDecimal
+* make assignment of argument name more intelligent, reflecting the type of argument expected
 
 RELICS
 ======
