@@ -5,6 +5,7 @@
       default argument names improved
       added BigInteger and BigDecimal as possible types
       added convenience methods to extract numeric values
+   * added string coercions
 
 1.14, 7 September 2012
    * fixed bug that was causing line breaks at inappropriate places during
