@@ -9,6 +9,9 @@
 package dfh.cli;
 
 public class StringOption extends Option<String> {
+	{
+		argDescription = "str";
+	}
 
 	@Override
 	public String description() {

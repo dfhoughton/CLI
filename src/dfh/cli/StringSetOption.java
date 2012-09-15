@@ -14,6 +14,7 @@ import java.util.Set;
 public class StringSetOption extends CollectionOption<String, Set<String>> {
 	{
 		value = new LinkedHashSet<String>();
+		argDescription = "str";
 	}
 
 	@Override

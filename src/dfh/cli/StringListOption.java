@@ -14,6 +14,7 @@ import java.util.List;
 public class StringListOption extends CollectionOption<String, List<String>> {
 	{
 		value = new ArrayList<String>();
+		argDescription = "str";
 	}
 
 	@Override
