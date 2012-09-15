@@ -1,11 +1,20 @@
 package dfh.cli.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 
 import dfh.cli.Cli;
+import dfh.cli.Cli.Res;
 import dfh.cli.Coercion;
+import dfh.cli.coercions.DateCoercion;
 
 public class CoercionTest {
 	class RomanNumerals extends Coercion<Integer> {
@@ -81,5 +90,82 @@ public class CoercionTest {
 		assertTrue(cli.collection("foo").contains(10));
 		assertTrue(cli.collection("foo").contains(1));
 		assertEquals(2, cli.collection("foo").size());
+	}
+
+	@Test
+	public void testDate() {
+		Object[][][] spec = { { { "foo", new DateCoercion() } }, };
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse("--foo=20120915");
+		Date d = (Date) cli.object("foo");
+		Calendar c = Calendar.getInstance();
+		c.setTime(d);
+		assertEquals(2012, c.get(Calendar.YEAR));
+		assertEquals(8, c.get(Calendar.MONTH));
+		assertEquals(15, c.get(Calendar.DATE));
+	}
+
+	@Test
+	public void testDate2() {
+		Object[][][] spec = { { { "foo", new DateCoercion() }, {},
+				{ Res.REPEATABLE } }, };
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse("--foo=20120915", "--foo=20120101");
+		@SuppressWarnings("unchecked")
+		Collection<Date> dates = (Collection<Date>) cli.collection("foo");
+		assertEquals(2, dates.size());
+	}
+
+	@Test
+	public void testDate3() {
+		Object[][][] spec = { { { "foo", new DateCoercion() }, {}, { Res.SET } }, };
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse("--foo=20120915", "--foo=20120101", "--foo=20120101");
+		@SuppressWarnings("unchecked")
+		Collection<Date> dates = (Collection<Date>) cli.collection("foo");
+		assertEquals(2, dates.size());
+	}
+
+	@Test
+	public void testDate4() {
+		Object[][][] spec = { { { "foo", new DateCoercion("yyyyMMdd", "yy") } }, };
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse("--foo=12");
+		Date d = (Date) cli.object("foo");
+		Calendar c = Calendar.getInstance();
+		c.setTime(d);
+		assertEquals(2012, c.get(Calendar.YEAR));
+		assertEquals(0, c.get(Calendar.MONTH));
+		assertEquals(1, c.get(Calendar.DATE));
+	}
+
+	@Test
+	public void testDateHelp1() {
+		try {
+			Object[][][] spec = { { { "foo", new DateCoercion() } }, };
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+			fail("should have thrown an exception");
+		} catch (Exception e) {
+			assertTrue(Pattern
+					.compile(
+							"<date>\\s++object;\\s++date\\s++string\\s++must\\s++be\\s++parsable\\s++as\\s++'yyyyMMdd'")
+					.matcher(e.getMessage()).find());
+		}
+	}
+
+	@Test
+	public void testDateHelp2() {
+		try {
+			Object[][][] spec = { { { "foo", new DateCoercion("yyyyMMdd", "yy") } }, };
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+			fail("should have thrown an exception");
+		} catch (Exception e) {
+			assertTrue(Pattern
+					.compile(
+							"date\\s++string\\s++must\\s++be\\s++parsable\\s++by\\s++one\\s++of\\s++\\{'yyyyMMdd',\\s++'yy'}")
+					.matcher(e.getMessage()).find());
+		}
 	}
 }

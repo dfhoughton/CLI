@@ -19,8 +19,11 @@ public abstract class Coercion<K> {
 	 * @param s
 	 *            string to coerce an object out of
 	 * @return object coerced out of a string
+	 * @throws ValidationException
+	 *             if the string cannot be coerced into an object of the
+	 *             specified type
 	 */
-	public abstract K coerce(String s);
+	public abstract K coerce(String s) throws ValidationException;
 
 	/**
 	 * Override to generate a more explanatory argument name.
