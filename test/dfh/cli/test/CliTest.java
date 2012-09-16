@@ -145,6 +145,102 @@ public class CliTest {
 	}
 
 	@Test
+	public void qmarkArg() {
+		Object[][][] spec = {
+		//
+		{ { Opt.ARGS, "foo", Opt.QMARK } },//
+		};
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse();
+	}
+
+	@Test
+	public void qmarkArg2() {
+		Object[][][] spec = {
+		//
+		{ { Opt.ARGS, "foo", Opt.QMARK, "bar", Opt.QMARK } },//
+		};
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse();
+	}
+
+	@Test
+	public void qmarkArgAndStar() {
+		Object[][][] spec = {
+		//
+		{ { Opt.ARGS, "foo", Opt.QMARK, "bar", Opt.STAR } },//
+		};
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse();
+	}
+
+	@Test
+	public void qmarkArgAndStar2() {
+		Object[][][] spec = {
+		//
+		{ { Opt.ARGS, "foo", Opt.QMARK, "bar", Opt.STAR } },//
+		};
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse("bar");
+		assertEquals("bar", cli.argument("foo"));
+	}
+
+	@Test
+	public void qmarkArgAndStar3() {
+		Object[][][] spec = {
+		//
+		{ { Opt.ARGS, "foo", Opt.QMARK, "bar", Opt.STAR } },//
+		};
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse("bar", "quux");
+		assertEquals("bar", cli.argument("foo"));
+		assertEquals("quux", cli.argument("bar"));
+	}
+
+	@Test
+	public void qmarkArgAndStar4() {
+		Object[][][] spec = {
+		//
+		{ { Opt.ARGS, "foo", Opt.QMARK, "bar", Opt.STAR } },//
+		};
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse("bar", "quux", "baz");
+		assertEquals("bar", cli.argument("foo"));
+		assertEquals("quux", cli.argument("bar"));
+		assertEquals(2, cli.slurpedArguments().size());
+	}
+
+	@Test
+	public void qmarkArgAndQMark() {
+		Object[][][] spec = {
+		//
+		{ { Opt.ARGS, "foo", Opt.QMARK, "bar", Opt.QMARK } },//
+		};
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse("bar", "quux");
+		assertEquals("bar", cli.argument("foo"));
+		assertEquals("quux", cli.argument("bar"));
+	}
+
+	@Test
+	public void qmarkArgAndPlus() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.ARGS, "foo", Opt.QMARK, "bar", Opt.PLUS } },//
+			};
+			new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			fail("should have thrown an exception");
+		} catch (Exception e) {
+			assertTrue(e.getMessage().startsWith("ERRORS"));
+			assertTrue(Pattern
+					.compile(
+							"all\\s++arguments\\s++before\\s++one\\s++marked\\s++with\\s++the\\s++PLUS\\s++constant")
+					.matcher(e.getMessage()).find());
+		}
+	}
+
+	@Test
 	public void plusArgs() {
 		try {
 			Object[][][] spec = {

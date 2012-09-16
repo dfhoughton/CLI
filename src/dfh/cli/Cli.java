@@ -57,14 +57,18 @@ public class Cli {
 		 */
 		ARGS,
 		/**
-		 * if provided in the {@link #ARGS} argument list, the next String is
-		 * the NAME given to any additional arguments
+		 * if provided in the {@link #ARGS} argument list, the preceding String
+		 * is the NAME given to any additional arguments
 		 */
 		STAR,
 		/**
 		 * At least one slurpy argument required.
 		 */
 		PLUS,
+		/**
+		 * This argument is optional.
+		 */
+		QMARK,
 		/**
 		 * The next string will be taken as a usage abstract. If a third element
 		 * appears in the array, it will be taken as the long usage text.
@@ -170,8 +174,7 @@ public class Cli {
 	 * Pattern which, if matched, causes a semicolon to be inserted before
 	 * default value or "required" in option description.
 	 */
-	public static final Pattern NEEDS_SEMICOLON = Pattern
-			.compile("[\\p{L}\\p{N}_\\s]$");
+	public static final Pattern NEEDS_SEMICOLON = Pattern.compile("[^;.!?]$");
 
 	private List<String> argList;
 	private LinkedHashMap<String, Integer> argNames = new LinkedHashMap<String, Integer>();
@@ -181,6 +184,7 @@ public class Cli {
 	private List<String> errors = new ArrayList<String>();
 	private String name = "EXECUTABLE";
 	private String usage = "", abstr = "";
+	private int lastRequiredArgument = -1;
 	private boolean argsSpecified = false;
 	private boolean nameSpecified = false;
 	private boolean usageSpecified = false;
@@ -291,33 +295,72 @@ public class Cli {
 							"argument list specified more than once");
 				argsSpecified = true;
 				isSlurpy = false;
+				int currentPos = -1;
+				Integer lastRequired = null;
+				boolean afterOpt = false;
+				// NOTES: keep track of position of last required argument, use
+				// to validate qmark, etc., plus cannot appear after last
+				// required argument
 				for (int i = 1; i < cmd[0].length; i++) {
 					Object next = cmd[0][i];
 					if (next instanceof Opt) {
-						if (next == Opt.STAR || next == Opt.PLUS) {
+						if (afterOpt)
+							throw new ValidationException(
+									"Opt constants can only appear after argument names in the ARGS definition");
+						afterOpt = true;
+						switch ((Opt) next) {
+						case PLUS:
+							if (lastRequired != null)
+								throw new ValidationException(
+										"all arguments before one marked with the "
+												+ Opt.PLUS
+												+ " constant must be required and non-slurpy");
+							lastRequired = currentPos;
+							slurpRequired = true;
+						case STAR:
 							if (isSlurpy)
 								throw new ValidationException(
 										"only specify one of " + Opt.STAR
 												+ " or " + Opt.PLUS
 												+ " once in argument list");
+							if (lastRequired == null)
+								lastRequired = currentPos - 1;
 							isSlurpy = true;
-							slurpRequired = next == Opt.PLUS;
-						} else
+							break;
+						case QMARK:
+							if (isSlurpy)
+								throw new ValidationException(Opt.QMARK
+										+ " arguments cannot appear after "
+										+ Opt.STAR + " or " + Opt.PLUS
+										+ " arguments");
+							if (lastRequired == null)
+								lastRequired = currentPos - 1;
+							break;
+						default:
 							throw new ValidationException("only " + Opt.STAR
 									+ " or " + Opt.PLUS
 									+ " can be specified in argument list");
+						}
 					} else if (next instanceof String) {
+						afterOpt = false;
 						if (isSlurpy)
 							throw new ValidationException(
 									"no argument names should be provided after "
-											+ Opt.STAR);
+											+ Opt.STAR + " or " + Opt.PLUS);
+						currentPos++;
 						String argName = (String) next;
 						if (argNames.containsKey(argName))
 							throw new ValidationException(
 									"duplicate argument name: " + argName);
 						argNames.put(argName, argNames.size());
-					}
+					} else
+						throw new ValidationException(
+								"only argument names and Opt constants expected in ARGS specification");
 				}
+				if (lastRequired != null)
+					lastRequiredArgument = lastRequired;
+				else
+					lastRequiredArgument = currentPos;
 				break;
 			case USAGE:
 				if (usageSpecified)
@@ -630,7 +673,13 @@ public class Cli {
 			}
 		}
 		if (argNames.size() > 0) {
-			if (argNames.size() < argList.size()) {
+			if (argList.size() <= lastRequiredArgument) {
+				List<String> nameList = new ArrayList<String>(argNames.keySet());
+				for (int i = argList.size(); i <= lastRequiredArgument; i++) {
+					errors.add("argument " + (i + 1) + ", <" + nameList.get(i)
+							+ ">, not defined");
+				}
+			} else if (argNames.size() < argList.size()) {
 				if (!isSlurpy) {
 					StringBuilder b = new StringBuilder();
 					b.append("only expected arguments: ");
@@ -643,13 +692,6 @@ public class Cli {
 						b.append('<').append(s).append('>');
 					}
 					errors.add(b.toString());
-				}
-			} else if (argNames.size() > argList.size()) {
-				List<String> nameList = new ArrayList<String>(argNames.keySet());
-				for (int i = argList.size(), lim = isSlurpy && !slurpRequired ? argNames
-						.size() - 1 : argNames.size(); i < lim; i++) {
-					errors.add("argument " + (i + 1) + ", <" + nameList.get(i)
-							+ ">, not defined");
 				}
 			}
 		}
