@@ -15,7 +15,7 @@ TODO
 * add coercion of arbitrary types from strings
 . create unit tests for more of the validation rules
 . remove unnecessary IntSet?
-. add default collection capability
+* add default collection capability
 . document new blank line syntax
 . create an example directory
 . document how to produce a branching CLI such as you have in git
