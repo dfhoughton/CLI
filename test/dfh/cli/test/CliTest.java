@@ -580,7 +580,7 @@ public class CliTest {
 		try {
 			Object[][][] spec = {
 			//
-			{ { Opt.ARGS, Opt.PLUS } },//
+			{ { Opt.ARGS, "arg", Opt.PLUS } },//
 			};
 			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
@@ -597,7 +597,7 @@ public class CliTest {
 		try {
 			Object[][][] spec = {
 			//
-			{ { Opt.ARGS, Opt.STAR } },//
+			{ { Opt.ARGS, "arg", Opt.STAR } },//
 			};
 			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 			cli.parse("--help");
@@ -623,6 +623,74 @@ public class CliTest {
 			String s = e.getMessage();
 			assertTrue("correct usage generated",
 					!s.startsWith("USAGE: EXECUTABLE [options] <arg>"));
+		}
+	}
+
+	@Test
+	public void argListing8() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.ARGS, "foo", Opt.QMARK } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("correct usage generated",
+					s.startsWith("USAGE: EXECUTABLE [options] <foo>?"));
+		}
+	}
+
+	@Test
+	public void argListing9() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.ARGS, "foo", Opt.QMARK, "bar", Opt.QMARK } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("correct usage generated",
+					s.startsWith("USAGE: EXECUTABLE [options] <foo>? <bar>?"));
+		}
+	}
+
+	@Test
+	public void argListing1o() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.ARGS, "foo", "bar", Opt.QMARK } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("correct usage generated",
+					s.startsWith("USAGE: EXECUTABLE [options] <foo> <bar>?"));
+		}
+	}
+
+	@Test
+	public void argListing11() {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.ARGS, "foo", Opt.QMARK, "bar", Opt.STAR } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("correct usage generated",
+					s.startsWith("USAGE: EXECUTABLE [options] <foo>? <bar>*"));
 		}
 	}
 

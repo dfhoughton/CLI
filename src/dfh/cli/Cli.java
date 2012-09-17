@@ -911,14 +911,27 @@ public class Cli {
 	}
 
 	private String argDigest() {
-		if (argNames.isEmpty())
-			return isSlurpy ? (slurpRequired ? " <arg>+" : " <arg>*") : "";
-		StringBuilder b = new StringBuilder();
-		for (String s : argNames.keySet())
-			b.append(" <").append(s).append('>');
-		if (isSlurpy)
-			b.append(slurpRequired ? '+' : '*');
-		return b.toString();
+		if (argsSpecified) {
+			if (argNames.isEmpty())
+				return "";
+			StringBuilder b = new StringBuilder();
+			List<String> list = new ArrayList<String>(argNames.keySet());
+			for (int i = 0; i < list.size(); i++) {
+				String name = list.get(i);
+				b.append(" <").append(name).append('>');
+				if (i >= lastRequiredArgument) {
+					if (i == list.size() - 1) {
+						if (isSlurpy) {
+							b.append(slurpRequired ? '+' : '*');
+						} else if (i > lastRequiredArgument)
+							b.append('?');
+					} else if (i > lastRequiredArgument)
+						b.append('?');
+				}
+			}
+			return b.toString();
+		}
+		return " <arg>*";
 	}
 
 	/**
