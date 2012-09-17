@@ -3,8 +3,6 @@ package dfh.cli;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import sun.security.util.BigInt;
-
 public class NumberOption extends Option<Number> {
 
 	/**
@@ -16,8 +14,8 @@ public class NumberOption extends Option<Number> {
 	 */
 	enum NumType {
 		shrt("short", "int"), integer("int", "int"), lng("long", "int"), bigint(
-				BigInt.class.getName(), "Z"), flt("float", "fp"), dbl("double",
-				"fp"), bigdec(BigDecimal.class.getName(), "R");
+				BigInteger.class.getName(), "Z"), flt("float", "fp"), dbl(
+				"double", "fp"), bigdec(BigDecimal.class.getName(), "R");
 		final String s, arg;
 
 		NumType(String s, String arg) {
