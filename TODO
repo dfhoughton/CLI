@@ -28,7 +28,7 @@ TODO
 . check error reporting when first option is unknown and other options are required
 * add unit Range
 * keep dump from breaking on slurpy arguments
-. create Cli.Opt.QMARK for an optional argument
+* create Cli.Opt.QMARK for an optional argument
 * improve precision handling of numbers
 * improve number retrieval, adding BigInt and BigDecimal
 * make assignment of argument name more intelligent, reflecting the type of argument expected
