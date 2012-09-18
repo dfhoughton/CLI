@@ -17,6 +17,12 @@ import dfh.cli.ValidationException;
  */
 public class RxCoercion extends Coercion<Pattern> {
 
+	/**
+	 * Constant singleton instance of this coercion that can be used in lieu of
+	 * {@code new RxCoercion()}.
+	 */
+	public static final RxCoercion C = new RxCoercion();
+
 	@Override
 	public Pattern coerce(String s) throws ValidationException {
 		try {

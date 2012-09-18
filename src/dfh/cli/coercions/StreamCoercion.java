@@ -15,6 +15,12 @@ import dfh.cli.ValidationException;
  */
 public class StreamCoercion extends Coercion<PrintStream> {
 
+	/**
+	 * Constant singleton instance of this coercion that can be used in lieu of
+	 * {@code new StreamCoercion()}.
+	 */
+	public static final StreamCoercion C = new StreamCoercion();
+
 	@Override
 	public PrintStream coerce(String s) throws ValidationException {
 		try {
