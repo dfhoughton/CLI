@@ -1,4 +1,4 @@
-2.01
+2.01, 18 September 2012
    * fixed issue with unset coerced options
    * added constant singleton members to various coercion classes
 
