@@ -1,4 +1,5 @@
 2.01
+   * fixed issue with unset coerced options
 
 2.0, 17 September 2012
    * NOT BACKWARDS COMPATIBLE!

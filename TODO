@@ -24,7 +24,7 @@ TODO
 . document Mod.NO_HELP
 . check error reporting when first option is unknown and other options are required
 . document coercions
-. make unit tests to make sure coercions work when not set
+* make unit tests to make sure coercions work when not set
 
 RELICS
 ======

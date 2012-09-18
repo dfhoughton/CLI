@@ -19,7 +19,8 @@ public class CoercedOption<K> extends Option<K> {
 
 	@Override
 	public void validate() throws ValidationException {
-		value = c.coerce(stored);
+		if (stored != null)
+			value = c.coerce(stored);
 	}
 
 	@SuppressWarnings("unchecked")
