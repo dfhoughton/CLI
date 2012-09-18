@@ -14,6 +14,12 @@ import dfh.cli.ValidationException;
  */
 public class FileCoercion extends Coercion<File> {
 
+	/**
+	 * Constant singleton instance of this coercion that can be used in lieu of
+	 * {@code new FileCoercion()}.
+	 */
+	public static final FileCoercion C = new FileCoercion();
+
 	@Override
 	public File coerce(String s) throws ValidationException {
 		return new File(s);

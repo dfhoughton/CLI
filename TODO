@@ -12,10 +12,8 @@ TODO
 ====
 
 . make internationalizable
-* add coercion of arbitrary types from strings
 . create unit tests for more of the validation rules
 . remove unnecessary IntSet?
-* add default collection capability
 . document new blank line syntax
 . create an example directory
 . document how to produce a branching CLI such as you have in git
@@ -24,15 +22,9 @@ TODO
 . document ValidationRule.shh()
 . document automatic addition of "repeatable" to option descriptions
 . document Mod.NO_HELP
-* improve detection of when to insert semicolons during option description generation
 . check error reporting when first option is unknown and other options are required
-* add unit Range
-* keep dump from breaking on slurpy arguments
-* create Cli.Opt.QMARK for an optional argument
-* improve precision handling of numbers
-* improve number retrieval, adding BigInt and BigDecimal
-* make assignment of argument name more intelligent, reflecting the type of argument expected
 . document coercions
+* make unit tests to make sure coercions work when not set
 
 RELICS
 ======
@@ -55,3 +47,12 @@ Things swept out of TODO list:
 * let ValidationRules apply to repeated arguments
 * make inclusion of help option a default
 * improve validation rule descriptions
+* add coercion of arbitrary types from strings
+* add default collection capability
+* improve detection of when to insert semicolons during option description generation
+* add unit Range
+* keep dump from breaking on slurpy arguments
+* create Cli.Opt.QMARK for an optional argument
+* improve precision handling of numbers
+* improve number retrieval, adding BigInt and BigDecimal
+* make assignment of argument name more intelligent, reflecting the type of argument expected

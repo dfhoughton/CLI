@@ -1,3 +1,7 @@
+2.01, 18 September 2012
+   * fixed issue with unset coerced options
+   * added constant singleton members to various coercion classes
+
 2.0, 17 September 2012
    * NOT BACKWARDS COMPATIBLE!
    * improved handling of numeric options:

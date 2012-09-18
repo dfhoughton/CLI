@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -15,6 +17,7 @@ import dfh.cli.Cli;
 import dfh.cli.Cli.Res;
 import dfh.cli.Coercion;
 import dfh.cli.coercions.DateCoercion;
+import dfh.cli.coercions.FileCoercion;
 
 public class CoercionTest {
 	class RomanNumerals extends Coercion<Integer> {
@@ -67,7 +70,15 @@ public class CoercionTest {
 		Object[][][] spec = { { { "foo", new RomanNumerals(), "I" } } };
 		Cli cli = new Cli(spec);
 		cli.parse();
-		assertTrue(cli.object("foo").equals(1));
+		assertEquals(1, cli.object("foo"));
+	}
+
+	@Test
+	public void unSet() {
+		Object[][][] spec = { { { "foo", new RomanNumerals() } } };
+		Cli cli = new Cli(spec);
+		cli.parse();
+		assertEquals(null, cli.object("foo"));
 	}
 
 	@Test
@@ -166,6 +177,31 @@ public class CoercionTest {
 					.compile(
 							"date\\s++string\\s++must\\s++be\\s++parsable\\s++by\\s++one\\s++of\\s++\\{'yyyyMMdd',\\s++'yy'}")
 					.matcher(e.getMessage()).find());
+		}
+	}
+
+	@Test
+	public void file() {
+		Object[][][] spec = { { { "foo", new FileCoercion() } } };
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse();
+		assertEquals(null, cli.object("foo"));
+	}
+
+	@Test
+	public void file2() {
+		try {
+			File f = File.createTempFile("throw_me_away", null);
+			try {
+				Object[][][] spec = { { { "foo", new FileCoercion() } } };
+				Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+				cli.parse("--foo", f.getAbsolutePath());
+				assertEquals(f, cli.object("foo"));
+			} finally {
+				f.delete();
+			}
+		} catch (IOException e) {
+			fail("threw exception: " + e);
 		}
 	}
 }
