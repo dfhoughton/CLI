@@ -1,4 +1,11 @@
 2.02
+   * changed names of numeric type option accessors from ilong to lng and
+     ishort to shrt
+   * added Byte accessor named byt
+   * added num accessor to obtain any numeric option
+   * refactored various numeric option accessors to delegate to num
+   * added String coercion rules for the default values of BigDecimal and
+     BigInteger
 
 2.01, 18 September 2012
    * fixed issue with unset coerced options

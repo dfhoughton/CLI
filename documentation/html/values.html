@@ -30,7 +30,7 @@
 	{ { "quux", Integer.class } },
 	{ { "corge", Integer.class } },
 	};
-Cli cli = new Cli(spec, Cli.Mod.HELP);
+Cli cli = new Cli(spec);
 cli.parse(args);
 boolean foo = cli.bool("foo"), bar = cli.bool("bar"), baz = cli.bool("baz");
 Integer quux = cli.integer("quux"), corge = cli.integer("corge");</pre>
@@ -56,16 +56,33 @@ Integer quux = cli.integer("quux"), corge = cli.integer("corge");</pre>
 	<h2>Numeric Values</h2>
 	<p>
 		<code>dfh.cli</code>
-		allows you to specify that a number is a float, integer, double, or
-		<code>Number</code>
-		, but the only values it will return to you are
-		<code>Integer</code>
-		and
-		<code>Number</code>
-		. If you truly only require float precision, you can request the float
-		value of
-		<code>Numbers</code>
-		returned.
+		allows you to specify that an option as containing any one of the
+		basic numeric types (other than
+		<code>char</code>
+		),
+		<code>BigInteger</code>
+		, or
+		<code>BigDecimal</code>
+		:
+	<pre>   { { 'a', Byte.class } },     // byte
+   { { 'b', Short.class } },     // short
+   { { 'c', Integer.class } },   // int
+   { { 'd', BigInteger.class } },// java.math.BigInteger
+   { { 'e', Float.class } },     // float
+   { { 'f', Double.class } },    // double
+   { { 'g', BigDecimal.class } },// java.math.BigDecimal</pre>
+	number is a
+	<code></code>
+	float, integer, double, or
+	<code>Number</code>
+	, but the only values it will return to you are
+	<code>Integer</code>
+	and
+	<code>Number</code>
+	. If you truly only require float precision, you can request the float
+	value of
+	<code>Numbers</code>
+	returned.
 	</p>
 	<h2>Sets</h2>
 	<p>

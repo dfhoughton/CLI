@@ -12,6 +12,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
@@ -1686,5 +1688,25 @@ public class CliTest {
 		cli.parse("--foo", "1");
 		Object o = cli.object("foo");
 		assertTrue(o instanceof Long);
+	}
+
+	@Test
+	public void bigInt() {
+		String num = "12345678901234567890";
+		BigInteger bi = new BigInteger(num);
+		Object[][][] spec = { { { "foo", BigInteger.class, num } }, };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		cli.parse();
+		assertEquals(bi, cli.object("foo"));
+	}
+
+	@Test
+	public void bigDec() {
+		String num = "1.2345e1234567890";
+		BigDecimal bi = new BigDecimal(num);
+		Object[][][] spec = { { { "foo", BigDecimal.class, num } }, };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		cli.parse();
+		assertEquals(bi, cli.object("foo"));
 	}
 }
