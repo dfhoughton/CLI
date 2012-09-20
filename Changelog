@@ -9,6 +9,7 @@
    * removed the stringCollection(String) and numberCollection(String)
      methods; use collection(String) instead, casting to the appropriate
      collection type if necessary
+   * fixed bug when retrieving unset optional arguments
 
 2.01, 18 September 2012
    * fixed issue with unset coerced options

@@ -108,42 +108,34 @@ System.out.println(cli.num("g"));            // 1</pre>
 		preserves the order of the values on the command line. You can
 		retrieve a set like so:
 	<pre>Object[][][] spec = {
-{ { "foo", String.class }, {}, { Cli.Res.SET } },
+    { { "foo", String.class }, {}, { <b>Cli.Res.SET</b> } },
 };
 Cli cli = new Cli(spec);
 cli.parse(args);
-Collection&lt;String&gt; foo = cli.stringCollection("foo");</pre>
+Set&lt;String&gt; foo = (Set&lt;String&gt;) cli.collection("foo");</pre>
 	</p>
 	<p>
-		If you wish you may safely cast such a collection to
-		<code>java.util.Set</code>
-		.
-	</p>
-	<p>
-		Only strings and numbers can come in sets. If you wish a set of
-		booleans, you'll have to hack something together because
-		<code>dfh.cli</code>
-		is coded to regard specifications of boolean sets as errors.
+		Anything can come in sets except booleans.
+		<code>{ { 'f' }, { }, { Res.Set } }</code>
+		, a specification for a set of booleans named "f", will throw a
+		<code>dfh.cli.ValidationException</code>
 	</p>
 	<h2>Lists</h2>
 	<p>
 		If an option is marked as
 		<code>Cli.Res.REPEATABLE</code>
-		and is not marked as a set, all the values found for this option will
-		be collected into a list.
+		and is not marked as a set (though you only ever need one or the
+		other), all the values found for this option will be collected into a
+		list.
 	</p>
 	<pre>Object[][][] spec = {
-{ { "foo", String.class }, {}, { <b>Cli.Res.REPEATABLE</b> } },
+    { { "foo", String.class }, {}, { <b>Cli.Res.REPEATABLE</b> } },
 };
 Cli cli = new Cli(spec);
 cli.parse(args);
-Collection&lt;String&gt; foo = cli.stringCollection("foo");</pre>
+List&lt;String&gt; foo = (List&lt;String&gt;) cli.collection("foo");</pre>
 	<p>
-		Again, the values of such an option are retrieved as a
-		<code>java.util.Collection</code>
-		. This collection may safely be cast to
-		<code>java.util.List</code>
-		. Underlyingly the collection is a
+		Underlyingly a repeatable option is a
 		<code>java.util.LinkedList</code>
 		.
 	</p>
@@ -152,7 +144,7 @@ Collection&lt;String&gt; foo = cli.stringCollection("foo");</pre>
 		option will obtain the first value of a repeatable one -- the first
 		item in a set or list.</p>
 	<pre>Object[][][] spec = {
-{ { "foo", String.class }, {}, { <b>Cli.Res.REPEATABLE</b> } },
+    { { "foo", String.class }, {}, { Cli.Res.REPEATABLE } },
 };
 Cli cli = new Cli(spec);
 cli.parse(args);
@@ -184,12 +176,12 @@ String foo = cli.string("foo");</pre>
 	<h3>anonymous</h3>
 	<p>The argument list may always be retrieved as a list of strings.</p>
 	<pre>Object[][][] spec = {
-{ { Cli.Opt.ARGS, "foo", "bar", Cli.Opt.PLUS } },
+    { { Cli.Opt.ARGS, "foo", "bar", Cli.Opt.PLUS } },
 };
 Cli cli = new Cli(spec);
 cli.parse("a", "b", "c", "d");
 for (String s: <b>cli.argList()</b>)
-	System.out.println(s);</pre>
+    System.out.println(s);</pre>
 	<pre class="results">a
 b
 c
@@ -198,17 +190,24 @@ d</pre>
 Cli cli = new Cli(spec);
 cli.parse("a", "b", "c", "d");
 for (String s : cli.argList())
-	System.out.println(s);</pre>
+    System.out.println(s);</pre>
 	<pre class="results">a
 b
 c
 d</pre>
 	<h3>named</h3>
-	<p>Any explicitly named argument not marked with a star is
-		required.</p>
+	<p>
+		Any explicitly named argument not marked with a
+		<code>*</code>
+		or
+		<code>?</code>
+		is required.
+	</p>
 	<pre>{ { Cli.Opt.ARGS, "foo" } }</pre>
 	<p>as opposed to</p>
 	<pre>{ { Cli.Opt.ARGS, "foo", <b>Cli.Opt.STAR</b> } }</pre>
+	<p>or</p>
+	<pre>{ { Cli.Opt.ARGS, "foo", <b>Cli.Opt.QMARK</b> } }</pre>
 	<p>Named arguments can be retrieved by their name.</p>
 	<pre>{ { Cli.Opt.ARGS, "foo" } };
 //...

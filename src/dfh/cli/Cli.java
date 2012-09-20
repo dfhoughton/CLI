@@ -1149,7 +1149,7 @@ public class Cli {
 		Integer i = argNames.get(name);
 		if (i == null)
 			throw new RuntimeException("unknown argument: " + name);
-		if (isSlurpy && i.intValue() == argList.size())
+		if (i.intValue() >= argList.size())
 			return null;
 		return argList.get(i);
 	}

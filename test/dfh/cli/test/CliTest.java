@@ -1708,4 +1708,19 @@ public class CliTest {
 		cli.parse();
 		assertEquals(bi, cli.object("foo"));
 	}
+
+	@Test
+	public void repeatableSet() {
+		Object[][][] spec = { { { "foo", Integer.class }, {},
+				{ Res.REPEATABLE, Res.SET } } };
+		new Cli(spec, Mod.THROW_EXCEPTION);
+	}
+
+	@Test
+	public void unsetQmarkArg() {
+		Object[][][] spec = { { { Cli.Opt.ARGS, "foo", Cli.Opt.QMARK } } };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		cli.parse();
+		assertNull(cli.argument("foo"));
+	}
 }
