@@ -1027,20 +1027,6 @@ public class Cli {
 			throw new RuntimeException("no arguments have been parsed");
 	}
 
-	public Collection<? extends Number> numberCollection(String string) {
-		parseCheck();
-		if (options.containsKey(string)) {
-			Option<?> opt = options.get(string);
-			if (opt instanceof NumberListOption)
-				return ((NumberListOption) opt).value();
-			else if (opt instanceof NumberSetOption)
-				return ((NumberSetOption) opt).value();
-			throw new RuntimeException("--" + opt.name
-					+ " not collection of integers");
-		}
-		throw new RuntimeException("unknown option --" + string);
-	}
-
 	/**
 	 * Returns the value of an option as a raw object.
 	 * 
@@ -1136,20 +1122,6 @@ public class Cli {
 			} catch (ClassCastException e) {
 				throw new RuntimeException("--" + opt.name + " not string");
 			}
-		}
-		throw new RuntimeException("unknown option --" + string);
-	}
-
-	public Collection<String> stringCollection(String string) {
-		parseCheck();
-		if (options.containsKey(string)) {
-			Option<?> opt = options.get(string);
-			if (opt instanceof StringListOption)
-				return ((StringListOption) opt).value();
-			else if (opt instanceof StringSetOption)
-				return ((StringSetOption) opt).value();
-			throw new RuntimeException("--" + opt.name
-					+ " not collection of strings");
 		}
 		throw new RuntimeException("unknown option --" + string);
 	}

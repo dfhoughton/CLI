@@ -391,9 +391,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "bar", "--foo", "quux");
-		assertTrue("contains bar", cli.stringCollection("foo").contains("bar"));
-		assertTrue("contains quux", cli.stringCollection("foo")
-				.contains("quux"));
+		assertTrue("contains bar", cli.collection("foo").contains("bar"));
+		assertTrue("contains quux", cli.collection("foo").contains("quux"));
 	}
 
 	@Test
@@ -404,8 +403,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "bar", "--foo", "bar");
-		assertTrue("contains bar", cli.stringCollection("foo").contains("bar"));
-		assertTrue("contains 2 items", cli.stringCollection("foo").size() == 2);
+		assertTrue("contains bar", cli.collection("foo").contains("bar"));
+		assertTrue("contains 2 items", cli.collection("foo").size() == 2);
 	}
 
 	@Test
@@ -416,8 +415,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "2");
-		assertTrue("contains 1", cli.numberCollection("foo").contains(1));
-		assertTrue("contains 2", cli.numberCollection("foo").contains(2));
+		assertTrue("contains 1", cli.collection("foo").contains(1));
+		assertTrue("contains 2", cli.collection("foo").contains(2));
 	}
 
 	@Test
@@ -428,8 +427,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "1");
-		assertTrue("contains 1", cli.numberCollection("foo").contains(1));
-		assertTrue("contains 2 items", cli.numberCollection("foo").size() == 2);
+		assertTrue("contains 1", cli.collection("foo").contains(1));
+		assertTrue("contains 2 items", cli.collection("foo").size() == 2);
 	}
 
 	@Test
@@ -440,8 +439,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "2");
-		assertTrue("contains 1", cli.numberCollection("foo").contains(1D));
-		assertTrue("contains 2", cli.numberCollection("foo").contains(2D));
+		assertTrue("contains 1", cli.collection("foo").contains(1D));
+		assertTrue("contains 2", cli.collection("foo").contains(2D));
 	}
 
 	@Test
@@ -452,8 +451,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "1");
-		assertTrue("contains 1", cli.numberCollection("foo").contains(1D));
-		assertTrue("contains 2 items", cli.numberCollection("foo").size() == 2);
+		assertTrue("contains 1", cli.collection("foo").contains(1D));
+		assertTrue("contains 2 items", cli.collection("foo").size() == 2);
 	}
 
 	@Test
@@ -1433,12 +1432,12 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec);
 		cli.parse("--foo=a", "--foo=b", "--bar=1", "--bar=1", "--bar=2");
-		assertEquals(2, cli.stringCollection("foo").size());
-		assertEquals(2, cli.numberCollection("bar").size());
+		assertEquals(2, cli.collection("foo").size());
+		assertEquals(2, cli.collection("bar").size());
 		cli.clear();
 		cli.parse("--bar=3");
-		assertEquals(0, cli.stringCollection("foo").size());
-		assertEquals(1, cli.numberCollection("bar").size());
+		assertEquals(0, cli.collection("foo").size());
+		assertEquals(1, cli.collection("bar").size());
 	}
 
 	@Test

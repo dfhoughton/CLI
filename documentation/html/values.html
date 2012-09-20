@@ -56,33 +56,47 @@ Integer quux = cli.integer("quux"), corge = cli.integer("corge");</pre>
 	<h2>Numeric Values</h2>
 	<p>
 		<code>dfh.cli</code>
-		allows you to specify that an option as containing any one of the
-		basic numeric types (other than
-		<code>char</code>
-		),
-		<code>BigInteger</code>
-		, or
-		<code>BigDecimal</code>
+		allows you to specify an option as containing most of the subtypes of
+		<code>Number</code>
 		:
-	<pre>   { { 'a', Byte.class } },     // byte
-   { { 'b', Short.class } },     // short
-   { { 'c', Integer.class } },   // int
-   { { 'd', BigInteger.class } },// java.math.BigInteger
-   { { 'e', Float.class } },     // float
-   { { 'f', Double.class } },    // double
-   { { 'g', BigDecimal.class } },// java.math.BigDecimal</pre>
-	number is a
-	<code></code>
-	float, integer, double, or
-	<code>Number</code>
-	, but the only values it will return to you are
-	<code>Integer</code>
+	<pre>Object[][][] spec = {
+        { { 'a', Byte.class, 1 } },         // byte
+        { { 'b', Short.class, 1 } },        // short
+        { { 'c', Integer.class, 1 } },      // int
+        { { 'd', BigInteger.class, "1" } }, // java.math.BigInteger<span
+			class="fn">Note that the arbitrary precision numeric types, 
+			<code>BigInteger</code> and <code>BigDecimal</code>, can take 
+			either an instance of their type or a String as their default 
+			value -- <code>{{ 'a', BigInteger.class, new BigInteger("1") }}</code> 
+			will give you the same results as <code>{{ 'a', BigInteger.class, "1" }}</code>. 
+			The String default syntax is provided simply because the usual 
+			form is cumbersome to type.</span>
+        { { 'e', Float.class, 1 } },        // float
+        { { 'f', Double.class, 1 } },       // double
+        { { 'g', BigDecimal.class, "1" } }, // java.math.BigDecimal
+};
+Cli cli = new Cli(spec);
+cli.parse();
+System.out.println(cli.byt("a"));            // 1
+System.out.println(cli.shrt("b"));           // 1
+System.out.println(cli.integer("c"));        // 1
+System.out.println(cli.num("d"));            // 1
+System.out.println(cli.flt("e"));            // 1.0
+System.out.println(cli.dbl("f"));            // 1.0
+System.out.println(cli.num("g"));            // 1</pre>
+	As you can see, convenience accessors are provided for all of these but
+	<code>BigInteger</code>
 	and
-	<code>Number</code>
-	. If you truly only require float precision, you can request the float
-	value of
-	<code>Numbers</code>
-	returned.
+	<code>BigDecimal</code>
+	, for which you can rely on the
+	<code>num(String)</code>
+	accessor, which returns any numeric option, or the
+	<code>object(String)</code>
+	accessor, which works for any option at all. The actual value returned
+	is an object in all cases: if the option has not been set and there is
+	no default, then
+	<code>null</code>
+	will be returned.
 	</p>
 	<h2>Sets</h2>
 	<p>

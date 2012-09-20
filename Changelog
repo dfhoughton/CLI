@@ -6,6 +6,9 @@
    * refactored various numeric option accessors to delegate to num
    * added String coercion rules for the default values of BigDecimal and
      BigInteger
+   * removed the stringCollection(String) and numberCollection(String)
+     methods; use collection(String) instead, casting to the appropriate
+     collection type if necessary
 
 2.01, 18 September 2012
    * fixed issue with unset coerced options
