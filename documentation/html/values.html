@@ -144,8 +144,44 @@ Date d2 = (Date) cli.object("date2");</pre>
 		All the coercions in
 		<code>dfh.cli.coercions</code>
 		provide a singleton instance named
-		<code>C</code>, though you may also simply instantiate them.
+		<code>C</code>
+		, though you may also simply instantiate them. Default values may be
+		either an object of the appropriate type or, as above, a string which
+		the coercion object can coerce into the right type. A
+		<code>dfh.cli.Cli</code>
+		object provides no accessor method for any particular coerced type.
+		Instead, as above, you must use the generic
+		<code>object(String)</code>
+		method and cast the value returned to the correct type.
 	</p>
+	<p>
+		<code>dfh.cli.coercions</code>
+		provides the following coercions.
+	</p>
+	<h5>java.util.Date</h5>
+	<pre>Object[][][] spec = {
+    {{ "date1", DateCoercion.C }},                                     // default date format
+    {{ "date2", new DateCoercion("yyyyMMdd", "yyyy", "yyyy/MM/dd") }}, // a variety of date formats
+};
+Cli cli = new Cli(spec);
+cli.parse();
+Date d = (Date) cli.object("date1");</pre>
+	<p>
+		<code>DateCoercion</code>
+		attempts to parse date strings according to the conventions understood
+		by
+		<code>java.text.SimpleDateFormat</code>
+		. If you specify no format, the default format
+		<code>yyyyMMdd</code>
+		, is used. Otherwise you pass in a list of date format strings and the
+		<code>DateCoercion</code>
+		will try these in order. For a parse to be successful it must consume
+		all characters in the option's argument.
+	</p>
+	<h5>java.util.regex.Pattern</h5>
+	<h5>java.io.File</h5>
+	<h5>java.io.PrintStream</h5>
+	<h5>ad hoc coercions</h5>
 	<h3>Sets</h3>
 	<p>
 		An option marked via
