@@ -151,6 +151,22 @@ public class CoercionTest {
 	}
 
 	@Test
+	public void testDate5() {
+		try {
+			Object[][][] spec = { { { "foo", new DateCoercion() } }, };
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--foo=20120915a");
+			System.err.println(cli.object("foo"));
+			fail("should have thrown exception: date string too long");
+		} catch (Exception e) {
+			assertTrue(Pattern
+					.compile(
+							"cannot\\s++parse\\s++'20120915a'\\s++as\\s++a\\s++date")
+					.matcher(e.getMessage()).find());
+		}
+	}
+
+	@Test
 	public void testDateHelp1() {
 		try {
 			Object[][][] spec = { { { "foo", new DateCoercion() } }, };
@@ -160,7 +176,7 @@ public class CoercionTest {
 		} catch (Exception e) {
 			assertTrue(Pattern
 					.compile(
-							"<date>\\s++object;\\s++date\\s++string\\s++must\\s++be\\s++parsable\\s++as\\s++'yyyyMMdd'")
+							"<date>\\s++java\\.util\\.Date;\\s++date\\s++string\\s++must\\s++be\\s++parsable\\s++as\\s++'yyyyMMdd'")
 					.matcher(e.getMessage()).find());
 		}
 	}

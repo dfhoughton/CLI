@@ -8,26 +8,19 @@
  */
 package dfh.cli;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class StringListOption extends CollectionOption<String, List<String>> {
+public class StringListOption extends ListOption<String> {
 	{
-		value = new ArrayList<String>();
 		argDescription = "str";
 	}
 
 	@Override
-	public String description() {
-		if (description == null)
-			return "a list of strings";
-		return description;
+	protected String handle(String s) {
+		return s;
 	}
 
 	@Override
-	public void validate() throws ValidationException {
-		for (String s : storageList)
-			value.add(s);
+	protected String type() {
+		return "strings";
 	}
 
 }

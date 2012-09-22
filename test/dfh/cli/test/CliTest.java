@@ -12,6 +12,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
@@ -389,9 +391,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "bar", "--foo", "quux");
-		assertTrue("contains bar", cli.stringCollection("foo").contains("bar"));
-		assertTrue("contains quux", cli.stringCollection("foo")
-				.contains("quux"));
+		assertTrue("contains bar", cli.collection("foo").contains("bar"));
+		assertTrue("contains quux", cli.collection("foo").contains("quux"));
 	}
 
 	@Test
@@ -402,8 +403,44 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "bar", "--foo", "bar");
-		assertTrue("contains bar", cli.stringCollection("foo").contains("bar"));
-		assertTrue("contains 2 items", cli.stringCollection("foo").size() == 2);
+		assertTrue("contains bar", cli.collection("foo").contains("bar"));
+		assertTrue("contains 2 items", cli.collection("foo").size() == 2);
+	}
+
+	@Test
+	public void stringListWithDefault() {
+		Object[][][] spec = {
+		//
+		{ { "foo", String.class, "bar" }, null, { Res.REPEATABLE } },//
+		};
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse();
+		assertTrue("contains bar", cli.collection("foo").contains("bar"));
+		assertEquals("contains 1 items", 1, cli.collection("foo").size());
+	}
+
+	@Test
+	public void intListWithDefault() {
+		Object[][][] spec = {
+		//
+		{ { "foo", Integer.class, 1 }, null, { Res.REPEATABLE } },//
+		};
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse();
+		assertTrue("contains 1", cli.collection("foo").contains(1));
+		assertEquals("contains 1 items", 1, cli.collection("foo").size());
+	}
+
+	@Test
+	public void stringListWithDefault2() {
+		Object[][][] spec = {
+		//
+		{ { "foo", String.class, "bar" }, null, { Res.REPEATABLE } },//
+		};
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse("--foo=baz");
+		assertTrue("contains baz", cli.collection("foo").contains("baz"));
+		assertEquals("contains 1 items", 1, cli.collection("foo").size());
 	}
 
 	@Test
@@ -414,8 +451,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "2");
-		assertTrue("contains 1", cli.numberCollection("foo").contains(1));
-		assertTrue("contains 2", cli.numberCollection("foo").contains(2));
+		assertTrue("contains 1", cli.collection("foo").contains(1));
+		assertTrue("contains 2", cli.collection("foo").contains(2));
 	}
 
 	@Test
@@ -426,8 +463,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "1");
-		assertTrue("contains 1", cli.numberCollection("foo").contains(1));
-		assertTrue("contains 2 items", cli.numberCollection("foo").size() == 2);
+		assertTrue("contains 1", cli.collection("foo").contains(1));
+		assertTrue("contains 2 items", cli.collection("foo").size() == 2);
 	}
 
 	@Test
@@ -438,8 +475,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "2");
-		assertTrue("contains 1", cli.numberCollection("foo").contains(1D));
-		assertTrue("contains 2", cli.numberCollection("foo").contains(2D));
+		assertTrue("contains 1", cli.collection("foo").contains(1D));
+		assertTrue("contains 2", cli.collection("foo").contains(2D));
 	}
 
 	@Test
@@ -450,8 +487,8 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
 		cli.parse("--foo", "1", "--foo", "1");
-		assertTrue("contains 1", cli.numberCollection("foo").contains(1D));
-		assertTrue("contains 2 items", cli.numberCollection("foo").size() == 2);
+		assertTrue("contains 1", cli.collection("foo").contains(1D));
+		assertTrue("contains 2 items", cli.collection("foo").size() == 2);
 	}
 
 	@Test
@@ -1431,12 +1468,12 @@ public class CliTest {
 		};
 		Cli cli = new Cli(spec);
 		cli.parse("--foo=a", "--foo=b", "--bar=1", "--bar=1", "--bar=2");
-		assertEquals(2, cli.stringCollection("foo").size());
-		assertEquals(2, cli.numberCollection("bar").size());
+		assertEquals(2, cli.collection("foo").size());
+		assertEquals(2, cli.collection("bar").size());
 		cli.clear();
 		cli.parse("--bar=3");
-		assertEquals(0, cli.stringCollection("foo").size());
-		assertEquals(1, cli.numberCollection("bar").size());
+		assertEquals(0, cli.collection("foo").size());
+		assertEquals(1, cli.collection("bar").size());
 	}
 
 	@Test
@@ -1686,5 +1723,40 @@ public class CliTest {
 		cli.parse("--foo", "1");
 		Object o = cli.object("foo");
 		assertTrue(o instanceof Long);
+	}
+
+	@Test
+	public void bigInt() {
+		String num = "12345678901234567890";
+		BigInteger bi = new BigInteger(num);
+		Object[][][] spec = { { { "foo", BigInteger.class, num } }, };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		cli.parse();
+		assertEquals(bi, cli.object("foo"));
+	}
+
+	@Test
+	public void bigDec() {
+		String num = "1.2345e1234567890";
+		BigDecimal bi = new BigDecimal(num);
+		Object[][][] spec = { { { "foo", BigDecimal.class, num } }, };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		cli.parse();
+		assertEquals(bi, cli.object("foo"));
+	}
+
+	@Test
+	public void repeatableSet() {
+		Object[][][] spec = { { { "foo", Integer.class }, {},
+				{ Res.REPEATABLE, Res.SET } } };
+		new Cli(spec, Mod.THROW_EXCEPTION);
+	}
+
+	@Test
+	public void unsetQmarkArg() {
+		Object[][][] spec = { { { Cli.Opt.ARGS, "foo", Cli.Opt.QMARK } } };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		cli.parse();
+		assertNull(cli.argument("foo"));
 	}
 }

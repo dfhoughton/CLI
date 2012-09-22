@@ -23,22 +23,28 @@
 		generally extract them into their own variables immediately after
 		parsing.
 	</p>
-	<pre>Object[][][] spec = {
-	{ { "foo" } },
-	{ { "bar" } },
-	{ { "baz" } },
-	{ { "quux", Integer.class } },
-	{ { "corge", Integer.class } },
-	};
-Cli cli = new Cli(spec, Cli.Mod.HELP);
+	<pre>// <b>command line specification</b>
+Object[][][] spec = {
+    { { Cli.Opt.ARGS, "qux" } },
+    { { "foo" } },
+    { { "bar" } },
+    { { "baz" } },
+    { { "quux", Integer.class } },
+    { { "corge", Integer.class } },
+};
+// <b>parse arguments</b>
+Cli cli = new Cli(spec);
 cli.parse(args);
+// <b>obtain option and argument values</b>
+String qux = cli.argument("qux");
 boolean foo = cli.bool("foo"), bar = cli.bool("bar"), baz = cli.bool("baz");
 Integer quux = cli.integer("quux"), corge = cli.integer("corge");</pre>
 	<span id="toc"></span>
-	<h2>
+	<h2>Options</h2>
+	<h3>
 		The Significance of
 		<code>null</code>
-	</h2>
+	</h3>
 	<p>
 		Except for boolean options and those with default values, it is always
 		possible that an option remains unset. In these cases you should use
@@ -53,21 +59,230 @@ Integer quux = cli.integer("quux"), corge = cli.integer("corge");</pre>
 		require options to have a a value you should mark them as required or
 		provide a default.
 	</p>
-	<h2>Numeric Values</h2>
+	<h3>Types</h3>
+	<h4>Boolean</h4>
+	<h4>String</h4>
+	<h4>Numeric</h4>
 	<p>
 		<code>dfh.cli</code>
-		allows you to specify that a number is a float, integer, double, or
+		allows you to specify an option as containing most of the subtypes of
 		<code>Number</code>
-		, but the only values it will return to you are
-		<code>Integer</code>
-		and
-		<code>Number</code>
-		. If you truly only require float precision, you can request the float
-		value of
-		<code>Numbers</code>
-		returned.
+		:
+	<pre>Object[][][] spec = {
+        { { 'a', Byte.class, 1 } },         // byte
+        { { 'b', Short.class, 1 } },        // short
+        { { 'c', Integer.class, 1 } },      // int
+        { { 'd', BigInteger.class, "1" } }, // java.math.BigInteger<span
+			class="fn">Note that the arbitrary precision numeric types, 
+			<code>BigInteger</code> and <code>BigDecimal</code>, can take 
+			either an instance of their type or a String as their default 
+			value -- <code>{{ 'a', BigInteger.class, new BigInteger("1") }}</code> 
+			will give you the same results as <code>{{ 'a', BigInteger.class, "1" }}</code>. 
+			The String default syntax is provided simply because the usual 
+			form is cumbersome to type.</span>
+        { { 'e', Float.class, 1 } },        // float
+        { { 'f', Double.class, 1 } },       // double
+        { { 'g', BigDecimal.class, "1" } }, // java.math.BigDecimal
+};
+Cli cli = new Cli(spec);
+cli.parse();
+System.out.println(cli.byt("a"));            // 1
+System.out.println(cli.shrt("b"));           // 1
+System.out.println(cli.integer("c"));        // 1
+System.out.println(cli.num("d"));            // 1
+System.out.println(cli.flt("e"));            // 1.0
+System.out.println(cli.dbl("f"));            // 1.0
+System.out.println(cli.num("g"));            // 1</pre>
+	As you can see, convenience accessors are provided for all of these but
+	<code>BigInteger</code>
+	and
+	<code>BigDecimal</code>
+	, for which you can rely on the
+	<code>num(String)</code>
+	accessor, which returns any numeric option, or the
+	<code>object(String)</code>
+	accessor, which works for any option at all. The actual value returned
+	is an object in all cases: if the option has not been set and there is
+	no default, then
+	<code>null</code>
+	will be returned.
 	</p>
-	<h2>Sets</h2>
+	<h4>Coercions</h4>
+	<p>
+		To produce options containing any value other than those listed above,
+		one must either &ldquo;coerce&rdquo; strings into the desired object
+		type oneself, or use a
+		<code>dfh.cli.Coercion</code>
+		class.
+	</p>
+	<pre>Object[][][] spec = {
+    {{ "date1", String.class, "20120922" }},
+    {{ "date2", DateCoercion.C, "20120921" }},
+};
+Cli cli = new Cli(spec);
+cli.parse();
+Date d1 = new SimpleDateFormat("yyyyMMdd").parse(cli.string("date1"));
+Date d2 = (Date) cli.object("date2");</pre>
+	<p>The advantages of using pre-defined coercions instead of doing
+		it oneself is that they</p>
+	<ul>
+		<li>are more terse and declarative</li>
+		<li>prevent fewer opportunities for bugs</li>
+		<li>handle validation for you</li>
+		<li>give you a pretty command line</li>
+	</ul>
+	<p>For example the specification above gives you the following
+		usage text:</p>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;arg&gt;*
+
+    --date1      &lt;str&gt;   string option; default: 20120922
+    --date2      &lt;date&gt;  java.util.Date; date string must be parsable as
+                         'yyyyMMdd'; default: Fri Sep 21 00:00:00 EDT 2012
+
+    --help -? -h         print usage information</pre>
+	<p>
+		All the coercions in
+		<code>dfh.cli.coercions</code>
+		provide a singleton instance named
+		<code>C</code>
+		, though you may also simply instantiate them. Default values may be
+		either an object of the appropriate type or, as above, a string which
+		the coercion object can coerce into the right type. A
+		<code>dfh.cli.Cli</code>
+		object provides no accessor method for any particular coerced type.
+		Instead, as above, you must use the generic
+		<code>object(String)</code>
+		method and cast the value returned to the correct type.
+	</p>
+	<p>
+		<code>dfh.cli.coercions</code>
+		provides the following coercions.
+	</p>
+	<h5>
+		<code>java.util.Date</code>
+	</h5>
+	<pre>Object[][][] spec = {
+    {{ "date1", DateCoercion.C }},                                     // default date format
+    {{ "date2", new DateCoercion("yyyyMMdd", "yyyy", "yyyy/MM/dd") }}, // a variety of date formats
+};
+Cli cli = new Cli(spec);
+cli.parse(args);
+Date d = (Date) cli.object("date1");</pre>
+	<p>
+		<code>DateCoercion</code>
+		attempts to parse date strings according to the conventions understood
+		by
+		<code>java.text.SimpleDateFormat</code>
+		. If you specify no format, the default format
+		<code>yyyyMMdd</code>
+		, is used. Otherwise you pass in a list of date format strings and the
+		<code>DateCoercion</code>
+		will try these in order. For a parse to be successful it must consume
+		all characters in the option's argument.
+	</p>
+	<h5>
+		<code>java.util.regex.Pattern</code>
+	</h5>
+	<pre>Object[][][] spec = {
+    {{ "pat", RxCoercion.C, "^pat$" }},
+};
+Cli cli = new Cli(spec);
+cli.parse(args);
+Pattern p = (Pattern) cli.object("pat");</pre>
+	<h5>
+		<code>java.io.File</code>
+	</h5>
+	<pre>Object[][][] spec = {
+    {{ 'f', FileCoercion.C, File.createTempFile("temporary", null) }},
+};
+Cli cli = new Cli(spec);
+cli.parse(args);
+File f = (File) cli.object("f");</pre>
+	<p>
+		<code>FileCoercion</code>
+		coerces a file name into a file object. It does no validation of the
+		existence, readability, or writeability of the file created, however.
+	</p>
+	<h5>
+		<code>java.io.PrintStream</code>
+	</h5>
+	<pre>Object[][][] spec = {
+    {{ "log", StreamCoercion.C, System.err }},
+};
+Cli cli = new Cli(spec);
+cli.parse(args);
+PrintStream log = (PrintStream) cli.object("log");</pre>
+	<p>
+		<code>StreamCoercion</code>
+		takes a file name and turns it into a
+		<code>java.io.PrintStream</code>
+		printing into this file. I find I often use the arrangement
+		illustrated above, printing output to STDERR unless an output file is
+		provided.
+	</p>
+	<h5>ad hoc coercions</h5>
+	<p>
+		I have only created a few coercions I tend to use a lot. Frankly, I
+		doubt anyone will add to this list. After all, the whole point is to
+		type less and have few libraries on one's class path. If you have to
+		hande the string coercion yourself, it's easy enough to do it after
+		you've parsed the CLI arguments. However, it is easy enough to add
+		coercion classes simply by extending
+		<code>dfh.cli.Coercion</code>
+		. Here, for example, is the implementation of
+		<code>RxCoercion</code>
+		:<span class="fn">This is at the time of writing, of course.
+			I've stripped away imports, comments, and annotations for the sake of
+			concision.</span>
+	</p>
+	<pre>public class RxCoercion extends Coercion&lt;Pattern&gt; {
+
+    public static final RxCoercion C = new RxCoercion();
+
+    public Pattern coerce(String s) throws ValidationException {
+        try {
+            return Pattern.compile(s);
+        } catch (PatternSyntaxException e) {
+            throw new ValidationException(e.getMessage());
+        }
+    }
+
+    public String argName() {
+        return "rx";
+    }
+
+    public Collection&lt;String&gt; constraintDescriptions() {
+        Collection&lt;String&gt; list = new ArrayList&lt;String&gt;(1);
+        list.add("value must parse as regex");
+        return list;
+    }
+
+    public String type() {
+        return Pattern.class.getCanonicalName();
+    }
+}</pre>
+	<p>Most of this code serves to make the command line more
+		explanatory. Really the following would be a complete implementation
+		of the coercion.</p>
+	<pre>public class RxCoercion extends Coercion&lt;Pattern&gt; {
+    public Pattern coerce(String s) throws ValidationException {
+        try {
+            return Pattern.compile(s);
+        } catch (PatternSyntaxException e) {
+            throw new ValidationException(e.getMessage());
+        }
+    }
+}</pre>
+	<p>And if you're indifferent to printing out usage information in
+		the case of compilation failures, you can further simplify this to.</p>
+	<pre>public class RxCoercion extends Coercion&lt;Pattern&gt; {
+    public Pattern coerce(String s) throws ValidationException {
+        return Pattern.compile(s);
+    }
+}</pre>
+	<p>Something this small could easily be in-lined as an anonymous
+		inner class.</p>
+	<h3>Sets</h3>
 	<p>
 		An option marked via
 		<code>Cli.Res.SET</code>
@@ -77,51 +292,43 @@ Integer quux = cli.integer("quux"), corge = cli.integer("corge");</pre>
 		preserves the order of the values on the command line. You can
 		retrieve a set like so:
 	<pre>Object[][][] spec = {
-{ { "foo", String.class }, {}, { Cli.Res.SET } },
+    { { "foo", String.class }, {}, { <b>Cli.Res.SET</b> } },
 };
 Cli cli = new Cli(spec);
 cli.parse(args);
-Collection&lt;String&gt; foo = cli.stringCollection("foo");</pre>
+Set&lt;String&gt; foo = (Set&lt;String&gt;) cli.collection("foo");</pre>
 	</p>
 	<p>
-		If you wish you may safely cast such a collection to
-		<code>java.util.Set</code>
-		.
+		Anything can come in sets except booleans.
+		<code>{ { 'f' }, { }, { Res.Set } }</code>
+		, a specification for a set of booleans named "f", will throw a
+		<code>dfh.cli.ValidationException</code>
 	</p>
-	<p>
-		Only strings and numbers can come in sets. If you wish a set of
-		booleans, you'll have to hack something together because
-		<code>dfh.cli</code>
-		is coded to regard specifications of boolean sets as errors.
-	</p>
-	<h2>Lists</h2>
+	<h3>Lists</h3>
 	<p>
 		If an option is marked as
 		<code>Cli.Res.REPEATABLE</code>
-		and is not marked as a set, all the values found for this option will
-		be collected into a list.
+		and is not marked as a set (though you only ever need one or the
+		other), all the values found for this option will be collected into a
+		list.
 	</p>
 	<pre>Object[][][] spec = {
-{ { "foo", String.class }, {}, { <b>Cli.Res.REPEATABLE</b> } },
+    { { "foo", String.class }, {}, { <b>Cli.Res.REPEATABLE</b> } },
 };
 Cli cli = new Cli(spec);
 cli.parse(args);
-Collection&lt;String&gt; foo = cli.stringCollection("foo");</pre>
+List&lt;String&gt; foo = (List&lt;String&gt;) cli.collection("foo");</pre>
 	<p>
-		Again, the values of such an option are retrieved as a
-		<code>java.util.Collection</code>
-		. This collection may safely be cast to
-		<code>java.util.List</code>
-		. Underlyingly the collection is a
+		Underlyingly a repeatable option is a
 		<code>java.util.LinkedList</code>
 		.
 	</p>
-	<h2>First Items</h2>
+	<h3>First Items</h3>
 	<p>The same method that retrieves the value of a non-repeatable
 		option will obtain the first value of a repeatable one -- the first
 		item in a set or list.</p>
 	<pre>Object[][][] spec = {
-{ { "foo", String.class }, {}, { <b>Cli.Res.REPEATABLE</b> } },
+    { { "foo", String.class }, {}, { Cli.Res.REPEATABLE } },
 };
 Cli cli = new Cli(spec);
 cli.parse(args);
@@ -131,6 +338,90 @@ String foo = cli.string("foo");</pre>
 		all options are assigned values. Unlike options, arguments are only
 		checked for existence, not type. Any argument validation must follow
 		command line parsing.</p>
+	<h3>Example Specifications</h3>
+	<h4>default</h4>
+	<pre>Object[][][] spec = {
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;arg&gt;*
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information
+	</pre>
+	<h4>no args</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options]
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information</pre>
+	<h4>fixed args</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS, "bar", "baz" }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;bar&gt; &lt;baz&gt;
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information</pre>
+	<h4>optional args</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS , "bar", Cli.Opt.QMARK }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;bar&gt;?
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information</pre>
+	<h4>required argument list</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS, "bar", Cli.Opt.PLUS }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;bar&gt;+
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information
+</pre>
+	<h4>optional argument list</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS, "bar", Cli.Opt.STAR }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;bar&gt;*
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information</pre>
+	<h4>mixed</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS, "bar", "baz", Cli.Opt.QMARK, "corge", Cli.Opt.STAR }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;bar&gt; &lt;baz&gt;? &lt;corge&gt;*
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information</pre>
+	<h4>argument order</h4>
+	<p>
+		Argument parsing doesn't backtrack. This means required arguments must
+		be listed before optional arguments and any argument name modified by
+		<code>Cli.Opt.STAR</code>
+		or
+		<code>Cli.Opt.PLUS</code>
+		must appear last. If you attempt an impossible argument order this
+		will be caught during
+		<code>Cli</code>
+		construction and an error will be thrown.
+	</p>
 	<h3>double dash</h3>
 	<p>To halt option parsing and force all remaining items on the
 		command line to be parsed as arguments, one may provide a double dash
@@ -153,12 +444,12 @@ String foo = cli.string("foo");</pre>
 	<h3>anonymous</h3>
 	<p>The argument list may always be retrieved as a list of strings.</p>
 	<pre>Object[][][] spec = {
-{ { Cli.Opt.ARGS, "foo", "bar", Cli.Opt.PLUS } },
+    { { Cli.Opt.ARGS, "foo", "bar", Cli.Opt.PLUS } },
 };
 Cli cli = new Cli(spec);
 cli.parse("a", "b", "c", "d");
 for (String s: <b>cli.argList()</b>)
-	System.out.println(s);</pre>
+    System.out.println(s);</pre>
 	<pre class="results">a
 b
 c
@@ -167,17 +458,26 @@ d</pre>
 Cli cli = new Cli(spec);
 cli.parse("a", "b", "c", "d");
 for (String s : cli.argList())
-	System.out.println(s);</pre>
+    System.out.println(s);</pre>
 	<pre class="results">a
 b
 c
 d</pre>
 	<h3>named</h3>
-	<p>Any explicitly named argument not marked with a star is
-		required.</p>
+	<p>
+		Any explicitly named argument not marked with a
+		<code>*</code>
+		or
+		<code>?</code>
+		is required --
 	<pre>{ { Cli.Opt.ARGS, "foo" } }</pre>
-	<p>as opposed to</p>
-	<pre>{ { Cli.Opt.ARGS, "foo", <b>Cli.Opt.STAR</b> } }</pre>
+	or
+	<pre>{ { Cli.Opt.ARGS, "foo", Cli.Opt.PLUS } }</pre>
+	as opposed to
+	<pre>{ { Cli.Opt.ARGS, "foo", Cli.Opt.STAR } }</pre>
+	or
+	<pre>{ { Cli.Opt.ARGS, "foo", Cli.Opt.QMARK } }</pre>
+	</p>
 	<p>Named arguments can be retrieved by their name.</p>
 	<pre>{ { Cli.Opt.ARGS, "foo" } };
 //...

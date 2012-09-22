@@ -1,3 +1,11 @@
+/*
+ * dfh.cli -- a command line argument parsing library for Java
+ * 
+ * Copyright (C) 2012 David F. Houghton
+ * 
+ * This software is licensed under the LGPL. Please see accompanying NOTICE file
+ * and lgpl.txt.
+ */
 package dfh.cli.coercions;
 
 import java.io.File;
@@ -28,5 +36,10 @@ public class FileCoercion extends Coercion<File> {
 	@Override
 	public String argName() {
 		return "file";
+	}
+
+	@Override
+	public String type() {
+		return File.class.getCanonicalName();
 	}
 }

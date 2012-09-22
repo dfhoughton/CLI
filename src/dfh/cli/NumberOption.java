@@ -13,9 +13,10 @@ public class NumberOption extends Option<Number> {
 	 * 
 	 */
 	enum NumType {
-		shrt("short", "int"), integer("int", "int"), lng("long", "int"), bigint(
-				BigInteger.class.getName(), "Z"), flt("float", "fp"), dbl(
-				"double", "fp"), bigdec(BigDecimal.class.getName(), "R");
+		byt("byte", "byte"), shrt("short", "int"), integer("int", "int"), lng(
+				"long", "int"), bigint(BigInteger.class.getName(), "Z"), flt(
+				"float", "fp"), dbl("double", "fp"), bigdec(BigDecimal.class
+				.getName(), "R");
 		final String s, arg;
 
 		NumType(String s, String arg) {
@@ -39,6 +40,8 @@ public class NumberOption extends Option<Number> {
 				o = NumType.dbl;
 			else if (cz.equals(BigDecimal.class) || cz.equals(Number.class))
 				o = NumType.bigdec;
+			else if (cz.equals(Byte.class))
+				o = NumType.byt;
 			else
 				throw new RuntimeException("unexpected class: " + cz);
 			return o;
@@ -70,9 +73,12 @@ public class NumberOption extends Option<Number> {
 					case bigdec:
 						n = new BigDecimal(s);
 						break;
+					case byt:
+						n = new Byte(s);
+						break;
 					default:
 						throw new RuntimeException(
-								"CLI is broken; unexpected integer type: " + i);
+								"CLI is broken; unexpected numeric type: " + i);
 					}
 				} catch (NumberFormatException e) {
 					throw new ValidationException("must be parsable as " + i.s
@@ -109,6 +115,22 @@ public class NumberOption extends Option<Number> {
 	@Override
 	public void validate() throws ValidationException {
 		value = NumType.parse(it, stored);
+	}
+
+	@Override
+	public void setDefault(Object def) throws ValidationException {
+		if ((it == NumType.bigdec || it == NumType.bigint)
+				&& def instanceof String) {
+			try {
+				this.def = it == NumType.bigdec ? new BigDecimal(def.toString())
+						: new BigInteger(def.toString());
+			} catch (NumberFormatException e) {
+				throw new ValidationException(def
+						+ " invalid default value for --" + name + " of type "
+						+ it.s);
+			}
+		} else
+			super.setDefault(def);
 	}
 
 }

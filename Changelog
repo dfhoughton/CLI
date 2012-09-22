@@ -1,3 +1,18 @@
+2.02, 22 September 2012
+   * changed names of numeric type option accessors from ilong to lng and
+     ishort to shrt
+   * added Byte accessor named byt
+   * added num accessor to obtain any numeric option
+   * refactored various numeric option accessors to delegate to num
+   * added String coercion rules for the default values of BigDecimal and
+     BigInteger
+   * removed the stringCollection(String) and numberCollection(String)
+     methods; use collection(String) instead, casting to the appropriate
+     collection type if necessary
+   * fixed bug when retrieving unset optional arguments
+   * added handling of defaults to collection options
+   * removed the deprecated Cli.Mod.HELP
+
 2.01, 18 September 2012
    * fixed issue with unset coerced options
    * added constant singleton members to various coercion classes

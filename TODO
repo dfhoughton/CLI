@@ -14,17 +14,10 @@ TODO
 . make internationalizable
 . create unit tests for more of the validation rules
 . remove unnecessary IntSet?
-. document new blank line syntax
 . create an example directory
 . document how to produce a branching CLI such as you have in git
   and cvs
-. document changes listed in change log for version 1.07
-. document ValidationRule.shh()
-. document automatic addition of "repeatable" to option descriptions
-. document Mod.NO_HELP
 . check error reporting when first option is unknown and other options are required
-. document coercions
-* make unit tests to make sure coercions work when not set
 
 RELICS
 ======
@@ -56,3 +49,10 @@ Things swept out of TODO list:
 * improve precision handling of numbers
 * improve number retrieval, adding BigInt and BigDecimal
 * make assignment of argument name more intelligent, reflecting the type of argument expected
+* document new blank line syntax
+- document changes listed in change log for version 1.07
+* document ValidationRule.shh()
+* document automatic addition of "repeatable" to option descriptions
+* document Mod.NO_HELP
+* document coercions
+* make unit tests to make sure coercions work when not set

@@ -26,8 +26,10 @@
 	{ { "foo" } },                    // boolean option
 	{ { "bar", 'b' } },               // boolean with short and long versions
 	{ { 'c' }, { "usually false" } }, // boolean with description
+	{ },                              // blank line in usage information
 	{ { 'd', Integer.class } },       // integer
 	{ { 'e', Integer.class, 1 } },    // integer with default
+	{ { } },                          // another way to specify a blank line
 	// floating point with a description and a name for its argument
 	{ { 'f', Double.class }, { "some number", "num" } },
 	// float with a restriction
@@ -43,11 +45,14 @@
 };</pre>
 	<p>The specification then is an array of arrays of arrays. You can
 		think of this as an array of specification lines. The lines come in
-		two sorts. Those that define a particular option.</p>
+		three sorts. Those that define a particular option.</p>
 	<pre>{ { "foo" } },
 { { "bar", 'b' } },
 { { 'f', Double.class }, { "some number", "num" } },
 { { 'g', Float.class }, {}, { Range.positive() } },</pre>
+	<p>Those that insert blank lines into the usage information.</p>
+	<pre>{ },
+{ { } },</pre>
 	<p>
 		And those that begin with a
 		<code>Cli.Opt</code>
@@ -57,10 +62,10 @@
 { { Cli.Opt.NAME, "hotstuff" } },
 { { Cli.Opt.ARGS, "quux", "corge", "others", Cli.Opt.PLUS } },</pre>
 	<p>
-		The latter modify properties of the
+		The last modify properties of the
 		<code>dfh.cli.Cli</code>
-		object or the usage information it generates. Both sorts of
-		specification line are described in greater detail below.
+		object or the usage information it generates. The first and third
+		sorts of specification line are described in greater detail below.
 	</p>
 	<span id="toc"></span>
 	<h2>Option Lines</h2>
@@ -69,8 +74,9 @@
 	<p>The first is required. It specifies option names, type, and any
 		default.</p>
 	<pre>{ { <b>"bar", 'b', 'c'</b> } },           // <b>names</b>
-{ { "foo", <b>String.class</b> } },       // <b>type</b>
-{ { "quux", Integer.class, <b>10</b> } }, // <b>default</b></pre>
+{ { "foo", <b>String.class</b> } },        // <b>type</b>
+{ { "quux", Integer.class, <b>10</b> } },  // <b>default</b>
+	</pre>
 	<h4>name</h4>
 	<p>Every option requires at least one name. These can be specified
 		by string or character. One character names, whether strings or
@@ -104,13 +110,19 @@
 		<li><code>Boolean.class</code></li>
 		<li><code>String.class</code></li>
 		<li><code>Integer.class</code></li>
-		<li><code>Number.class</code></li>
-		<li><code>Float.class</code></li>
 		<li><code>Double.class</code></li>
+		<li><code>Byte.class</code></li>
+		<li><code>Short.class</code></li>
+		<li><code>Long.class</code></li>
+		<li><code>Float.class</code></li>
+		<li><code>BigInteger.class</code></li>
+		<li><code>BigDecimal.class</code></li>
+		<li>or an instance of <code>dfh.cli.Coercion</code></li>
 	</ul>
-	<p>If no type is provided, the option will be boolean. The number,
-		float, and double classes all cause the option to be parsed as a
-		double.</p>
+	<p>
+		If no type is provided, the option will be boolean. For more
+		concerning these types see <a href="values.html">here</a>.
+	</p>
 	<h4>default</h4>
 	<p>
 		An options default value, if any, is the last item in the first array.
@@ -119,7 +131,8 @@
 		, though you may change this. If you provide an explicit default
 		value, it will be listed in usage information.
 	</p>
-	<pre>	-e        &lt;val&gt;  whole number option<b>; default: 1</b></pre>
+	<pre>	-e        &lt;val&gt;  whole number option<b>; default: 1</b>
+	</pre>
 	<p>An option cannot be marked as required if it has a default. See
 		the third array below.</p>
 	<h3>Second Array</h3>
@@ -127,12 +140,12 @@
 		construction of usage information. It provides a description of the
 		option and possibly, if the option is non-boolean, a name for its
 		argument.</p>
-	<pre>// <b>only a description, default name "val" used</b>
+	<pre>// <b>only a description, default name "str" used</b>
 { { "foo", String.class }, { <b>"description"</b> } },
 // this one has an argument name
 { { "bar", String.class }, { "another description", <b>"baz"</b> } },</pre>
 	<p>produces</p>
-	<pre>	--foo     &lt;val&gt;  description
+	<pre>	--foo     &lt;str&gt;  description
 	--bar     &lt;baz&gt;  another description</pre>
 	<p>If you don't wish to provide any of this information, a simple
 		description will be generated indicating the option type. If you wish
@@ -149,23 +162,26 @@
 { { 'c', Integer.class }, {}, { Cli.Res.SET } },
 { { 'd', Integer.class }, {}, { Range.nonNegative() } },
 { { 'e', Integer.class }, {},
-		{ Range.nonNegative(), new ValidationRule&lt;Integer&gt;() {
-			@Override
-			public void test(Integer arg)
-					throws ValidationException {
-				double d = Math.sqrt(arg);
-				if (Math.floor(d) != d)
-					throw new ValidationException(
-							"not a square");
-			}
-		} } },</pre>
+        { Range.nonNegative(), new ValidationRule&lt;Integer&gt;() {
+            @Override
+            public void test(Integer arg)
+                    throws ValidationException {
+                double d = Math.sqrt(arg);
+                if (Math.floor(d) != d)
+                    throw new ValidationException(
+                            "not a square");
+            }
+        } } },</pre>
+	<p>These values may be mixed and matched. For example, an option
+		can be required and repeatable, in which case the user must specify
+		one or more values for the option.</p>
+	<p>Most of the items one puts in the third array will modify the
+		option description. For instance, the description will mention if the
+		option is repeatable, and required options are boldly marked REQUIRED.</p>
 	<p>
-		These values may be mixed an matched. For example, an option can be
-		required and repeatable, in which case the user must specify one or
-		more values for the option. The fourth example above shows multiple
-		validation rules being applied to an option. Validation rules can be
-		generated ad hoc like this, but a number of useful rules are provided
-		in the package
+		The fourth example above shows multiple validation rules being applied
+		to an option. Validation rules can be generated ad hoc like this, but
+		a number of useful rules are provided in the package
 		<code>dfh.cli.rules</code>
 		among these are
 	</p>
@@ -200,6 +216,17 @@
 		may be provided to the constructor. The pattern must match against the
 		entire argument.
 	</p>
+	<h4>Silencing Noisy Validation Rules</h4>
+	<p>
+		Many validation rules add text to the option description that appears
+		in the usage information. If you wish to remove the contribution of a
+		particular rule from the description, you can call
+		<code>ValidationRule.shh()</code>
+		, like so:
+	</p>
+	<pre>{ { 'a', Integer.class }, {}, { new IntSet(1, 5, 28)<b>.shh()</b> } }</pre>
+	<p>This method sets the rule to be quiet and returns the rule
+		itself.</p>
 	<h2>
 		<code>dfh.cli.Cli.Opt</code>
 		Lines
@@ -218,31 +245,31 @@
 		Some examples:
 	</p>
 	<pre>Object[][][] spec = { { { Cli.Opt.ARGS } } };
-Cli cli = new Cli(spec, Cli.Mod.HELP);
+Cli cli = new Cli(spec);
 cli.parse("--help");</pre>
 	<pre class="results">USAGE: EXECUTABLE [options]
 
 	--help -? -h    print usage information</pre>
 	<pre>Object[][][] spec = { { { Cli.Opt.ARGS, "foo" } } };
-Cli cli = new Cli(spec, Cli.Mod.HELP);
+Cli cli = new Cli(spec);
 cli.parse("--help");</pre>
 	<pre class="results">USAGE: EXECUTABLE [options] &lt;foo&gt;
 
 	--help -? -h    print usage information</pre>
 	<pre>Object[][][] spec = { { { Cli.Opt.ARGS, "foo", "bar" } } };
-Cli cli = new Cli(spec, Cli.Mod.HELP);
+Cli cli = new Cli(spec);
 cli.parse("--help");</pre>
 	<pre class="results">USAGE: EXECUTABLE [options] &lt;foo&gt; &lt;bar&gt;
 
 	--help -? -h    print usage information</pre>
 	<pre>Object[][][] spec = { { { Cli.Opt.ARGS, "foo", "bar", Cli.Opt.STAR } } };
-Cli cli = new Cli(spec, Cli.Mod.HELP);
+Cli cli = new Cli(spec);
 cli.parse("--help");</pre>
 	<pre class="results">USAGE: EXECUTABLE [options] &lt;foo&gt; &lt;bar&gt;*
 
 	--help -? -h    print usage information</pre>
 	<pre>Object[][][] spec = { { { Cli.Opt.ARGS, "foo", Cli.Opt.PLUS } } };
-Cli cli = new Cli(spec, Cli.Mod.HELP);
+Cli cli = new Cli(spec);
 cli.parse("--help");</pre>
 	<pre class="results">USAGE: EXECUTABLE [options] &lt;foo&gt;+
 
@@ -256,7 +283,7 @@ cli.parse("--help");</pre>
 	<code>STAR</code>
 	, or
 	<code>PLUS</code>
-	arguments this is lust the first argument in the list)
+	arguments this is just the first argument in the list)
 	<pre>String arg = cli.argument("foo");</pre>
 	or the list of the arguments slurped into any final argument name
 	<pre>List&lt;String&gt; args = cli.slurpedArguments();</pre>
@@ -270,7 +297,7 @@ cli.parse("--help");</pre>
 		the end.</p>
 	<pre>Object[][][] spec = { { { Cli.Opt.USAGE, "short description",
 		"much longer description" } }, };
-Cli cli = new Cli(spec, Cli.Mod.HELP);
+Cli cli = new Cli(spec);
 cli.parse("--help");</pre>
 	<pre class="results">USAGE: EXECUTABLE [options] &lt;arg&gt;*
 
@@ -279,13 +306,21 @@ cli.parse("--help");</pre>
 	--help -? -h    print usage information
 
 much longer description</pre>
-	<p>
-		<code>dfh.cli</code>
-		makes no attempt to wrap this text; this is entirely up to you. If you
-		prefer to keep your long usage text in a separate text file or
-		otherwise apart from your code, you can specify an input stream in a
-		second array.
-	</p>
+	<p>If you prefer to keep your long usage text in a separate text
+		file or otherwise apart from your code, you can specify an input
+		stream in a second array. Usage text is formatted according to the
+		following rules:</p>
+	<ol>
+		<li>The right margin for wrapping text is 80 characters, though
+			this can be set with <code>Cli.setMargin(int)</code>
+		</li>
+		<li>Line breaks are preserved.</li>
+		<li>Whitespace inside wrapped lines is normalized to a single
+			space.</li>
+		<li>Any space at the beginning of the text or after a line break
+			indicates preformatted text. This turns off word wrapping and
+			whitespace normalization until the next line break.</li>
+	</ol>
 	<h4>
 		load usage via
 		<code>dfh.cli.Cli.class.getClassLoader()</code>
@@ -331,7 +366,7 @@ Object[][][] spec = { { { Cli.Opt.USAGE, "short description"}, { is } }, };</pre
 	{ { "quux", Integer.class } },
 	{ { "corge", Integer.class } },
 	};
-Cli cli = new Cli(spec, Cli.Mod.HELP);
+Cli cli = new Cli(spec);
 cli.parse("--help");</pre>
 	<pre class="results">USAGE: EXECUTABLE [options] &lt;arg&gt;*
 
@@ -339,10 +374,19 @@ cli.parse("--help");</pre>
 	--bar               a boolean option
 	--baz               a boolean option
 
-and now for something completely different
+    and now for something completely different
 
 	--quux       &lt;val&gt;  whole number option
 	--corge      &lt;val&gt;  whole number option</pre>
+	<p>
+		Note that the left margin is indented to line up with the options
+		being described. The normal text wrapping rules will apply to this
+		text. Also,
+		<code>{ { Cli.Opt.TEXT } }</code>
+		is functionally equivalent to the much more concise
+		<code>{ }</code>
+		.
+	</p>
 	<h3>
 		<code>NAME</code>
 	</h3>
@@ -357,7 +401,7 @@ and now for something completely different
 		wrapped your Java executable in something more comfortable on the
 		command line:
 	</p>
-	<pre>{ { Cli.Opt.NAME, MyClass.class.toString() } }</pre>
+	<pre>{ { Cli.Opt.NAME, "java " + MyClass.class.getName() } }</pre>
 	<p>
 		If you provide no
 		<code>NAME</code>
@@ -374,9 +418,9 @@ and now for something completely different
 		<code>VERSION</code>
 		constant. The next argument will be stringified to produce a version
 		number.
-		<pre>{ { Cli.Opt.VERSION, 1.5 } }</pre>
-		or 
-		<pre>{ { Cli.Opt.VERSION, "1.5.1" } }</pre>
+	<pre>{ { Cli.Opt.VERSION, 1.5 } }</pre>
+	or
+	<pre>{ { Cli.Opt.VERSION, "1.5.1" } }</pre>
 	</p>
 	<p>
 		<code>dfh.cli</code>

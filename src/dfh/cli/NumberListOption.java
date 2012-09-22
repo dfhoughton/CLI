@@ -8,9 +8,6 @@
  */
 package dfh.cli;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import dfh.cli.NumberOption.NumType;
 
 /**
@@ -20,12 +17,8 @@ import dfh.cli.NumberOption.NumType;
  * @author David F. Houghton
  * 
  */
-public class NumberListOption extends CollectionOption<Number, List<Number>> {
+public class NumberListOption extends ListOption<Number> {
 	private final NumType it;
-
-	{
-		value = new ArrayList<Number>();
-	}
 
 	public NumberListOption(Object cz) {
 		it = NumType.obj2type(cz);
@@ -33,24 +26,19 @@ public class NumberListOption extends CollectionOption<Number, List<Number>> {
 	}
 
 	@Override
-	public String description() {
-		if (description == null) {
-			switch (it) {
-			case flt:
-			case dbl:
-			case bigdec:
-				return "a list of floating point numbers";
-			default:
-				return "a list of integers";
-			}
-		}
-		return description;
+	protected Number handle(String s) throws ValidationException {
+		return NumType.parse(it, s);
 	}
 
 	@Override
-	public void validate() throws ValidationException {
-		for (String stored : storageList) {
-			value.add(NumType.parse(it, stored));
+	protected String type() {
+		switch (it) {
+		case flt:
+		case dbl:
+		case bigdec:
+			return "floating point numbers";
+		default:
+			return "integers";
 		}
 	}
 

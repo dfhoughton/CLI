@@ -1,3 +1,11 @@
+/*
+ * dfh.cli -- a command line argument parsing library for Java
+ * 
+ * Copyright (C) 2012 David F. Houghton
+ * 
+ * This software is licensed under the LGPL. Please see accompanying NOTICE file
+ * and lgpl.txt.
+ */
 package dfh.cli.coercions;
 
 import java.util.ArrayList;
@@ -42,5 +50,10 @@ public class RxCoercion extends Coercion<Pattern> {
 		Collection<String> list = new ArrayList<String>(1);
 		list.add("value must parse as regex");
 		return list;
+	}
+
+	@Override
+	public String type() {
+		return Pattern.class.getCanonicalName();
 	}
 }
