@@ -14,7 +14,7 @@ TODO
 . make internationalizable
 . create unit tests for more of the validation rules
 . remove unnecessary IntSet?
-. document new blank line syntax
+* document new blank line syntax
 . create an example directory
 . document how to produce a branching CLI such as you have in git
   and cvs
@@ -23,7 +23,7 @@ TODO
 . document automatic addition of "repeatable" to option descriptions
 . document Mod.NO_HELP
 . check error reporting when first option is unknown and other options are required
-. document coercions
+* document coercions
 * make unit tests to make sure coercions work when not set
 
 RELICS
