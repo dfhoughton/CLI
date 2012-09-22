@@ -16,7 +16,6 @@ import org.junit.Test;
 import dfh.cli.Cli;
 import dfh.cli.Cli.Res;
 import dfh.cli.Coercion;
-import dfh.cli.ValidationException;
 import dfh.cli.coercions.DateCoercion;
 import dfh.cli.coercions.FileCoercion;
 

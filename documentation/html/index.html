@@ -54,8 +54,10 @@
 	{ { "foo" } },                    // boolean option
 	{ { "bar", 'b' } },               // boolean with short and long versions
 	{ { 'c' }, { "usually false" } }, // boolean with description
+	{ },                              // blank line in usage information
 	{ { 'd', Integer.class } },       // integer
 	{ { 'e', Integer.class, 1 } },    // integer with default
+	{ { } },                          // another way to specify a blank line
 	// floating point with a description and a name for its argument
 	{ { 'f', Double.class }, { "some number", "num" } },
 	// float with a restriction
@@ -69,25 +71,28 @@
 	// argument list description
 	{ { Cli.Opt.ARGS, "quux", "corge", "others", Cli.Opt.PLUS } },
 };
-Cli cli = new Cli(spec, Cli.Mod.HELP);
+Cli cli = new Cli(spec);
 cli.parse("--help");</pre>
 	<p>produces the following usage information.</p>
-	<pre>USAGE: hotstuff [options] &lt;quux&gt; &lt;corge&gt; &lt;others&gt;+
+	<pre class="results">USAGE: hotstuff [options] &lt;quux&gt; &lt;corge&gt; &lt;others&gt;+
 
-	short description
+  short description
 
-	--foo            a boolean option
-	--bar -b         a boolean option
-	-c               usually false
-	-d        &lt;val&gt;  whole number option
-	-e        &lt;val&gt;  whole number option; default: 1
-	-f        &lt;num&gt;  some number
-	-g        &lt;val&gt;  floating point numerical option
-	-h        &lt;val&gt;  a set of strings; REQUIRED
+    --foo            a boolean option
+    --bar -b         a boolean option
+    -c               usually false
 
-	--help -?        print usage information
+    -d        &lt;int&gt;  integer option
+    -e        &lt;int&gt;  integer option; default: 1
 
-long description</pre>
+    -f        &lt;num&gt;  some number
+    -g        &lt;fp&gt;   floating point number option; value must be &gt; 0
+    -h        &lt;str&gt;  a set of strings; repeatable; REQUIRED
+
+    --help -?        print usage information
+
+long description
+</pre>
 	<h2>Overview</h2>
 	<p>
 		Most of the essential parts of using
@@ -103,7 +108,7 @@ long description</pre>
 		</li>
 		<li>create a <code>dfh.cli.Cli</code> object with the
 			specification, optionally passing in modifiers that add options or
-			change the object's behavior <pre>Cli cli = new Cli(spec, Cli.Mod.HELP);</pre>
+			change the object's behavior <pre>Cli cli = new Cli(spec);</pre>
 		</li>
 		<li>and you parse some arguments with this object <pre>cli.parse("--help");</pre>
 		</li>
@@ -112,7 +117,7 @@ long description</pre>
 	<ol start="4">
 		<li>extract the parsed values <pre>boolean foo = cli.bool("foo"), bar = cli.bool("bar");
 Integer d = cli.integer("d");
-Set&lt;String&gt; h = (Set&lt;String&gt;) cli.stringCollection("h");</pre></li>
+Set&lt;String&gt; h = (Set&lt;String&gt;) cli.collection("h");</pre></li>
 		<li>and do some additional validation beyond what was done during
 			argument parsing<pre>if (cli.bool("c") &amp;&amp; bar)
 	cli.die("Not both -c and --bar!!! We go no further!");
@@ -135,7 +140,7 @@ cli.errorCheck();</pre>
 	<a href="specification.html">here</a>.
 	<h3>modifiers</h3>
 	<p>For more information about stuff like this
-	<pre>Cli cli = new Cli(spec, <b>Cli.Mod.HELP</b>);</pre>
+	<pre>Cli cli = new Cli(spec, <b>Cli.Mod.THROW_EXCEPTION</b>);</pre>
 	go
 	<a href="modifiers.html">here</a>.
 	</p>

@@ -158,7 +158,9 @@ Date d2 = (Date) cli.object("date2");</pre>
 		<code>dfh.cli.coercions</code>
 		provides the following coercions.
 	</p>
-	<h5>java.util.Date</h5>
+	<h5>
+		<code>java.util.Date</code>
+	</h5>
 	<pre>Object[][][] spec = {
     {{ "date1", DateCoercion.C }},                                     // default date format
     {{ "date2", new DateCoercion("yyyyMMdd", "yyyy", "yyyy/MM/dd") }}, // a variety of date formats
@@ -178,14 +180,18 @@ Date d = (Date) cli.object("date1");</pre>
 		will try these in order. For a parse to be successful it must consume
 		all characters in the option's argument.
 	</p>
-	<h5>java.util.regex.Pattern</h5>
+	<h5>
+		<code>java.util.regex.Pattern</code>
+	</h5>
 	<pre>Object[][][] spec = {
     {{ "pat", RxCoercion.C, "^pat$" }},
 };
 Cli cli = new Cli(spec);
 cli.parse(args);
 Pattern p = (Pattern) cli.object("pat");</pre>
-	<h5>java.io.File</h5>
+	<h5>
+		<code>java.io.File</code>
+	</h5>
 	<pre>Object[][][] spec = {
     {{ 'f', FileCoercion.C, File.createTempFile("temporary", null) }},
 };
@@ -197,7 +203,9 @@ File f = (File) cli.object("f");</pre>
 		coerces a file name into a file object. It does no validation of the
 		existence, readability, or writeability of the file created, however.
 	</p>
-	<h5>java.io.PrintStream</h5>
+	<h5>
+		<code>java.io.PrintStream</code>
+	</h5>
 	<pre>Object[][][] spec = {
     {{ "log", StreamCoercion.C, System.err }},
 };
@@ -330,6 +338,90 @@ String foo = cli.string("foo");</pre>
 		all options are assigned values. Unlike options, arguments are only
 		checked for existence, not type. Any argument validation must follow
 		command line parsing.</p>
+	<h3>Example Specifications</h3>
+	<h4>default</h4>
+	<pre>Object[][][] spec = {
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;arg&gt;*
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information
+	</pre>
+	<h4>no args</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options]
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information</pre>
+	<h4>fixed args</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS, "bar", "baz" }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;bar&gt; &lt;baz&gt;
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information</pre>
+	<h4>optional args</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS , "bar", Cli.Opt.QMARK }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;bar&gt;?
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information</pre>
+	<h4>required argument list</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS, "bar", Cli.Opt.PLUS }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;bar&gt;+
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information
+</pre>
+	<h4>optional argument list</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS, "bar", Cli.Opt.STAR }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;bar&gt;*
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information</pre>
+	<h4>mixed</h4>
+	<pre>Object[][][] spec = {
+    {{ Cli.Opt.ARGS, "bar", "baz", Cli.Opt.QMARK, "corge", Cli.Opt.STAR }},
+    {{ "foo" }},
+};</pre>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;bar&gt; &lt;baz&gt;? &lt;corge&gt;*
+
+    --foo           a boolean option
+
+    --help -? -h    print usage information</pre>
+	<h4>argument order</h4>
+	<p>
+		Argument parsing doesn't backtrack. This means required arguments must
+		be listed before optional arguments and any argument name modified by
+		<code>Cli.Opt.STAR</code>
+		or
+		<code>Cli.Opt.PLUS</code>
+		must appear last. If you attempt an impossible argument order this
+		will be caught during
+		<code>Cli</code>
+		construction and an error will be thrown.
+	</p>
 	<h3>double dash</h3>
 	<p>To halt option parsing and force all remaining items on the
 		command line to be parsed as arguments, one may provide a double dash
@@ -392,11 +484,6 @@ d</pre>
 String foo = cli.argument("foo");</pre>
 	<p>As with repeatable options, this same method will retrieve the
 		first in a list of named slurped arguments (see below).
-	<h3>optional single argument</h3>
-	<p>
-		An argument marked with
-		<code>Cli.Opt.QMARK</code>
-		is optional.
 	<h3>slurped</h3>
 	<p>
 		A slurped argument is a named argument marked with
