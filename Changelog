@@ -11,6 +11,7 @@
      collection type if necessary
    * fixed bug when retrieving unset optional arguments
    * added handling of defaults to collection options
+   * removed the deprecated Cli.Mod.HELP
 
 2.01, 18 September 2012
    * fixed issue with unset coerced options
