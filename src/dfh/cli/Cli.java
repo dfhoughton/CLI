@@ -105,14 +105,6 @@ public class Cli {
 	 */
 	public enum Mod {
 		/**
-		 * Auto-generate help text. See {@link Cli#HELP_FLAGS}. The
-		 * auto-generation of help has become the default so this modifier is
-		 * deprecated and is ignored during parsing.
-		 * 
-		 * @deprecated
-		 */
-		HELP,
-		/**
 		 * Do not auto-generate a help option.
 		 */
 		NO_HELP,
