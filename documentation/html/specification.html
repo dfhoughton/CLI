@@ -216,6 +216,17 @@
 		may be provided to the constructor. The pattern must match against the
 		entire argument.
 	</p>
+	<h4>Silencing Noisy Validation Rules</h4>
+	<p>
+		Many validation rules add text to the option description that appears
+		in the usage information. If you wish to remove the contribution of a
+		particular rule from the description, you can call
+		<code>ValidationRule.shh()</code>
+		, like so:
+	</p>
+	<pre>{ { 'a', Integer.class }, {}, { new IntSet(1, 5, 28)<b>.shh()</b> } }</pre>
+	<p>This method sets the rule to be quiet and returns the rule
+		itself.</p>
 	<h2>
 		<code>dfh.cli.Cli.Opt</code>
 		Lines

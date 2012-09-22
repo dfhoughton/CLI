@@ -19,7 +19,7 @@ TODO
 . document how to produce a branching CLI such as you have in git
   and cvs
 - document changes listed in change log for version 1.07
-. document ValidationRule.shh()
+* document ValidationRule.shh()
 * document automatic addition of "repeatable" to option descriptions
 * document Mod.NO_HELP
 . check error reporting when first option is unknown and other options are required
