@@ -408,6 +408,18 @@ public class CliTest {
 	}
 
 	@Test
+	public void stringListWithDefault() {
+		Object[][][] spec = {
+		//
+		{ { "foo", String.class, "bar" }, null, { Res.REPEATABLE } },//
+		};
+		Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+		cli.parse();
+		assertTrue("contains bar", cli.collection("foo").contains("bar"));
+		assertEquals("contains 1 items", 1, cli.collection("foo").size());
+	}
+
+	@Test
 	public void integerSet() {
 		Object[][][] spec = {
 		//

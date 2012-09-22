@@ -1,14 +1,16 @@
+/*
+ * dfh.cli -- a command line argument parsing library for Java
+ * 
+ * Copyright (C) 2012 David F. Houghton
+ * 
+ * This software is licensed under the LGPL. Please see accompanying NOTICE file
+ * and lgpl.txt.
+ */
 package dfh.cli;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class CoercedList<K> extends CollectionOption<K, List<K>> {
+public class CoercedList<K> extends ListOption<K> {
 
 	protected final Coercion<K> c;
-	{
-		value = new ArrayList<K>();
-	}
 
 	public CoercedList(Coercion<K> c) {
 		this.c = c;
@@ -17,17 +19,13 @@ public class CoercedList<K> extends CollectionOption<K, List<K>> {
 	}
 
 	@Override
-	public String description() {
-		if (description == null)
-			return "a list of " + c.type();
-		return description;
+	protected K handle(String s) throws ValidationException {
+		return c.coerce(s);
 	}
 
 	@Override
-	public void validate() throws ValidationException {
-		for (String stored : storageList) {
-			value.add(c.coerce(stored));
-		}
+	protected String type() {
+		return c.type();
 	}
 
 }

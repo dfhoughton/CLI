@@ -8,9 +8,6 @@
  */
 package dfh.cli;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import dfh.cli.NumberOption.NumType;
 
 /**
@@ -20,12 +17,8 @@ import dfh.cli.NumberOption.NumType;
  * @author David F. Houghton
  * 
  */
-public class NumberSetOption extends CollectionOption<Number, Set<Number>> {
+public class NumberSetOption extends SetOption<Number> {
 	private final NumType it;
-
-	{
-		value = new LinkedHashSet<Number>();
-	}
 
 	public NumberSetOption(Object cz) {
 		it = NumType.obj2type(cz);
@@ -33,25 +26,19 @@ public class NumberSetOption extends CollectionOption<Number, Set<Number>> {
 	}
 
 	@Override
-	public String description() {
-		if (description == null) {
-			switch (it) {
-			case flt:
-			case dbl:
-			case bigdec:
-				return "a set of floating point numbers";
-			default:
-				return "a set of integers";
-			}
-		}
-		return description;
+	protected Number handle(String s) throws ValidationException {
+		return NumType.parse(it, s);
 	}
 
 	@Override
-	public void validate() throws ValidationException {
-		for (String stored : storageList) {
-			value.add(NumType.parse(it, stored));
+	protected String type() {
+		switch (it) {
+		case flt:
+		case dbl:
+		case bigdec:
+			return "floating point numbers";
+		default:
+			return "integers";
 		}
 	}
-
 }

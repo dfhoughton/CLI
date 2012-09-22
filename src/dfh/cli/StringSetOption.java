@@ -8,26 +8,19 @@
  */
 package dfh.cli;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-public class StringSetOption extends CollectionOption<String, Set<String>> {
+public class StringSetOption extends SetOption<String> {
 	{
-		value = new LinkedHashSet<String>();
 		argDescription = "str";
 	}
 
 	@Override
-	public String description() {
-		if (description == null)
-			return "a set of strings";
-		return description;
+	protected String handle(String s) {
+		return s;
 	}
 
 	@Override
-	public void validate() throws ValidationException {
-		for (String s : storageList)
-			value.add(s);
+	protected String type() {
+		return "strings";
 	}
 
 }

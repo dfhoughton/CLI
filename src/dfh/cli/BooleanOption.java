@@ -27,7 +27,8 @@ public class BooleanOption extends Option<Boolean> {
 			if (def == null) {
 				value = found;
 			} else {
-				value = found ? !def : def;
+				Boolean b = (Boolean) def;
+				value = found ? !b : b;
 			}
 		} else {
 			try {

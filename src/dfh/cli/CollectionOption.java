@@ -72,4 +72,40 @@ public abstract class CollectionOption<K, C extends Collection<K>> extends
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public C value() {
+		if (value.isEmpty() && def != null) {
+			value.add((K) def);
+		}
+		return value;
+	}
+
+	@Override
+	public void setDefault(Object def) throws ValidationException {
+		if (def instanceof String)
+			this.def = handle(def.toString());
+		else
+			this.def = def;
+	}
+
+	/**
+	 * @param s
+	 *            an option value represented as a string
+	 * @return an object of the type in this collection
+	 * @throws ValidationException
+	 */
+	protected abstract K handle(String s) throws ValidationException;
+
+	/**
+	 * @return the type of object in this collection
+	 */
+	protected abstract String type();
+
+	@Override
+	public void validate() throws ValidationException {
+		for (String stored : storageList) {
+			value.add(handle(stored));
+		}
+	}
 }

@@ -10,6 +10,7 @@
      methods; use collection(String) instead, casting to the appropriate
      collection type if necessary
    * fixed bug when retrieving unset optional arguments
+   * added handling of defaults to collection options
 
 2.01, 18 September 2012
    * fixed issue with unset coerced options

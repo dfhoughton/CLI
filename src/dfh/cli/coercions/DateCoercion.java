@@ -1,3 +1,11 @@
+/*
+ * dfh.cli -- a command line argument parsing library for Java
+ * 
+ * Copyright (C) 2012 David F. Houghton
+ * 
+ * This software is licensed under the LGPL. Please see accompanying NOTICE file
+ * and lgpl.txt.
+ */
 package dfh.cli.coercions;
 
 import java.text.ParsePosition;
@@ -21,6 +29,11 @@ import dfh.cli.ValidationException;
  * 
  */
 public class DateCoercion extends Coercion<Date> {
+	/**
+	 * Constant singleton instance of this coercion that can be used in lieu of
+	 * {@code new DateCoercion()}.
+	 */
+	public static final DateCoercion C = new DateCoercion();
 	protected final SimpleDateFormat[] parser;
 
 	/**
@@ -89,6 +102,11 @@ public class DateCoercion extends Coercion<Date> {
 	@Override
 	public String argName() {
 		return "date";
+	}
+
+	@Override
+	public String type() {
+		return Date.class.getCanonicalName();
 	}
 
 	@Override

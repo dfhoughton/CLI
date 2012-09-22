@@ -23,22 +23,28 @@
 		generally extract them into their own variables immediately after
 		parsing.
 	</p>
-	<pre>Object[][][] spec = {
-	{ { "foo" } },
-	{ { "bar" } },
-	{ { "baz" } },
-	{ { "quux", Integer.class } },
-	{ { "corge", Integer.class } },
-	};
+	<pre>// <b>command line specification</b>
+Object[][][] spec = {
+    { { Cli.Opt.ARGS, "qux" } },
+    { { "foo" } },
+    { { "bar" } },
+    { { "baz" } },
+    { { "quux", Integer.class } },
+    { { "corge", Integer.class } },
+};
+// <b>parse arguments</b>
 Cli cli = new Cli(spec);
 cli.parse(args);
+// <b>obtain option and argument values</b>
+String qux = cli.argument("qux");
 boolean foo = cli.bool("foo"), bar = cli.bool("bar"), baz = cli.bool("baz");
 Integer quux = cli.integer("quux"), corge = cli.integer("corge");</pre>
 	<span id="toc"></span>
-	<h2>
+	<h2>Options</h2>
+	<h3>
 		The Significance of
 		<code>null</code>
-	</h2>
+	</h3>
 	<p>
 		Except for boolean options and those with default values, it is always
 		possible that an option remains unset. In these cases you should use
@@ -53,7 +59,10 @@ Integer quux = cli.integer("quux"), corge = cli.integer("corge");</pre>
 		require options to have a a value you should mark them as required or
 		provide a default.
 	</p>
-	<h2>Numeric Values</h2>
+	<h3>Types</h3>
+	<h4>Boolean</h4>
+	<h4>String</h4>
+	<h4>Numeric</h4>
 	<p>
 		<code>dfh.cli</code>
 		allows you to specify an option as containing most of the subtypes of
@@ -98,7 +107,46 @@ System.out.println(cli.num("g"));            // 1</pre>
 	<code>null</code>
 	will be returned.
 	</p>
-	<h2>Sets</h2>
+	<h4>Coercions</h4>
+	<p>
+		To produce options containing any value other than those listed above,
+		one must either &ldquo;coerce&rdquo; strings into the desired object
+		type oneself, or use a
+		<code>dfh.cli.Coercion</code>
+		class.
+	</p>
+	<pre>Object[][][] spec = {
+    {{ "date1", String.class, "20120922" }},
+    {{ "date2", DateCoercion.C, "20120921" }},
+};
+Cli cli = new Cli(spec);
+cli.parse();
+Date d1 = new SimpleDateFormat("yyyyMMdd").parse(cli.string("date1"));
+Date d2 = (Date) cli.object("date2");</pre>
+	<p>The advantages of using pre-defined coercions instead of doing
+		it oneself is that they</p>
+	<ul>
+		<li>are more terse and declarative</li>
+		<li>prevent fewer opportunities for bugs</li>
+		<li>handle validation for you</li>
+		<li>give you a pretty command line</li>
+	</ul>
+	<p>For example the specification above gives you the following
+		usage text:</p>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;arg&gt;*
+
+    --date1      &lt;str&gt;   string option; default: 20120922
+    --date2      &lt;date&gt;  java.util.Date; date string must be parsable as
+                         'yyyyMMdd'; default: Fri Sep 21 00:00:00 EDT 2012
+
+    --help -? -h         print usage information</pre>
+	<p>
+		All the coercions in
+		<code>dfh.cli.coercions</code>
+		provide a singleton instance named
+		<code>C</code>, though you may also simply instantiate them.
+	</p>
+	<h3>Sets</h3>
 	<p>
 		An option marked via
 		<code>Cli.Res.SET</code>
@@ -120,7 +168,7 @@ Set&lt;String&gt; foo = (Set&lt;String&gt;) cli.collection("foo");</pre>
 		, a specification for a set of booleans named "f", will throw a
 		<code>dfh.cli.ValidationException</code>
 	</p>
-	<h2>Lists</h2>
+	<h3>Lists</h3>
 	<p>
 		If an option is marked as
 		<code>Cli.Res.REPEATABLE</code>
@@ -139,7 +187,7 @@ List&lt;String&gt; foo = (List&lt;String&gt;) cli.collection("foo");</pre>
 		<code>java.util.LinkedList</code>
 		.
 	</p>
-	<h2>First Items</h2>
+	<h3>First Items</h3>
 	<p>The same method that retrieves the value of a non-repeatable
 		option will obtain the first value of a repeatable one -- the first
 		item in a set or list.</p>
@@ -201,13 +249,15 @@ d</pre>
 		<code>*</code>
 		or
 		<code>?</code>
-		is required.
-	</p>
+		is required --
 	<pre>{ { Cli.Opt.ARGS, "foo" } }</pre>
-	<p>as opposed to</p>
-	<pre>{ { Cli.Opt.ARGS, "foo", <b>Cli.Opt.STAR</b> } }</pre>
-	<p>or</p>
-	<pre>{ { Cli.Opt.ARGS, "foo", <b>Cli.Opt.QMARK</b> } }</pre>
+	or
+	<pre>{ { Cli.Opt.ARGS, "foo", Cli.Opt.PLUS } }</pre>
+	as opposed to
+	<pre>{ { Cli.Opt.ARGS, "foo", Cli.Opt.STAR } }</pre>
+	or
+	<pre>{ { Cli.Opt.ARGS, "foo", Cli.Opt.QMARK } }</pre>
+	</p>
 	<p>Named arguments can be retrieved by their name.</p>
 	<pre>{ { Cli.Opt.ARGS, "foo" } };
 //...
@@ -215,7 +265,10 @@ String foo = cli.argument("foo");</pre>
 	<p>As with repeatable options, this same method will retrieve the
 		first in a list of named slurped arguments (see below).
 	<h3>optional single argument</h3>
-	<p>An argument marked with <code>Cli.Opt.QMARK</code> is optional.
+	<p>
+		An argument marked with
+		<code>Cli.Opt.QMARK</code>
+		is optional.
 	<h3>slurped</h3>
 	<p>
 		A slurped argument is a named argument marked with

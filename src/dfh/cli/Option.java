@@ -35,7 +35,7 @@ public abstract class Option<K> {
 	protected String stored;
 
 	protected K value;
-	protected K def;
+	protected Object def;
 	protected String argDescription = "val";
 	protected String optionDescription;
 	protected String description;
@@ -64,9 +64,10 @@ public abstract class Option<K> {
 		this.hasArgument = hasArgument;
 	}
 
+	@SuppressWarnings("unchecked")
 	public K value() {
 		if (value == null)
-			return def;
+			return (K) def;
 		return value;
 	}
 
@@ -147,8 +148,9 @@ public abstract class Option<K> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public K getDefault() {
-		return def;
+		return (K) def;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -172,8 +174,9 @@ public abstract class Option<K> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	void assignDefault() {
-		value = def;
+		value = (K) def;
 	}
 
 	public void setDescription(String string) {
