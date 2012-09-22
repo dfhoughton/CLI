@@ -1,3 +1,5 @@
+2.03
+
 2.02, 22 September 2012
    * changed names of numeric type option accessors from ilong to lng and
      ishort to shrt
