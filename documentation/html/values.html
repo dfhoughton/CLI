@@ -164,7 +164,7 @@ Date d2 = (Date) cli.object("date2");</pre>
     {{ "date2", new DateCoercion("yyyyMMdd", "yyyy", "yyyy/MM/dd") }}, // a variety of date formats
 };
 Cli cli = new Cli(spec);
-cli.parse();
+cli.parse(args);
 Date d = (Date) cli.object("date1");</pre>
 	<p>
 		<code>DateCoercion</code>
@@ -179,9 +179,101 @@ Date d = (Date) cli.object("date1");</pre>
 		all characters in the option's argument.
 	</p>
 	<h5>java.util.regex.Pattern</h5>
+	<pre>Object[][][] spec = {
+    {{ "pat", RxCoercion.C, "^pat$" }},
+};
+Cli cli = new Cli(spec);
+cli.parse(args);
+Pattern p = (Pattern) cli.object("pat");</pre>
 	<h5>java.io.File</h5>
+	<pre>Object[][][] spec = {
+    {{ 'f', FileCoercion.C, File.createTempFile("temporary", null) }},
+};
+Cli cli = new Cli(spec);
+cli.parse(args);
+File f = (File) cli.object("f");</pre>
+	<p>
+		<code>FileCoercion</code>
+		coerces a file name into a file object. It does no validation of the
+		existence, readability, or writeability of the file created, however.
+	</p>
 	<h5>java.io.PrintStream</h5>
+	<pre>Object[][][] spec = {
+    {{ "log", StreamCoercion.C, System.err }},
+};
+Cli cli = new Cli(spec);
+cli.parse(args);
+PrintStream log = (PrintStream) cli.object("log");</pre>
+	<p>
+		<code>StreamCoercion</code>
+		takes a file name and turns it into a
+		<code>java.io.PrintStream</code>
+		printing into this file. I find I often use the arrangement
+		illustrated above, printing output to STDERR unless an output file is
+		provided.
+	</p>
 	<h5>ad hoc coercions</h5>
+	<p>
+		I have only created a few coercions I tend to use a lot. Frankly, I
+		doubt anyone will add to this list. After all, the whole point is to
+		type less and have few libraries on one's class path. If you have to
+		hande the string coercion yourself, it's easy enough to do it after
+		you've parsed the CLI arguments. However, it is easy enough to add
+		coercion classes simply by extending
+		<code>dfh.cli.Coercion</code>
+		. Here, for example, is the implementation of
+		<code>RxCoercion</code>
+		:<span class="fn">This is at the time of writing, of course.
+			I've stripped away imports, comments, and annotations for the sake of
+			concision.</span>
+	</p>
+	<pre>public class RxCoercion extends Coercion&lt;Pattern&gt; {
+
+    public static final RxCoercion C = new RxCoercion();
+
+    public Pattern coerce(String s) throws ValidationException {
+        try {
+            return Pattern.compile(s);
+        } catch (PatternSyntaxException e) {
+            throw new ValidationException(e.getMessage());
+        }
+    }
+
+    public String argName() {
+        return "rx";
+    }
+
+    public Collection&lt;String&gt; constraintDescriptions() {
+        Collection&lt;String&gt; list = new ArrayList&lt;String&gt;(1);
+        list.add("value must parse as regex");
+        return list;
+    }
+
+    public String type() {
+        return Pattern.class.getCanonicalName();
+    }
+}</pre>
+	<p>Most of this code serves to make the command line more
+		explanatory. Really the following would be a complete implementation
+		of the coercion.</p>
+	<pre>public class RxCoercion extends Coercion&lt;Pattern&gt; {
+    public Pattern coerce(String s) throws ValidationException {
+        try {
+            return Pattern.compile(s);
+        } catch (PatternSyntaxException e) {
+            throw new ValidationException(e.getMessage());
+        }
+    }
+}</pre>
+	<p>And if you're indifferent to printing out usage information in
+		the case of compilation failures, you can further simplify this to.</p>
+	<pre>public class RxCoercion extends Coercion&lt;Pattern&gt; {
+    public Pattern coerce(String s) throws ValidationException {
+        return Pattern.compile(s);
+    }
+}</pre>
+	<p>Something this small could easily be in-lined as an anonymous
+		inner class.</p>
 	<h3>Sets</h3>
 	<p>
 		An option marked via
