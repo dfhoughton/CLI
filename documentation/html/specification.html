@@ -172,13 +172,16 @@
                             "not a square");
             }
         } } },</pre>
+	<p>These values may be mixed and matched. For example, an option
+		can be required and repeatable, in which case the user must specify
+		one or more values for the option.</p>
+	<p>Most of the items one puts in the third array will modify the
+		option description. For instance, the description will mention if the
+		option is repeatable, and required options are boldly marked REQUIRED.</p>
 	<p>
-		These values may be mixed and matched. For example, an option can be
-		required and repeatable, in which case the user must specify one or
-		more values for the option. The fourth example above shows multiple
-		validation rules being applied to an option. Validation rules can be
-		generated ad hoc like this, but a number of useful rules are provided
-		in the package
+		The fourth example above shows multiple validation rules being applied
+		to an option. Validation rules can be generated ad hoc like this, but
+		a number of useful rules are provided in the package
 		<code>dfh.cli.rules</code>
 		among these are
 	</p>
