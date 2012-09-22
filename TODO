@@ -21,7 +21,7 @@ TODO
 - document changes listed in change log for version 1.07
 . document ValidationRule.shh()
 * document automatic addition of "repeatable" to option descriptions
-. document Mod.NO_HELP
+* document Mod.NO_HELP
 . check error reporting when first option is unknown and other options are required
 * document coercions
 * make unit tests to make sure coercions work when not set
