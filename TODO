@@ -18,6 +18,7 @@ TODO
 . document how to produce a branching CLI such as you have in git
   and cvs
 . check error reporting when first option is unknown and other options are required
+. improve javadocs
 
 RELICS
 ======
