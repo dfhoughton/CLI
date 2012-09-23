@@ -314,13 +314,59 @@ much longer description</pre>
 		<li>The right margin for wrapping text is 80 characters, though
 			this can be set with <code>Cli.setMargin(int)</code>
 		</li>
-		<li>Line breaks are preserved.</li>
-		<li>Whitespace inside wrapped lines is normalized to a single
-			space.</li>
+		<li>Whitespace inside wrapped text is normalized to a single
+			space. Marginal whitespace is trimmed.</li>
+		<li>Single line breaks not followed by whitespace are treated
+			like any other whitespace.</li>
+		<li>Double line breaks mark paragraph boundaries.</li>
 		<li>Any space at the beginning of the text or after a line break
 			indicates preformatted text. This turns off word wrapping and
 			whitespace normalization until the next line break.</li>
 	</ol>
+	<p>
+		So for example, the following text<span class="fn">This is from
+			the beginning of the second chapter of <i>Vaarallinen juhannus</i>,
+			by Tove Jansson. I was going to use the standard <i>lorem ipsum</i>
+			text, but then I figured why not branch out. Also, this example shows
+			that the word wrap algorithm can handle any character set. It doesn't
+			attempt to find syllable boundaries but only breaks on whitespace.
+		</span>
+	</p>
+	<pre>Se syttyi kapeasta juovasta, joka hapuili kauan pitkin taivaanrantaa
+ennen kuin uskalsi nousta korkeammalle.
+
+Oli tyyni ja kaunis ilma.
+
+Mutta laineet vy&ouml;ryiv&auml;t kiihke&auml;n&auml; sekamelskana yli uusien rantojen,
+jotka eiv&auml;t koskaan ennen olleet kohdanneet merta.
+Tulta sy&ouml;ksev&auml; vuori, joka oli saanut kaiken t&auml;m&auml;n aikaan, oli nut rauhoittunut.</pre>
+	<p>will wrap to</p>
+	<pre class="results">Se syttyi kapeasta juovasta, joka hapuili kauan pitkin taivaanrantaa ennen kuin 
+uskalsi nousta korkeammalle.
+
+Oli tyyni ja kaunis ilma.
+
+Mutta laineet vy&ouml;ryiv&auml;t kiihke&auml;n&auml; sekamelskana yli uusien rantojen, jotka eiv&auml;t 
+koskaan ennen olleet kohdanneet merta. Tulta sy&ouml;ksev&auml; vuori, joka oli saanut 
+kaiken t&auml;m&auml;n aikaan, oli nut rauhoittunut.</pre>
+	<p>and</p>
+	<pre>Se syttyi kapeasta juovasta, joka hapuili kauan pitkin taivaanrantaa
+ennen kuin uskalsi nousta korkeammalle.
+
+   Oli  tyyni 
+      ja kaunis            ilma.
+Mutta laineet vy&ouml;ryiv&auml;t kiihke&auml;n&auml; sekamelskana yli uusien rantojen,
+jotka eiv&auml;t koskaan ennen olleet kohdanneet merta.
+Tulta sy&ouml;ksev&auml; vuori, joka oli saanut kaiken t&auml;m&auml;n aikaan, oli nut rauhoittunut.</pre>
+	<p>will wrap to</p>
+	<pre class="results">Se syttyi kapeasta juovasta, joka hapuili kauan pitkin taivaanrantaa ennen kuin 
+uskalsi nousta korkeammalle.
+
+   Oli  tyyni 
+      ja kaunis            ilma.
+Mutta laineet vy&ouml;ryiv&auml;t kiihke&auml;n&auml; sekamelskana yli uusien rantojen, jotka eiv&auml;t 
+koskaan ennen olleet kohdanneet merta. Tulta sy&ouml;ksev&auml; vuori, joka oli saanut 
+kaiken t&auml;m&auml;n aikaan, oli nut rauhoittunut.</pre>
 	<h4>
 		load usage via
 		<code>dfh.cli.Cli.class.getClassLoader()</code>
@@ -328,7 +374,9 @@ much longer description</pre>
 	<p>
 		If you specify the resource as a string in the second array,
 		<code>dfh.cli.Cli</code>
-		will attempt to use its class loader to load the text in as a stream.
+		will attempt to use its class loader to load the text as a resource.
+		This is particularly handy if you want to pack the long usage text
+		into a jar file.
 	</p>
 	<pre>Object[][][] spec = { { { Cli.Opt.USAGE, "short description"},
 		{ "usage.txt" } }, };</pre>
