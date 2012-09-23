@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
@@ -820,6 +821,34 @@ public class CliTest {
 		} catch (RuntimeException e) {
 			String s = e.getMessage();
 			assertTrue("usage at end", s.trim().endsWith("bar"));
+		}
+	}
+
+	@Test
+	public void wordWrap() throws IOException {
+		try {
+			Object[][][] spec = {
+			//
+			{ { Opt.USAGE, "foo" }, { "vaarallinen_juhannus.txt" } },//
+			};
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+			fail("--help failed to throw exception");
+		} catch (RuntimeException e) {
+			String s = e.getMessage();
+			assertTrue("preformatted text 1",
+					s.indexOf("kaunis            ilma") > -1);
+			assertTrue("preformatted text 2",
+					Pattern.compile("^   Oli", Pattern.MULTILINE).matcher(s)
+							.find());
+			assertTrue("paragraph break",
+					Pattern.compile("korkeammalle.$\\s^$", Pattern.MULTILINE)
+							.matcher(s).find());
+			Matcher m = Pattern.compile("^.*$", Pattern.MULTILINE).matcher(s);
+			while (m.find()) {
+				String line = m.group();
+				assertTrue(line.trim().length() <= 80);
+			}
 		}
 	}
 
