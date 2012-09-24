@@ -14,8 +14,8 @@ TODO
 . make internationalizable
 . create unit tests for more of the validation rules
 . remove unnecessary IntSet?
-. create an example directory
-. document how to produce a branching CLI such as you have in git
+* create an example directory
+* document how to produce a branching CLI such as you have in git
   and cvs
 . check error reporting when first option is unknown and other options are required
 . improve javadocs
