@@ -1,0 +1,6 @@
+This application doesn't actually do anything. It does illustrate
+many of the things you can do, and in particular how to make a
+bipartite CLI as you see in git and other version control systems,
+but after the CLI logic there's just a little output to STDOUT.
+
+This paragraph merely illustrates a paragraph break, nothing more.
