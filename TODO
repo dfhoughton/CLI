@@ -21,6 +21,8 @@ TODO
 . improve javadocs
 . improve default reporting for StreamCoercion or any other coercion which 
   doesn't produce human-readable stringifications
+. add Cli.Res.SHH to silence description augmentation for a particular option
+. add Cli.Mod.SHH to silence description augmentation for all options
 
 RELICS
 ======
