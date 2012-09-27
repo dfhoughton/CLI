@@ -109,6 +109,13 @@ public class Cli {
 		 */
 		NO_HELP,
 		/**
+		 * Silence all the automatically inserted jibber jabber about defaults
+		 * and restrictions and so forth when displaying usage text. Provide
+		 * only minimal information or what is provided in the spec to override
+		 * it.
+		 */
+		SHH,
+		/**
 		 * Throw a {@link RuntimeException} when option parsing or validation
 		 * fails rather than calling {@link System#exit(int)}.
 		 */
@@ -141,7 +148,7 @@ public class Cli {
 		 * noting its default, that is' repeatable, and/or the descriptions of
 		 * its various restrictions.
 		 */
-		BRIEF
+		SHH
 	}
 
 	/**
@@ -187,6 +194,7 @@ public class Cli {
 	private static Pattern linePattern = Pattern.compile("^.*$",
 			Pattern.MULTILINE);
 	private int margin = 80;
+	private boolean silent = false;
 
 	public Cli(Object[][][] spec, Mod... mods) {
 		for (Object[][] cmd : spec) {
@@ -198,10 +206,17 @@ public class Cli {
 		}
 		boolean hasHelp = true;
 		for (Mod m : mods) {
-			if (m == Mod.THROW_EXCEPTION)
-				throwException = true;
-			else if (m == Mod.NO_HELP)
+			switch (m) {
+			case NO_HELP:
 				hasHelp = false;
+				break;
+			case SHH:
+				silent = true;
+				break;
+			case THROW_EXCEPTION:
+				throwException = true;
+				break;
+			}
 		}
 		// add blank line
 		if ((hasHelp || versionOption != null) && !options.isEmpty())
@@ -509,7 +524,7 @@ public class Cli {
 					case REQUIRED:
 						isRequired = true;
 						break;
-					case BRIEF:
+					case SHH:
 						isBrief = true;
 						break;
 					default:
@@ -818,7 +833,7 @@ public class Cli {
 				String optDesc = c.optionDescription();
 				String argDescription = c.argDescription();
 				StringBuilder b = new StringBuilder();
-				if (!c.isBrief()) {
+				if (!(silent || c.isBrief())) {
 					CharSequence cs = c.description();
 					if (c instanceof CollectionOption<?, ?>) {
 						addDelimiter(b, cs);

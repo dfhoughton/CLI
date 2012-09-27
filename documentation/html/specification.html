@@ -161,7 +161,8 @@
 { { 'b', Integer.class }, {}, { Cli.Res.REPEATABLE } },
 { { 'c', Integer.class }, {}, { Cli.Res.SET } },
 { { 'd', Integer.class }, {}, { Range.nonNegative() } },
-{ { 'e', Integer.class }, {},
+{ { 'e', Integer.class }, {}, { Range.nonNegative(), Cli.Res.SHH } },
+{ { 'f', Integer.class }, {},
         { Range.nonNegative(), new ValidationRule&lt;Integer&gt;() {
             @Override
             public void test(Integer arg)
@@ -175,11 +176,16 @@
 	<p>These values may be mixed and matched. For example, an option
 		can be required and repeatable, in which case the user must specify
 		one or more values for the option.</p>
-	<p>Most of the items one puts in the third array will modify the
-		option description. For instance, the description will mention if the
-		option is repeatable, and required options are boldly marked REQUIRED.</p>
 	<p>
-		The fourth example above shows multiple validation rules being applied
+		Most of the items one puts in the third array will modify the option
+		description. For instance, the description will mention if the option
+		is repeatable, and required options are boldly marked REQUIRED. The
+		<code>Cli.Res.SHH</code>
+		constant, on the other hand, will silence all the additional usage
+		text added via the third specification array.
+	</p>
+	<p>
+		The fifth example above shows multiple validation rules being applied
 		to an option. Validation rules can be generated ad hoc like this, but
 		a number of useful rules are provided in the package
 		<code>dfh.cli.rules</code>

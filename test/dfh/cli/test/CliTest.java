@@ -1788,4 +1788,55 @@ public class CliTest {
 		cli.parse();
 		assertNull(cli.argument("foo"));
 	}
+
+	@Test
+	public void displayRestriction() {
+		try {
+			Object[][][] spec = {
+					{ { "foo", Integer.class }, {}, { Res.REPEATABLE } },
+					{ { "bar", Integer.class }, {}, { Range.positive() } } };
+			Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+		} catch (Exception e) {
+			String s = e.getMessage();
+			assertTrue("repeatability noted", s.indexOf("repeatable") > -1);
+			assertTrue("restriction noted",
+					Pattern.compile("value\\s++must\\s++be\\s++>\\s++0")
+							.matcher(s).find());
+		}
+	}
+
+	@Test
+	public void silenceIndividualOption() {
+		try {
+			Object[][][] spec = {
+					{ { "foo", Integer.class }, {}, { Res.REPEATABLE, Res.SHH } },
+					{ { "bar", Integer.class }, {}, { Range.positive() } } };
+			Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+		} catch (Exception e) {
+			String s = e.getMessage();
+			assertTrue("repeatability hidden", s.indexOf("repeatable") == -1);
+			assertTrue("restriction noted",
+					Pattern.compile("value\\s++must\\s++be\\s++>\\s++0")
+							.matcher(s).find());
+		}
+	}
+
+	@Test
+	public void silenceAllOptions() {
+		try {
+			Object[][][] spec = {
+					{ { "foo", Integer.class }, {}, { Res.REPEATABLE } },
+					{ { "bar", Integer.class }, {}, { Range.positive() } } };
+			Cli cli = new Cli(spec, Mod.THROW_EXCEPTION, Mod.SHH);
+			cli.parse("--help");
+		} catch (Exception e) {
+			String s = e.getMessage();
+			assertTrue("repeatability hidden", s.indexOf("repeatable") == -1);
+			assertFalse("restriction hidden",
+					Pattern.compile("value\\s++must\\s++be\\s++>\\s++0")
+							.matcher(s).find());
+		}
+	}
 }
