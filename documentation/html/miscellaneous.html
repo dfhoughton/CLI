@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>dfh.cli.Cli</title>
+<link rel="icon" type="image/png" href="/dfh.png" />
+<link href="../css/dfh.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/pageutils.js"></script>
+<script type="text/javascript" src="headers.json"></script>
+<style type="text/css">
+.sm {
+	font-size: small;
+}
+</style>
+</head>
+<body onLoad="dfh.prepare('misc.', 'dfh.cli')">
+	<h1>Miscellaneous</h1>
+	<p>Things not covered elsewhere on this site.</p>
+	<span id="toc"></span>
+
+	<h2>Thread Safety</h2>
+	<p>
+		No measures have been taken to make a
+		<code>Cli</code>
+		thread safe. You should treat them as you would a
+		<code>HashMap</code>
+		: synchronized access to internal state if you are performing any
+		operations that change it.
+	</p>
+	<h2>Serialization</h2>
+	<p>
+		All the non-abstract classes of the various
+		<code>dfh.cli</code>
+		packages and most of the abstract ones implement
+		<code>java.io.Serializable</code>
+		. This means if you are just using the classes in these packages you
+		can serialize without worries. If you are extending abstract classes
+		or implementing interfaces, it's up to you to remember to make things
+		serializable if this is what you want. You won't necessarily get
+		warnings if you forget.
+	</p>
+	<h2>Overriding Usage</h2>
+	<p>
+		Suppose you don't like all this usage stuff and want to roll your own.
+		Suit yourself. You'll need to override the
+		<code>void&nbsp;dfh.cli.Cli.usage(int,&nbsp;PrintStream)</code>
+		method. E.g.,
+	</p>
+	<pre>Cli cli = new Cli(spec) {
+    @Override
+    public void usage(int status, PrintStream sink) {
+        sink.println("Bzzzzt!!!");
+        sink.flush();
+    }
+};</pre>
+	<h2>
+		Assorted
+		<code>dfh.cli.Cli</code>
+		Methods
+	</h2>
+	<h3>
+		<code>boolean isSet(String)</code>
+	</h3>
+	<p>Reports whether a value was assigned to the given option by the
+		user as opposed to set by default. This was designed primarily as a
+		more declarative expression than</p>
+	<pre>Object foo = cli.object("foo");
+if (foo != null)
+    ...</pre>
+	<p>Instead you use</p>
+	<pre>if (cli.isSet("foo"))
+    ...</pre>
+	<h3>
+		<code>Object def(String)</code>
+	</h3>
+	<p>Returns the default value of the named option.</p>
+	<h3>
+		<code>String dump()</code>
+	</h3>
+	<p>
+		Prints out a human-readable summary of all the options and arguments
+		given to the
+		<code>Cli</code>
+		. This is useful for logging, for example.
+	</p>
+	<pre>Object[][][] spec = { 
+    { { Opt.ARGS, "one", "many", Opt.PLUS } },
+    { { "foo" } },
+    { { "bar", String.class, "quux" }, {}, { Res.REPEATABLE } },
+    { { "baz", Double.class }, {}, { Res.SET } }, 
+};
+Cli cli = new Cli(spec);
+cli.parse("--baz=.5", "--baz=10", "larry", "moe", "curly");
+System.out.println(cli.dump());</pre>
+		<pre class="results">options:
+foo: false
+bar: quux
+baz: 0.5, 10.0
+arguments:
+one: larry
+many: moe, curly
+</pre>
+	<h3>
+		<code>void clear()</code>
+	</h3>
+	<p>
+		Returns the
+		<code>Cli</code>
+		to its state prior to parsing command line options. This is chiefly
+		useful if you're reusing a
+		<code>Cli</code>
+		for some reason.
+		</p>
+</body>
+</html>

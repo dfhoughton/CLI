@@ -23,7 +23,7 @@ TODO
   doesn't produce human-readable stringifications
 * add Cli.Res.SHH to silence description augmentation for a particular option
 * add Cli.Mod.SHH to silence description augmentation for all options
-. add miscellaneous section to documentation to cover the bits left out elsewhere
+* add miscellaneous section to documentation to cover the bits left out elsewhere
 . make the option names wrap (maybe they already do? I forget)
 * make non-abstract dfh.cli classes serializable
 
