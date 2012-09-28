@@ -1513,6 +1513,11 @@ public class Cli implements Serializable {
 		Option<?> opt = options.get(string);
 		if (opt == null)
 			return false;
+		if (opt instanceof CollectionOption<?, ?>) {
+			@SuppressWarnings("unchecked")
+			CollectionOption<?, Collection<?>> c = (CollectionOption<?, Collection<?>>) opt;
+			return !c.value.isEmpty();
+		}
 		return opt.value != null;
 	}
 

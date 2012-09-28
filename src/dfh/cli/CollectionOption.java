@@ -62,14 +62,14 @@ public abstract class CollectionOption<K, C extends Collection<K>> extends
 
 	@Override
 	void terminalValidation() throws ValidationException {
-		if (!value().isEmpty()) {
-			for (K k : value()) {
+		if (!value.isEmpty()) {
+			for (K k : value) {
 				for (ValidationRule<K> v : itemValidationRules) {
 					v.test(k);
 				}
 			}
 			for (ValidationRule<C> v : validationRules)
-				v.test(value());
+				v.test(value);
 		}
 	}
 

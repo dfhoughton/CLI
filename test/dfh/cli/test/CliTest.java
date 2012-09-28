@@ -1577,6 +1577,42 @@ public class CliTest {
 	}
 
 	@Test
+	public void isSetCollectionTest1() {
+		Object[][][] spec = { { { "foo", Integer.class, 1 }, {},
+				{ Res.REPEATABLE } } };
+		Cli cli = new Cli(spec);
+		cli.parse("--foo", "2");
+		assertTrue(cli.isSet("foo"));
+	}
+
+	@Test
+	public void isSetCollectionTest2() {
+		Object[][][] spec = { { { "foo", Integer.class, 1 }, {},
+				{ Res.REPEATABLE } } };
+		Cli cli = new Cli(spec);
+		cli.parse();
+		assertFalse(cli.isSet("foo"));
+	}
+
+	@Test
+	public void isSetCollectionTest3() {
+		Object[][][] spec = { { { "foo", Integer.class }, {},
+				{ Res.REPEATABLE } } };
+		Cli cli = new Cli(spec);
+		cli.parse("--foo", "2");
+		assertTrue(cli.isSet("foo"));
+	}
+
+	@Test
+	public void isSetCollectionTest4() {
+		Object[][][] spec = { { { "foo", Integer.class }, {},
+				{ Res.REPEATABLE } } };
+		Cli cli = new Cli(spec);
+		cli.parse();
+		assertFalse(cli.isSet("foo"));
+	}
+
+	@Test
 	public void qmarkHelp() {
 		Object[][][] spec = { { {} } };
 		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
@@ -1620,6 +1656,7 @@ public class CliTest {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	@Test
 	public void setRestriction3() {
 		Object[][][] spec = { { { "foo", Integer.class }, {},
@@ -1636,6 +1673,7 @@ public class CliTest {
 		cli.parse("--foo", "1", "--foo", "2");
 	}
 
+	@SuppressWarnings("serial")
 	@Test
 	public void setRestriction4() {
 		Object[][][] spec = { { { "foo", Integer.class }, {},
