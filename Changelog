@@ -1,4 +1,4 @@
-2.03
+2.03, 28 September 2012
    * renamed Cli.Res.BRIEF to Cli.Res.SHH
    * created Cli.Mod.SHH
    * fixed bug where isSet(String) was not working with collection options
