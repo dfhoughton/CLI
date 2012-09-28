@@ -29,4 +29,9 @@ public class CoercedSet<K> extends SetOption<K> implements Serializable {
 	protected String type() {
 		return c.type();
 	}
+
+	@Override
+	protected String describeDefault() {
+		return c.describeDefault(def);
+	}
 }

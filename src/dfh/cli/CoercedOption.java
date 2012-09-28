@@ -40,4 +40,8 @@ public class CoercedOption<K> extends Option<K> {
 			this.def = (K) def;
 	}
 
+	@Override
+	protected String describeDefault() {
+		return c.describeDefault(def);
+	}
 }

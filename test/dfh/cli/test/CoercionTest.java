@@ -18,6 +18,7 @@ import dfh.cli.Cli.Res;
 import dfh.cli.Coercion;
 import dfh.cli.coercions.DateCoercion;
 import dfh.cli.coercions.FileCoercion;
+import dfh.cli.coercions.StreamCoercion;
 
 public class CoercionTest {
 	class RomanNumerals extends Coercion<Integer> {
@@ -218,6 +219,31 @@ public class CoercionTest {
 			}
 		} catch (IOException e) {
 			fail("threw exception: " + e);
+		}
+	}
+
+	@Test
+	public void describeDefault1() {
+		try {
+			Object[][][] spec = { { { "foo", StreamCoercion.C, System.err } } };
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+			fail("should have throw an exception");
+		} catch (Exception e) {
+			assertTrue(e.getMessage().indexOf("STDERR") > -1);
+		}
+	}
+
+	@Test
+	public void describeDefault2() {
+		String f = "bar.txt";
+		try {
+			Object[][][] spec = { { { "foo", StreamCoercion.C, f } } };
+			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
+			cli.parse("--help");
+			fail("should have throw an exception");
+		} catch (Exception e) {
+			assertTrue(e.getMessage().indexOf(f) > -1);
 		}
 	}
 }

@@ -19,7 +19,7 @@ TODO
   and cvs
 . check error reporting when first option is unknown and other options are required
 . improve javadocs
-. improve default reporting for StreamCoercion or any other coercion which 
+* improve default reporting for StreamCoercion or any other coercion which 
   doesn't produce human-readable stringifications
 * add Cli.Res.SHH to silence description augmentation for a particular option
 * add Cli.Mod.SHH to silence description augmentation for all options

@@ -59,4 +59,12 @@ public abstract class Coercion<K> {
 	public Collection<String> constraintDescriptions() {
 		return Collections.emptyList();
 	}
+	
+	/**
+	 * @param def
+	 * @return stringification of a default value of this coercion
+	 */
+	protected String describeDefault(Object def) {
+		return def.toString();
+	}
 }

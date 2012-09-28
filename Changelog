@@ -3,6 +3,7 @@
    * created Cli.Mod.SHH
    * fixed bug where isSet(String) was not working with collection options
      with default values
+   * improved stringification of default values of coerced options
 
 2.02, 22 September 2012
    * changed names of numeric type option accessors from ilong to lng and

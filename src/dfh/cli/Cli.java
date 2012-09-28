@@ -856,7 +856,7 @@ public class Cli implements Serializable {
 						if (c.isRequired())
 							b.append(" REQUIRED");
 						else
-							b.append(" default: ").append(c.def);
+							b.append(" default: ").append(c.describeDefault());
 					}
 				}
 				String line = String.format(format, optDesc, argDescription,

@@ -30,4 +30,8 @@ public class CoercedList<K> extends ListOption<K> implements Serializable {
 		return c.type();
 	}
 
+	@Override
+	protected String describeDefault() {
+		return c.describeDefault(def);
+	}
 }

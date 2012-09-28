@@ -192,4 +192,11 @@ public abstract class Option<K> implements Serializable {
 	public void setBrief(boolean brief) {
 		this.brief = brief;
 	}
+
+	/**
+	 * @return string representation of the default value
+	 */
+	protected String describeDefault() {
+		return def.toString();
+	}
 }
