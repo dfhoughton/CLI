@@ -8,8 +8,10 @@
  */
 package dfh.cli;
 
-public class CoercedSet<K> extends SetOption<K> {
+import java.io.Serializable;
 
+public class CoercedSet<K> extends SetOption<K> implements Serializable {
+	private static final long serialVersionUID = 1L;
 	protected final Coercion<K> c;
 
 	public CoercedSet(Coercion<K> c) {

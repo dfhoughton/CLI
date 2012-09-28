@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class NumberOption extends Option<Number> {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Helps with parsing and display of numeric options.

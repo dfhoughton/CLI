@@ -9,6 +9,7 @@ var hdrs = {
 	"modifiers" : "modifiers.html",
 	"use" : "values.html",
 	"validation" : "validation.html",
+	"misc." : "miscellaneous.html",
 	"API" : "api/index.html",
 	"download" : "download.html",
 };

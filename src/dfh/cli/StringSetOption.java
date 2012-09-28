@@ -8,7 +8,11 @@
  */
 package dfh.cli;
 
-public class StringSetOption extends SetOption<String> {
+import java.io.Serializable;
+
+public class StringSetOption extends SetOption<String> implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	{
 		argDescription = "str";
 	}

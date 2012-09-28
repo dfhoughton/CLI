@@ -8,6 +8,7 @@
  */
 package dfh.cli;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +27,8 @@ import java.util.TreeSet;
  * @param <K>
  *            the value associated with the option
  */
-public abstract class Option<K> {
+public abstract class Option<K> implements Serializable {
+	private static final long serialVersionUID = 1L;
 	protected boolean found = false;
 	protected Set<String> longNames = new TreeSet<String>();
 	protected Set<Character> shortNames = new TreeSet<Character>();

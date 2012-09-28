@@ -24,6 +24,7 @@ import dfh.cli.ValidationRule;
  * 
  */
 public class NumSet extends ValidationRule<Number> {
+	private static final long serialVersionUID = 1L;
 	private final Set<Double> set;
 
 	public NumSet(double... nums) {

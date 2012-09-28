@@ -7,11 +7,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
@@ -26,6 +30,7 @@ import dfh.cli.Cli.Opt;
 import dfh.cli.Cli.Res;
 import dfh.cli.ValidationException;
 import dfh.cli.ValidationRule;
+import dfh.cli.coercions.FileCoercion;
 import dfh.cli.rules.Range;
 
 public class CliTest {
@@ -1838,5 +1843,28 @@ public class CliTest {
 					Pattern.compile("value\\s++must\\s++be\\s++>\\s++0")
 							.matcher(s).find());
 		}
+	}
+
+	@Test
+	public void serialization() throws IOException, ClassNotFoundException {
+		Object[][][] spec = { { { "foo", String.class, "bar" } },
+				{ { "baz", Integer.class }, {}, { Res.REPEATABLE } },
+				{ { "quux", FileCoercion.C }, { "description" }, { Res.SET } },
+				{}, { { "corge" } }, };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		cli.parse("--baz=1", "--baz=2", "--corge");
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(cli);
+		oos.close();
+		ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(
+				baos.toByteArray()));
+		cli = (Cli) ois.readObject();
+		assertEquals(2, cli.collection("baz").size());
+		assertTrue(cli.collection("baz").contains(1));
+		assertTrue(cli.collection("baz").contains(2));
+		assertTrue(cli.collection("quux").isEmpty());
+		assertTrue(cli.bool("corge"));
+		assertEquals("bar", cli.string("foo"));
 	}
 }

@@ -10,6 +10,7 @@ package dfh.cli.coercions;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.io.Serializable;
 
 import dfh.cli.Coercion;
 import dfh.cli.ValidationException;
@@ -21,8 +22,9 @@ import dfh.cli.ValidationException;
  * @author David F. Houghton - Sep 15, 2012
  * 
  */
-public class StreamCoercion extends Coercion<PrintStream> {
-
+public class StreamCoercion extends Coercion<PrintStream> implements
+		Serializable {
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Constant singleton instance of this coercion that can be used in lieu of
 	 * {@code new StreamCoercion()}.

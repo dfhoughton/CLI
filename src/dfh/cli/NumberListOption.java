@@ -8,6 +8,8 @@
  */
 package dfh.cli;
 
+import java.io.Serializable;
+
 import dfh.cli.NumberOption.NumType;
 
 /**
@@ -17,7 +19,9 @@ import dfh.cli.NumberOption.NumType;
  * @author David F. Houghton
  * 
  */
-public class NumberListOption extends ListOption<Number> {
+public class NumberListOption extends ListOption<Number> implements
+		Serializable {
+	private static final long serialVersionUID = 1L;
 	private final NumType it;
 
 	public NumberListOption(Object cz) {

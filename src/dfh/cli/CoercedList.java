@@ -8,8 +8,10 @@
  */
 package dfh.cli;
 
-public class CoercedList<K> extends ListOption<K> {
+import java.io.Serializable;
 
+public class CoercedList<K> extends ListOption<K> implements Serializable {
+	private static final long serialVersionUID = 1L;
 	protected final Coercion<K> c;
 
 	public CoercedList(Coercion<K> c) {

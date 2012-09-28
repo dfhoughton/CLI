@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ListOption<K> extends CollectionOption<K, List<K>> {
+	private static final long serialVersionUID = 1L;
+
 	{
 		value = new ArrayList<K>();
 	}

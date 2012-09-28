@@ -23,7 +23,7 @@ import dfh.cli.ValidationRule;
  * @param <K>
  */
 public class Range<K extends Number> extends ValidationRule<K> {
-
+	private static final long serialVersionUID = 1L;
 	protected final double low;
 	protected final double high;
 	private final String rangeName;
@@ -100,6 +100,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 */
 	public static Range<? extends Number> positive() {
 		return new Range<Double>(0D, Double.POSITIVE_INFINITY, false, true) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String description() {
 				return "value must be > 0";
@@ -116,6 +118,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 */
 	public static Range<Double> greater(double low) {
 		return new Range<Double>(low, Double.POSITIVE_INFINITY, false, true) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String description() {
 				return "value must be > " + new DecimalFormat().format(low);
@@ -132,6 +136,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 */
 	public static Range<Double> greaterOrEq(double low) {
 		return new Range<Double>(low, Double.POSITIVE_INFINITY, true, true) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String description() {
 				return "value must be >= " + new DecimalFormat().format(low);
@@ -147,6 +153,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 */
 	public static Range<? extends Number> negative() {
 		return new Range<Double>(Double.NEGATIVE_INFINITY, 0D, true, false) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String description() {
 				return "value must be < 0";
@@ -163,6 +171,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 */
 	public static Range<Double> less(double high) {
 		return new Range<Double>(Double.NEGATIVE_INFINITY, high, true, false) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String description() {
 				return "value must be < " + new DecimalFormat().format(high);
@@ -179,6 +189,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 */
 	public static Range<Double> lessOrEq(double high) {
 		return new Range<Double>(Double.NEGATIVE_INFINITY, high, true, true) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String description() {
 				return "value must be <= " + new DecimalFormat().format(high);
@@ -194,6 +206,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 */
 	public static Range<? extends Number> nonNegative() {
 		return new Range<Double>(0D, Double.POSITIVE_INFINITY, true, true) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String description() {
 				return "value must be >= 0";
@@ -209,6 +223,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 */
 	public static Range<? extends Number> nonPositive() {
 		return new Range<Double>(Double.NEGATIVE_INFINITY, 0D, true, true) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String description() {
 				return "value must be <= 0";

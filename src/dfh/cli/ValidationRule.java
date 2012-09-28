@@ -8,6 +8,8 @@
  */
 package dfh.cli;
 
+import java.io.Serializable;
+
 /**
  * Test to be applied to particular command line values.
  * <p>
@@ -19,7 +21,8 @@ package dfh.cli;
  *            the type of object parsed out of the argument if validation
  *            succeeds
  */
-public abstract class ValidationRule<K> {
+public abstract class ValidationRule<K> implements Serializable {
+	private static final long serialVersionUID = 1L;
 	protected boolean quiet = false;
 
 	/**

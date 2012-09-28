@@ -8,7 +8,9 @@
  */
 package dfh.cli;
 
+
 public class BooleanOption extends Option<Boolean> {
+	private static final long serialVersionUID = 1L;
 
 	{
 		hasArgument = false;

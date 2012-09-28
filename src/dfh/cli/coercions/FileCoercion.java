@@ -9,6 +9,7 @@
 package dfh.cli.coercions;
 
 import java.io.File;
+import java.io.Serializable;
 
 import dfh.cli.Coercion;
 import dfh.cli.ValidationException;
@@ -20,8 +21,8 @@ import dfh.cli.ValidationException;
  * @author David F. Houghton - Sep 15, 2012
  * 
  */
-public class FileCoercion extends Coercion<File> {
-
+public class FileCoercion extends Coercion<File> implements Serializable {
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Constant singleton instance of this coercion that can be used in lieu of
 	 * {@code new FileCoercion()}.

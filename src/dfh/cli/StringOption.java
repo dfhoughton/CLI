@@ -9,6 +9,8 @@
 package dfh.cli;
 
 public class StringOption extends Option<String> {
+	private static final long serialVersionUID = 1L;
+
 	{
 		argDescription = "str";
 	}

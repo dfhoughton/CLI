@@ -25,6 +25,7 @@ import java.util.List;
  */
 public abstract class CollectionOption<K, C extends Collection<K>> extends
 		Option<C> {
+	private static final long serialVersionUID = 1L;
 	protected List<String> storageList = new LinkedList<String>();
 	protected List<ValidationRule<K>> itemValidationRules = new ArrayList<ValidationRule<K>>();
 

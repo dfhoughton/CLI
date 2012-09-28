@@ -12,6 +12,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public abstract class SetOption<K> extends CollectionOption<K, Set<K>> {
+	private static final long serialVersionUID = 1L;
+
 	{
 		value = new LinkedHashSet<K>();
 	}

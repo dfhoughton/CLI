@@ -19,7 +19,7 @@ import dfh.cli.ValidationRule;
  * @author David Houghton
  */
 public class StrRegex extends ValidationRule<String> {
-
+	private static final long serialVersionUID = 1;
 	private final Pattern re;
 
 	public StrRegex(String regex) {

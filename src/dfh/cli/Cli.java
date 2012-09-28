@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -39,7 +40,9 @@ import java.util.regex.Pattern;
  * @author David Houghton
  * 
  */
-public class Cli {
+public class Cli implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * If provided as the first element of a specification array, these types
 	 * determine how the remainder of the array will be parsed.

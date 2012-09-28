@@ -18,6 +18,7 @@ package dfh.cli;
  * 
  */
 public class DummyOption extends Option<String> {
+	private static final long serialVersionUID = 1L;
 
 	public DummyOption() {
 		stored = "";

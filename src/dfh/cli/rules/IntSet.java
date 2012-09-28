@@ -23,6 +23,7 @@ import dfh.cli.ValidationRule;
  * 
  */
 public class IntSet extends ValidationRule<Integer> {
+	private static final long serialVersionUID = 1L;
 	private final Set<Integer> set;
 
 	public IntSet(int... ints) {

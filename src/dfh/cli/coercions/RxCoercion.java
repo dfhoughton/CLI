@@ -8,6 +8,7 @@
  */
 package dfh.cli.coercions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Pattern;
@@ -23,8 +24,8 @@ import dfh.cli.ValidationException;
  * @author David F. Houghton - Sep 15, 2012
  * 
  */
-public class RxCoercion extends Coercion<Pattern> {
-
+public class RxCoercion extends Coercion<Pattern> implements Serializable {
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Constant singleton instance of this coercion that can be used in lieu of
 	 * {@code new RxCoercion()}.

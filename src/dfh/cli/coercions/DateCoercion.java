@@ -8,6 +8,7 @@
  */
 package dfh.cli.coercions;
 
+import java.io.Serializable;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,7 +29,8 @@ import dfh.cli.ValidationException;
  * @author David F. Houghton - Sep 15, 2012
  * 
  */
-public class DateCoercion extends Coercion<Date> {
+public class DateCoercion extends Coercion<Date> implements Serializable {
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Constant singleton instance of this coercion that can be used in lieu of
 	 * {@code new DateCoercion()}.

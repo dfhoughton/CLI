@@ -8,6 +8,7 @@
  */
 package dfh.cli.rules;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,8 +24,8 @@ import dfh.cli.ValidationRule;
  * 
  * @author David Houghton
  */
-public class StrSet extends ValidationRule<String> {
-
+public class StrSet extends ValidationRule<String> implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private final Set<String> set;
 
 	public StrSet(String... strings) {
