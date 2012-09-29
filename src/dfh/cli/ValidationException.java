@@ -20,6 +20,12 @@ package dfh.cli;
 public class ValidationException extends Exception {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructs an exception holding the description of a validation error.
+	 * 
+	 * @param error
+	 *            message payload of error
+	 */
 	public ValidationException(String error) {
 		super(error);
 	}

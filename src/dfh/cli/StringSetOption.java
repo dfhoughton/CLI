@@ -10,7 +10,10 @@ package dfh.cli;
 
 import java.io.Serializable;
 
-public class StringSetOption extends SetOption<String> implements Serializable {
+/**
+ * Option holding a set of strings.
+ */
+class StringSetOption extends SetOption<String> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	{
@@ -18,12 +21,12 @@ public class StringSetOption extends SetOption<String> implements Serializable {
 	}
 
 	@Override
-	protected String handle(String s) {
+	String handle(String s) {
 		return s;
 	}
 
 	@Override
-	protected String type() {
+	String type() {
 		return "strings";
 	}
 

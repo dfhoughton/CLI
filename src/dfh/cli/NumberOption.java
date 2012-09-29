@@ -3,7 +3,11 @@ package dfh.cli;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class NumberOption extends Option<Number> {
+/**
+ * Option holding a numeric value.
+ * 
+ */
+class NumberOption extends Option<Number> {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -25,6 +29,13 @@ public class NumberOption extends Option<Number> {
 			this.arg = arg;
 		}
 
+		/**
+		 * Used in parsing spec. Converts the spect type to a {@link NumType}.
+		 * 
+		 * @param cz
+		 *            spec object
+		 * @return
+		 */
 		static NumType obj2type(Object cz) {
 			NumType o;
 			if (cz.equals(Short.class))
@@ -48,6 +59,16 @@ public class NumberOption extends Option<Number> {
 			return o;
 		}
 
+		/**
+		 * Coerces a numeric option argument into a number.
+		 * 
+		 * @param i
+		 *            numeric type governing parsing
+		 * @param s
+		 *            string to be parsed into a number
+		 * @return option value
+		 * @throws ValidationException
+		 */
 		static Number parse(NumType i, String s) throws ValidationException {
 			Number n = null;
 			if (s != null) {
@@ -99,7 +120,7 @@ public class NumberOption extends Option<Number> {
 	}
 
 	@Override
-	public String description() {
+	String description() {
 		if (description == null) {
 			switch (it) {
 			case flt:
@@ -114,12 +135,12 @@ public class NumberOption extends Option<Number> {
 	}
 
 	@Override
-	public void validate() throws ValidationException {
+	void validate() throws ValidationException {
 		value = NumType.parse(it, stored);
 	}
 
 	@Override
-	public void setDefault(Object def) throws ValidationException {
+	void setDefault(Object def) throws ValidationException {
 		if ((it == NumType.bigdec || it == NumType.bigint)
 				&& def instanceof String) {
 			try {

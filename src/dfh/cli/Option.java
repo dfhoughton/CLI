@@ -27,7 +27,7 @@ import java.util.TreeSet;
  * @param <K>
  *            the value associated with the option
  */
-public abstract class Option<K> implements Serializable {
+abstract class Option<K> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	protected boolean found = false;
 	protected Set<String> longNames = new TreeSet<String>();
@@ -50,30 +50,30 @@ public abstract class Option<K> implements Serializable {
 	 */
 	protected List<String> nativeConstraints = new LinkedList<String>();
 
-	public boolean isRequired() {
+	boolean isRequired() {
 		return required;
 	}
 
-	public void setRequired(boolean required) {
+	void setRequired(boolean required) {
 		this.required = required;
 	}
 
-	public void setArgDescription(String argDescription) {
+	void setArgDescription(String argDescription) {
 		this.argDescription = argDescription;
 	}
 
-	public void setHasArgument(boolean hasArgument) {
+	void setHasArgument(boolean hasArgument) {
 		this.hasArgument = hasArgument;
 	}
 
 	@SuppressWarnings("unchecked")
-	public K value() {
+	K value() {
 		if (value == null)
 			return (K) def;
 		return value;
 	}
 
-	public void addName(Object n) throws ValidationException {
+	void addName(Object n) throws ValidationException {
 		if (n instanceof String) {
 			String s = (String) n;
 			if (s.length() == 1)
@@ -90,7 +90,7 @@ public abstract class Option<K> implements Serializable {
 			name = n.toString();
 	}
 
-	public void store(String stored) {
+	void store(String stored) {
 		this.stored = stored;
 	}
 
@@ -98,18 +98,18 @@ public abstract class Option<K> implements Serializable {
 	 * Mark command as present on the command line. This facilitates discovering
 	 * missing a required argument.
 	 */
-	public void mark() {
+	void mark() {
 		this.found = true;
 	}
 
 	/**
 	 * @return whether the command was on the command line
 	 */
-	public boolean found() {
+	boolean found() {
 		return found;
 	}
 
-	public String optionDescription() {
+	String optionDescription() {
 		if (optionDescription == null) {
 			StringBuilder b = new StringBuilder();
 			for (String s : longNames) {
@@ -127,20 +127,20 @@ public abstract class Option<K> implements Serializable {
 		return optionDescription;
 	}
 
-	public String argDescription() {
+	String argDescription() {
 		if (hasArgument()) {
 			return '<' + argDescription + '>';
 		}
 		return "";
 	}
 
-	public boolean hasArgument() {
+	boolean hasArgument() {
 		return hasArgument;
 	}
 
-	public abstract String description();
+	abstract String description();
 
-	public abstract void validate() throws ValidationException;
+	abstract void validate() throws ValidationException;
 
 	void terminalValidation() throws ValidationException {
 		if (value() != null) {
@@ -151,12 +151,12 @@ public abstract class Option<K> implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public K getDefault() {
+	K getDefault() {
 		return (K) def;
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setDefault(Object def) throws ValidationException {
+	void setDefault(Object def) throws ValidationException {
 		try {
 			this.def = (K) def;
 		} catch (ClassCastException e) {
@@ -166,8 +166,7 @@ public abstract class Option<K> implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void addValidationRule(ValidationRule<?> v)
-			throws ValidationException {
+	void addValidationRule(ValidationRule<?> v) throws ValidationException {
 		try {
 			validationRules.add((ValidationRule<K>) v);
 		} catch (ClassCastException e) {
@@ -181,22 +180,22 @@ public abstract class Option<K> implements Serializable {
 		value = (K) def;
 	}
 
-	public void setDescription(String string) {
+	void setDescription(String string) {
 		this.description = string;
 	}
 
-	public boolean isBrief() {
+	boolean isBrief() {
 		return brief;
 	}
 
-	public void setBrief(boolean brief) {
+	void setBrief(boolean brief) {
 		this.brief = brief;
 	}
 
 	/**
 	 * @return string representation of the default value
 	 */
-	protected String describeDefault() {
+	String describeDefault() {
 		return def.toString();
 	}
 }

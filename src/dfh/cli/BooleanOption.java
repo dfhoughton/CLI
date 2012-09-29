@@ -8,8 +8,10 @@
  */
 package dfh.cli;
 
-
-public class BooleanOption extends Option<Boolean> {
+/**
+ * Option whose value is true or false.
+ */
+class BooleanOption extends Option<Boolean> {
 	private static final long serialVersionUID = 1L;
 
 	{

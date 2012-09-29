@@ -17,24 +17,24 @@ package dfh.cli;
  * @author David Houghton
  * 
  */
-public class DummyOption extends Option<String> {
+class DummyOption extends Option<String> {
 	private static final long serialVersionUID = 1L;
 
-	public DummyOption() {
+	DummyOption() {
 		stored = "";
 	}
 
-	public DummyOption(String s) {
+	DummyOption(String s) {
 		stored = s;
 	}
 
 	@Override
-	public String description() {
+	String description() {
 		return stored;
 	}
 
 	@Override
-	public void validate() throws ValidationException {
+	void validate() throws ValidationException {
 	}
 
 }

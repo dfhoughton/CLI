@@ -13,29 +13,28 @@ import java.io.Serializable;
 import dfh.cli.NumberOption.NumType;
 
 /**
- * Option holding repeated integer values.
+ * Option holding repeated numeric values.
  * <p>
  * 
  * @author David F. Houghton
  * 
  */
-public class NumberListOption extends ListOption<Number> implements
-		Serializable {
+class NumberListOption extends ListOption<Number> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final NumType it;
 
-	public NumberListOption(Object cz) {
+	NumberListOption(Object cz) {
 		it = NumType.obj2type(cz);
 		argDescription = it.arg;
 	}
 
 	@Override
-	protected Number handle(String s) throws ValidationException {
+	Number handle(String s) throws ValidationException {
 		return NumType.parse(it, s);
 	}
 
 	@Override
-	protected String type() {
+	String type() {
 		switch (it) {
 		case flt:
 		case dbl:

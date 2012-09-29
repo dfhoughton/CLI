@@ -36,7 +36,8 @@ public abstract class Coercion<K> {
 	/**
 	 * Override to generate a more explanatory argument name.
 	 * 
-	 * @return
+	 * @return name of argument, usually an abbreviation for the type of value
+	 *         strings are coerced into
 	 */
 	public String argName() {
 		return "val";
@@ -59,7 +60,7 @@ public abstract class Coercion<K> {
 	public Collection<String> constraintDescriptions() {
 		return Collections.emptyList();
 	}
-	
+
 	/**
 	 * @param def
 	 * @return stringification of a default value of this coercion
