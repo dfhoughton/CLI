@@ -13,19 +13,9 @@ TODO
 
 . make internationalizable
 . create unit tests for more of the validation rules
-. remove unnecessary IntSet?
-* create an example directory
-* document how to produce a branching CLI such as you have in git
-  and cvs
+- remove unnecessary IntSet?
 . check error reporting when first option is unknown and other options are required
-* improve javadocs
-* improve default reporting for StreamCoercion or any other coercion which 
-  doesn't produce human-readable stringifications
-* add Cli.Res.SHH to silence description augmentation for a particular option
-* add Cli.Mod.SHH to silence description augmentation for all options
-* add miscellaneous section to documentation to cover the bits left out elsewhere
 . make the option names wrap (maybe they already do? I forget)
-* make non-abstract dfh.cli classes serializable
 
 RELICS
 ======
@@ -64,3 +54,13 @@ Things swept out of TODO list:
 * document Mod.NO_HELP
 * document coercions
 * make unit tests to make sure coercions work when not set
+* create an example directory
+* document how to produce a branching CLI such as you have in git
+  and cvs
+* improve javadocs
+* improve default reporting for StreamCoercion or any other coercion which 
+  doesn't produce human-readable stringifications
+* add Cli.Res.SHH to silence description augmentation for a particular option
+* add Cli.Mod.SHH to silence description augmentation for all options
+* add miscellaneous section to documentation to cover the bits left out elsewhere
+* make non-abstract dfh.cli classes serializable
