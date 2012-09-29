@@ -8,7 +8,10 @@
  */
 package dfh.cli;
 
-public class StringOption extends Option<String> {
+/**
+ * Option whose value remains a string.
+ */
+class StringOption extends Option<String> {
 	private static final long serialVersionUID = 1L;
 
 	{
@@ -16,14 +19,14 @@ public class StringOption extends Option<String> {
 	}
 
 	@Override
-	public String description() {
+	String description() {
 		if (description == null)
 			return "string option";
 		return description;
 	}
 
 	@Override
-	public void validate() throws ValidationException {
+	void validate() throws ValidationException {
 		if (stored != null) {
 			value = stored;
 		}

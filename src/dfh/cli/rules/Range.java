@@ -20,7 +20,7 @@ import dfh.cli.ValidationRule;
  * 
  * @author David Houghton
  * 
- * @param <K>
+ * @param <K> type of number in range
  */
 public class Range<K extends Number> extends ValidationRule<K> {
 	private static final long serialVersionUID = 1L;

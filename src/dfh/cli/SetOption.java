@@ -11,7 +11,13 @@ package dfh.cli;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public abstract class SetOption<K> extends CollectionOption<K, Set<K>> {
+/**
+ * Option holding a set of values.
+ * 
+ * @param <K>
+ *            type of object in set
+ */
+abstract class SetOption<K> extends CollectionOption<K, Set<K>> {
 	private static final long serialVersionUID = 1L;
 
 	{
@@ -19,7 +25,7 @@ public abstract class SetOption<K> extends CollectionOption<K, Set<K>> {
 	}
 
 	@Override
-	public String description() {
+	String description() {
 		if (description == null)
 			return "a set of " + type();
 		return description;

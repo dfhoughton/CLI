@@ -23,21 +23,19 @@ import java.util.List;
  * @param <K>
  *            the sort of value repeated
  */
-public abstract class CollectionOption<K, C extends Collection<K>> extends
-		Option<C> {
+abstract class CollectionOption<K, C extends Collection<K>> extends Option<C> {
 	private static final long serialVersionUID = 1L;
 	protected List<String> storageList = new LinkedList<String>();
 	protected List<ValidationRule<K>> itemValidationRules = new ArrayList<ValidationRule<K>>();
 
 	@Override
-	public void store(String s) {
+	void store(String s) {
 		storageList.add(s);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void addValidationRule(ValidationRule<?> v)
-			throws ValidationException {
+	void addValidationRule(ValidationRule<?> v) throws ValidationException {
 		Method m = getTestMethod(v);
 		Class<?> cz = m.getParameterTypes()[0];
 		try {
@@ -75,7 +73,7 @@ public abstract class CollectionOption<K, C extends Collection<K>> extends
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public C value() {
+	C value() {
 		if (value.isEmpty() && def != null) {
 			value.add((K) def);
 		}
@@ -83,7 +81,7 @@ public abstract class CollectionOption<K, C extends Collection<K>> extends
 	}
 
 	@Override
-	public void setDefault(Object def) throws ValidationException {
+	void setDefault(Object def) throws ValidationException {
 		if (def instanceof String)
 			this.def = handle(def.toString());
 		else
@@ -96,15 +94,15 @@ public abstract class CollectionOption<K, C extends Collection<K>> extends
 	 * @return an object of the type in this collection
 	 * @throws ValidationException
 	 */
-	protected abstract K handle(String s) throws ValidationException;
+	abstract K handle(String s) throws ValidationException;
 
 	/**
 	 * @return the type of object in this collection
 	 */
-	protected abstract String type();
+	abstract String type();
 
 	@Override
-	public void validate() throws ValidationException {
+	void validate() throws ValidationException {
 		for (String stored : storageList) {
 			value.add(handle(stored));
 		}

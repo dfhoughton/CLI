@@ -8,7 +8,7 @@
  */
 package dfh.cli;
 
-public class CoercedOption<K> extends Option<K> {
+class CoercedOption<K> extends Option<K> {
 	private static final long serialVersionUID = 1L;
 	private Coercion<K> c;
 

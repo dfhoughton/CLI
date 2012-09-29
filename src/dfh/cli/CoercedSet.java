@@ -10,28 +10,34 @@ package dfh.cli;
 
 import java.io.Serializable;
 
-public class CoercedSet<K> extends SetOption<K> implements Serializable {
+/**
+ * Option holding a set of objects coerced out of strings. See {@link Coercion}.
+ * 
+ * @param <K>
+ *            the type of object strings are coerced into
+ */
+class CoercedSet<K> extends SetOption<K> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	protected final Coercion<K> c;
 
-	public CoercedSet(Coercion<K> c) {
+	CoercedSet(Coercion<K> c) {
 		this.c = c;
 		argDescription = c.argName();
 		nativeConstraints.addAll(c.constraintDescriptions());
 	}
 
 	@Override
-	protected K handle(String s) throws ValidationException {
+	K handle(String s) throws ValidationException {
 		return c.coerce(s);
 	}
 
 	@Override
-	protected String type() {
+	String type() {
 		return c.type();
 	}
 
 	@Override
-	protected String describeDefault() {
+	String describeDefault() {
 		return c.describeDefault(def);
 	}
 }

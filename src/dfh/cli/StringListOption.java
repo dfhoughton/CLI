@@ -10,8 +10,7 @@ package dfh.cli;
 
 import java.io.Serializable;
 
-public class StringListOption extends ListOption<String> implements
-		Serializable {
+class StringListOption extends ListOption<String> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	{
@@ -19,12 +18,12 @@ public class StringListOption extends ListOption<String> implements
 	}
 
 	@Override
-	protected String handle(String s) {
+	String handle(String s) {
 		return s;
 	}
 
 	@Override
-	protected String type() {
+	String type() {
 		return "strings";
 	}
 

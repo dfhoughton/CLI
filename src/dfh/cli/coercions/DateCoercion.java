@@ -66,6 +66,7 @@ public class DateCoercion extends Coercion<Date> implements Serializable {
 	 * objects on hand.
 	 * 
 	 * @param c
+	 *            the date parser to use
 	 */
 	public DateCoercion(Collection<SimpleDateFormat> c) {
 		if (c.isEmpty())
@@ -80,7 +81,8 @@ public class DateCoercion extends Coercion<Date> implements Serializable {
 	 * is a workaround for type erasure.
 	 * 
 	 * @param formats
-	 * @return
+	 *            date formats to use
+	 * @return DateCoercion that uses the given formats
 	 */
 	public static DateCoercion build(SimpleDateFormat... formats) {
 		List<SimpleDateFormat> list = new ArrayList<SimpleDateFormat>(

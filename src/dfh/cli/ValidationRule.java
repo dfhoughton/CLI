@@ -23,6 +23,10 @@ import java.io.Serializable;
  */
 public abstract class ValidationRule<K> implements Serializable {
 	private static final long serialVersionUID = 1L;
+	/**
+	 * Whether this rule should add its {@link #description()} to its option's
+	 * description.
+	 */
 	protected boolean quiet = false;
 
 	/**

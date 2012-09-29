@@ -28,7 +28,18 @@ public class StrSet extends ValidationRule<String> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final Set<String> set;
 
+	/**
+	 * Constructs a validator from a set of values.
+	 * 
+	 * @param strings
+	 *            values in set
+	 * @throws RuntimeException
+	 *             if no values in set
+	 */
 	public StrSet(String... strings) {
+		if (strings.length == 0)
+			throw new RuntimeException("no strings in "
+					+ StrSet.class.getName());
 		set = new HashSet<String>(strings.length * 2);
 		for (String s : strings)
 			set.add(s);

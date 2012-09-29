@@ -26,7 +26,17 @@ public class IntSet extends ValidationRule<Integer> {
 	private static final long serialVersionUID = 1L;
 	private final Set<Integer> set;
 
+	/**
+	 * Constructs a validator from a list of integers.
+	 * 
+	 * @param ints
+	 *            the ints in the set
+	 * @throws RuntimeException
+	 *             if there are no ints in the set
+	 */
 	public IntSet(int... ints) {
+		if (ints.length == 0)
+			throw new RuntimeException("no values in " + IntSet.class.getName());
 		set = new HashSet<Integer>(ints.length * 2);
 		for (int i : ints)
 			set.add(i);

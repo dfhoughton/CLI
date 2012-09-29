@@ -155,10 +155,9 @@ public class Cli implements Serializable {
 	}
 
 	/**
-	 * If the {@link Mod#HELP} modifier is provided to
-	 * {@link Cli#Cli(Object[][][], Mod...)}, these are the preferred flags to
-	 * trigger help. Since the last, <code>-?</code>, violates
-	 * {@link #COMMAND_NAME_PATTERN}, it should always be available.
+	 * These are the preferred flags to trigger help. Since the last,
+	 * <code>-?</code>, violates {@link #COMMAND_NAME_PATTERN}, it should always
+	 * be available.
 	 */
 	public static final String[] HELP_FLAGS = { "help", "h", "?" };
 	/**
@@ -266,7 +265,7 @@ public class Cli implements Serializable {
 			usage(1);
 	}
 
-	protected boolean addAuxiliary(BooleanOption opt, String s)
+	private boolean addAuxiliary(BooleanOption opt, String s)
 			throws ValidationException {
 		if (!options.containsKey(s)) {
 			opt.addName(s);
@@ -496,7 +495,7 @@ public class Cli implements Serializable {
 		}
 	}
 
-	protected void registerName(Option<?> opt, String s)
+	private void registerName(Option<?> opt, String s)
 			throws ValidationException {
 		if (COMMAND_NAME_PATTERN.matcher(s).matches()) {
 			Option<?> old = options.get(s);

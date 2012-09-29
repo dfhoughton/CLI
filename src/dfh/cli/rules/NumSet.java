@@ -27,7 +27,17 @@ public class NumSet extends ValidationRule<Number> {
 	private static final long serialVersionUID = 1L;
 	private final Set<Double> set;
 
+	/**
+	 * Constructors validator out of a list of numeric values.
+	 * 
+	 * @param nums
+	 *            values in set
+	 * @throws RuntimeException
+	 *             if no values in set
+	 */
 	public NumSet(double... nums) {
+		if (nums.length == 0)
+			throw new RuntimeException("no values in " + NumSet.class.getName());
 		set = new HashSet<Double>(nums.length * 2);
 		for (double i : nums)
 			set.add(i);

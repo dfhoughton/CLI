@@ -22,10 +22,22 @@ public class StrRegex extends ValidationRule<String> {
 	private static final long serialVersionUID = 1;
 	private final Pattern re;
 
+	/**
+	 * Constructs validator that will match values against the given pattern.
+	 * 
+	 * @param regex
+	 *            regular expression to be compiled into a {@link Pattern}
+	 */
 	public StrRegex(String regex) {
 		this(Pattern.compile(regex));
 	}
 
+	/**
+	 * Constructs validator that will match values against the given pattern.
+	 * 
+	 * @param re
+	 *            regular expression to use for validation
+	 */
 	public StrRegex(Pattern re) {
 		this.re = re;
 		if (re == null)

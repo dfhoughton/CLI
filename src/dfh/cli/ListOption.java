@@ -11,7 +11,13 @@ package dfh.cli;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ListOption<K> extends CollectionOption<K, List<K>> {
+/**
+ * An option holding a list of values.
+ * 
+ * @param <K>
+ *            the type of value held by the option
+ */
+abstract class ListOption<K> extends CollectionOption<K, List<K>> {
 	private static final long serialVersionUID = 1L;
 
 	{
@@ -19,7 +25,7 @@ public abstract class ListOption<K> extends CollectionOption<K, List<K>> {
 	}
 
 	@Override
-	public String description() {
+	String description() {
 		if (description == null)
 			return "a list of " + type();
 		return description;
