@@ -20,7 +20,8 @@ import dfh.cli.ValidationRule;
  * 
  * @author David Houghton
  * 
- * @param <K> type of number in range
+ * @param <K>
+ *            type of number in range
  */
 public class Range<K extends Number> extends ValidationRule<K> {
 	private static final long serialVersionUID = 1L;
@@ -45,8 +46,9 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>[low,high]</code>, or
-	 * <code>x &gt;= low and x &lt;= high</code>
+	 * Generates a range of the form {@code [low,high]}, or
+	 * {@code x >= low and x
+	 * <= high}
 	 * 
 	 * @param low
 	 * @param high
@@ -57,8 +59,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>[low,high)</code>, or
-	 * <code>x &gt;= low and x &lt; high</code>
+	 * Generates a range of the form {@code [low,high)}, or
+	 * {@code x >= low and x < high}
 	 * 
 	 * @param low
 	 * @param high
@@ -69,8 +71,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>(low,high]</code>, or
-	 * <code>x &gt; low and x &lt;= high</code>
+	 * Generates a range of the form {@code (low,high]}, or
+	 * {@code x > low and x <= high}
 	 * 
 	 * @param low
 	 * @param high
@@ -81,8 +83,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>(low,high)</code>, or
-	 * <code>x &gt; low and x &lt; high</code>
+	 * Generates a range of the form {@code (low,high)}, or
+	 * {@code x > low and x < high}
 	 * 
 	 * @param low
 	 * @param high
@@ -93,8 +95,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>(0,&infin;]</code>, or
-	 * <code>x &gt; low and x &lt;= &infin;</code>
+	 * Generates a range of the form {@code (0,&infin;]}, or
+	 * {@code x > low and x <= &infin;}
 	 * 
 	 * @return a range of the form (0,&infin;]
 	 */
@@ -110,8 +112,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>(low,&infin;]</code>, or
-	 * <code>x &gt; low and x &lt;= &infin;</code>
+	 * Generates a range of the form {@code (low,&infin;]}, or
+	 * {@code x > low and x <= &infin;}
 	 * 
 	 * @param low
 	 * @return a range of the form (low,&infin;]
@@ -128,8 +130,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>[low,&infin;]</code>, or
-	 * <code>x &gt;= low and x &lt;= &infin;</code>
+	 * Generates a range of the form {@code [low,&infin;]}, or
+	 * {@code x >= low and x <= &infin;}
 	 * 
 	 * @param low
 	 * @return a range of the form [low,&infin;]
@@ -146,8 +148,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>[-&infin;,0)</code>, or
-	 * <code>x &gt;= -&infin; and x &lt; 0</code>
+	 * Generates a range of the form {@code [-&infin;,0)}, or
+	 * {@code x >= -&infin; and x < 0}
 	 * 
 	 * @return a range of the form [-&infin;,0)
 	 */
@@ -163,8 +165,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>[-&infin;,high)</code>, or
-	 * <code>x &gt;= low and x &lt; high</code>
+	 * Generates a range of the form {@code [-&infin;,high)}, or
+	 * {@code x >= low and x < high}
 	 * 
 	 * @param high
 	 * @return a range of the form [-&infin;,high)
@@ -181,8 +183,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>[-&infin;,high]</code>, or
-	 * <code>x &gt;= -&infin; and x &lt;= high</code>
+	 * Generates a range of the form {@code [-&infin;,high]}, or
+	 * {@code x >= -&infin; and x <= high}
 	 * 
 	 * @param high
 	 * @return a range of the form [-&infin;,high]
@@ -199,8 +201,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>[0,&infin;]</code>, or
-	 * <code>x &gt;= 0 and x &lt;= &infin;</code>
+	 * Generates a range of the form {@code [0,&infin;]}, or
+	 * {@code x >= 0 and x <= &infin;}
 	 * 
 	 * @return a range of the form [0,&infin;]
 	 */
@@ -216,8 +218,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates a range of the form <code>[-&infin;,0]</code>, or
-	 * <code>x &gt;= -&infin; and x &lt;= 0</code>
+	 * Generates a range of the form {@code [-&infin;,0]}, or
+	 * {@code x >= -&infin; and x <= 0}
 	 * 
 	 * @return a range of the form [-&infin;,0]
 	 */
@@ -233,7 +235,7 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	}
 
 	/**
-	 * Generates the range <code>[0,1]</code>, the unit interval.
+	 * Generates the range {@code [0,1]}, the unit interval.
 	 * 
 	 * @return the range [0,1].
 	 */
