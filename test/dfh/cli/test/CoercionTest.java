@@ -244,6 +244,7 @@ public class CoercionTest {
 			fail("should have throw an exception");
 		} catch (Exception e) {
 			assertTrue(e.getMessage().indexOf(f) > -1);
+			new File(f).delete();
 		}
 	}
 }
