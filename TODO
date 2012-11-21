@@ -16,7 +16,7 @@ TODO
 - remove unnecessary IntSet?
 . check error reporting when first option is unknown and other options are required
 . make the option names wrap (maybe they already do? I forget)
-. added enum coerced option
+* added enum option
 
 RELICS
 ======

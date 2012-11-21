@@ -553,7 +553,15 @@ public class Cli implements Serializable {
 		}
 		// create the option
 		Option<?> opt = null;
-		if (cz.equals(Boolean.class)) {
+		if (cz instanceof Class && ((Class<?>) cz).isEnum()) {
+			Class<Enum<?>> ce = (Class<Enum<?>>) cz;
+			if (isSet)
+				opt = new EnumSetOption(ce);
+			else if (isRepeatable)
+				opt = new EnumListOption(ce);
+			else
+				opt = new EnumOption(ce);
+		} else if (cz.equals(Boolean.class)) {
 			if (isRepeatable)
 				throw new ValidationException(
 						"boolean options are not repeatable");
