@@ -235,8 +235,8 @@ public class CoercionTest {
 	}
 
 	@Test
-	public void describeDefault2() {
-		String f = "bar.txt";
+	public void describeDefault2() throws IOException {
+		String f = File.createTempFile("foo", null).getName();
 		try {
 			Object[][][] spec = { { { "foo", StreamCoercion.C, f } } };
 			Cli cli = new Cli(spec, Cli.Mod.THROW_EXCEPTION);
