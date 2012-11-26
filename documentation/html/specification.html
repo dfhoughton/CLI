@@ -213,6 +213,14 @@
 		equivalent to a range.</p>
 	<pre>{ { 'a', Integer.class }, {}, { new IntSet(1, 5, 28) } }</pre>
 	<h4>
+		<code>dfh.cli.rules.StrSet</code>
+	</h4>
+	<p>This rule validates a string value against a pattern:</p>
+	<pre>{ { 'a', String.class }, {}, { new StrSet("foo", "bar", "quux") } }</pre>
+	<p>
+		Any value provided must be in the specified, case-sensitive set.
+	</p>
+	<h4>
 		<code>dfh.cli.rules.StrRegex</code>
 	</h4>
 	<p>This rule validates a string value against a pattern:</p>

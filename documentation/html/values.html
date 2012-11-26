@@ -61,7 +61,44 @@ Integer quux = cli.integer("quux"), corge = cli.integer("corge");</pre>
 	</p>
 	<h3>Types</h3>
 	<h4>Boolean</h4>
+	<p>
+		Boolean is the default type of an option. As such, all it needs is a
+		name, though you may specify its type as a
+		<code>Boolean.class</code>
+		. Boolean options always have a default value,
+		<code>false</code>
+		. You must explicitly specify the type if you wish to specify the
+		default, so if you want the default to be
+		<code>true</code>
+		.
+	</p>
+	<pre>        Object[][][] spec = {
+            // equivalent specifications
+            { { "foo" } },
+            { { "bar", Boolean.class } },
+            { { "quux", Boolean.class, false } },
+            // make the default true
+            { { "baz", Boolean.class, true } },
+        };
+
+        Cli cli = new Cli(spec);
+        cli.parse();
+        for (String s : "foo bar quux baz".split(" "))
+            System.out.println(cli.bool(s));</pre>
+	<pre class="results">false
+false
+false
+true</pre>
+	<p>Boolean options are not repeatable.</p>
+	<pre>        Object[][][] spec = {
+            { { "foo" },{},{Res.REPEATABLE} }, // will cause <b>runtime error</b> during Cli construction
+        };</pre>
 	<h4>String</h4>
+	<p>String options are pretty straightforward:</p>
+	<pre>    Object[][][] spec = { { { "foo", String.class } } };
+    Cli cli = new Cli(spec);
+    cli.parse("--foo=bar");
+    String foo = cli.string("foo"); // bar</pre>
 	<h4>Numeric</h4>
 	<p>
 		<code>dfh.cli</code>
@@ -108,8 +145,48 @@ System.out.println(cli.num("g"));            // 1</pre>
 	will be returned.
 	</p>
 	<h4>Enums</h4>
-	<p>If you want an option to take some enum constant, or collection of enum constants, as a value, you can simply specify the enum class as its type:</p>
-	<pre></pre>
+	<p>If you want an option to take some enum constant, or collection
+		of enum constants, as a value, you can simply specify the enum class
+		as its type:</p>
+	<pre>    public static void main(String[] args) {
+        Object[][][] spec = { 
+            { {
+                "foo",
+                <b>Example.class, // --foo will be an Example constant
+                Example.foo    // its default value will be Example.foo</b>
+            } },
+        };
+
+        Cli cli = new Cli(spec);
+        cli.parse();
+        Example ex = (Example) cli.object("foo");
+    }
+
+    enum Example {
+        foo, bar, baz, quux
+    }</pre>
+	<p>
+		If you pass this class the
+		<code>--help</code>
+		flag it produces
+	</p>
+	<pre class="results">USAGE: EXECUTABLE [options] &lt;arg&gt;*
+
+    --foo        &lt;str&gt;  a string; value must be in {foo, bar, baz, quux};
+                        default: foo
+
+    --help -? -h        print usage information
+
+    </pre>
+	<p>As you can see, the possible enum constants are listed in the
+		description.</p>
+	<p>
+		An enum option is functionally similar to a string option with a
+		<code>StrSet</code>
+		validation rule, but it's a little less verbose and saves your
+		coercing the string to the corresponding enum constant if that's what
+		you really want.
+	</p>
 	<h4>Coercions</h4>
 	<p>
 		To produce options containing any value other than those listed above,
