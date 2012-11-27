@@ -1905,4 +1905,28 @@ public class CliTest {
 		assertTrue(cli.bool("corge"));
 		assertEquals("bar", cli.string("foo"));
 	}
+
+	@Test
+	public void unknownAndRequired() {
+		Object[][][] spec = {
+				{ { "foo", String.class }, {}, { Res.REQUIRED } },
+				{ { "corge", String.class }, {}, { Res.REQUIRED } } };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		try {
+			cli.parse("--bar=baz");
+		} catch (Exception e) {
+			String msg = e.getMessage();
+			String re = "unknown option --bar".replaceAll(" ", "\\\\s+");
+			assertTrue("found unknown --bar", Pattern.compile(re).matcher(msg)
+					.find());
+			re = "--foo is required but has no defined value".replaceAll(" ",
+					"\\\\s+");
+			assertTrue("found missing --foo", Pattern.compile(re).matcher(msg)
+					.find());
+			re = "--corge is required but has no defined value".replaceAll(" ",
+					"\\\\s+");
+			assertTrue("found missing --corge", Pattern.compile(re)
+					.matcher(msg).find());
+		}
+	}
 }
