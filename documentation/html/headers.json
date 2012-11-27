@@ -14,4 +14,4 @@ var hdrs = {
 	"download" : "download.html",
 };
 
-var version = "2.04";
+var version = "2.05";
