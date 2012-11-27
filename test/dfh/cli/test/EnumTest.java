@@ -89,6 +89,18 @@ public class EnumTest {
 	}
 
 	@Test
+	public void nonExistentValue() {
+		try {
+			Cli cli = new Cli(new Object[][][] { { { "foo", foo.class } } },
+					Mod.THROW_EXCEPTION);
+			cli.parse("--foo=corge");
+			fail("should have thrown exception when given a non-existent value but got "
+					+ cli.object("foo"));
+		} catch (Exception e) {
+		}
+	}
+
+	@Test
 	public void help() {
 		try {
 			Cli cli = new Cli(new Object[][][] { {
@@ -99,7 +111,8 @@ public class EnumTest {
 		} catch (Exception e) {
 			String s = e.getMessage();
 			Pattern p = Pattern.compile("description.+\\{bar, baz\\}");
-			assertTrue("enumeration present in description", p.matcher(s).find());
+			assertTrue("enumeration present in description", p.matcher(s)
+					.find());
 		}
 	}
 }

@@ -1,4 +1,5 @@
 2.05
+   * fixed validation problem with enum options
 
 2.04, 26 November 2012
    * added enumeration option

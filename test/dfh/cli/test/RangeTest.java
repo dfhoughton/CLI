@@ -108,4 +108,11 @@ public class RangeTest {
 		}
 	}
 
+	@Test
+	public void defaultInt() {
+		Object[][][] spec = { { { "foo", Integer.class, 1 }, {},
+				{ Range.nonNegative() } } };
+		Cli cli = new Cli(spec, Mod.THROW_EXCEPTION);
+		cli.parse("--foo=10000");
+	}
 }

@@ -25,11 +25,15 @@ class EnumOption extends Option<Enum<?>> {
 
 	@Override
 	void validate() throws ValidationException {
-		for (Enum<?> e : cz.getEnumConstants()) {
-			if (e.name().equals(stored)) {
-				value = e;
-				break;
+		if (stored != null) {
+			for (Enum<?> e : cz.getEnumConstants()) {
+				if (e.name().equals(stored)) {
+					value = e;
+					break;
+				}
 			}
+			if (value == null)
+				throw new ValidationException("unknown value: " + stored);
 		}
 	}
 }
