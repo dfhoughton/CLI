@@ -101,6 +101,30 @@ public class EnumTest {
 	}
 
 	@Test
+	public void nonExistentValueInList() {
+		try {
+			Cli cli = new Cli(new Object[][][] { { { "foo", foo.class }, {},
+					{ Cli.Res.REPEATABLE } } }, Mod.THROW_EXCEPTION);
+			cli.parse("--foo=corge");
+			fail("should have thrown exception when given a non-existent value but got "
+					+ cli.object("foo"));
+		} catch (Exception e) {
+		}
+	}
+
+	@Test
+	public void nonExistentValueInSet() {
+		try {
+			Cli cli = new Cli(new Object[][][] { { { "foo", foo.class }, {},
+					{ Cli.Res.SET } } }, Mod.THROW_EXCEPTION);
+			cli.parse("--foo=corge");
+			fail("should have thrown exception when given a non-existent value but got "
+					+ cli.object("foo"));
+		} catch (Exception e) {
+		}
+	}
+
+	@Test
 	public void help() {
 		try {
 			Cli cli = new Cli(new Object[][][] { {
