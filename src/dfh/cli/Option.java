@@ -150,6 +150,11 @@ abstract class Option<K> implements Serializable {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "--" + name + '=' + value();
+	}
+
 	@SuppressWarnings("unchecked")
 	K getDefault() {
 		return (K) def;
