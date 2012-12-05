@@ -19,9 +19,6 @@ import dfh.cli.ValidationRule;
  * <b>Creation date:</b> Nov 7, 2011
  * 
  * @author David Houghton
- * 
- * @param <K>
- *            type of number in range
  */
 public class Range extends ValidationRule<Number> {
 	private static final long serialVersionUID = 1L;
