@@ -23,7 +23,7 @@ import dfh.cli.ValidationRule;
  * @param <K>
  *            type of number in range
  */
-public class Range<K extends Number> extends ValidationRule<K> {
+public class Range extends ValidationRule<Number> {
 	private static final long serialVersionUID = 1L;
 	protected final double low;
 	protected final double high;
@@ -31,7 +31,7 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	private final boolean lowInc;
 	private final boolean highInc;
 
-	private Range(K low, K high, boolean lowInc, boolean highInc) {
+	private Range(Number low, Number high, boolean lowInc, boolean highInc) {
 		this.rangeName = (lowInc ? "[" : "(") + low + ", " + high
 				+ (highInc ? "]" : ")");
 		this.low = low.doubleValue();
@@ -54,8 +54,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * @param high
 	 * @return a range of the form [low,high]
 	 */
-	public static <T extends Number> Range<T> incl(T low, T high) {
-		return new Range<T>(low, high, true, true);
+	public static Range incl(Number low, Number high) {
+		return new Range(low, high, true, true);
 	}
 
 	/**
@@ -66,8 +66,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * @param high
 	 * @return a range of the form [low,high)
 	 */
-	public static <T extends Number> Range<T> lowIncl(T low, T high) {
-		return new Range<T>(low, high, true, false);
+	public static Range lowIncl(Number low, Number high) {
+		return new Range(low, high, true, false);
 	}
 
 	/**
@@ -78,8 +78,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * @param high
 	 * @return a range of the form (low,high]
 	 */
-	public static <T extends Number> Range<T> highIncl(T low, T high) {
-		return new Range<T>(low, high, false, true);
+	public static Range highIncl(Number low, Number high) {
+		return new Range(low, high, false, true);
 	}
 
 	/**
@@ -90,8 +90,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * @param high
 	 * @return a range of the form (low,high)
 	 */
-	public static <T extends Number> Range<T> excl(T low, T high) {
-		return new Range<T>(low, high, false, false);
+	public static Range excl(Number low, Number high) {
+		return new Range(low, high, false, false);
 	}
 
 	/**
@@ -100,8 +100,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * 
 	 * @return a range of the form (0,&infin;]
 	 */
-	public static Range<? extends Number> positive() {
-		return new Range<Double>(0D, Double.POSITIVE_INFINITY, false, true) {
+	public static Range positive() {
+		return new Range(0D, Double.POSITIVE_INFINITY, false, true) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -118,8 +118,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * @param low
 	 * @return a range of the form (low,&infin;]
 	 */
-	public static Range<Double> greater(double low) {
-		return new Range<Double>(low, Double.POSITIVE_INFINITY, false, true) {
+	public static Range greater(double low) {
+		return new Range(low, Double.POSITIVE_INFINITY, false, true) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -136,8 +136,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * @param low
 	 * @return a range of the form [low,&infin;]
 	 */
-	public static Range<Double> greaterOrEq(double low) {
-		return new Range<Double>(low, Double.POSITIVE_INFINITY, true, true) {
+	public static Range greaterOrEq(double low) {
+		return new Range(low, Double.POSITIVE_INFINITY, true, true) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -153,8 +153,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * 
 	 * @return a range of the form [-&infin;,0)
 	 */
-	public static Range<? extends Number> negative() {
-		return new Range<Double>(Double.NEGATIVE_INFINITY, 0D, true, false) {
+	public static Range negative() {
+		return new Range(Double.NEGATIVE_INFINITY, 0D, true, false) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -171,8 +171,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * @param high
 	 * @return a range of the form [-&infin;,high)
 	 */
-	public static Range<Double> less(double high) {
-		return new Range<Double>(Double.NEGATIVE_INFINITY, high, true, false) {
+	public static Range less(double high) {
+		return new Range(Double.NEGATIVE_INFINITY, high, true, false) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -189,8 +189,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * @param high
 	 * @return a range of the form [-&infin;,high]
 	 */
-	public static Range<Double> lessOrEq(double high) {
-		return new Range<Double>(Double.NEGATIVE_INFINITY, high, true, true) {
+	public static Range lessOrEq(double high) {
+		return new Range(Double.NEGATIVE_INFINITY, high, true, true) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -206,8 +206,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * 
 	 * @return a range of the form [0,&infin;]
 	 */
-	public static Range<? extends Number> nonNegative() {
-		return new Range<Double>(0D, Double.POSITIVE_INFINITY, true, true) {
+	public static Range nonNegative() {
+		return new Range(0D, Double.POSITIVE_INFINITY, true, true) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -223,8 +223,8 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * 
 	 * @return a range of the form [-&infin;,0]
 	 */
-	public static Range<? extends Number> nonPositive() {
-		return new Range<Double>(Double.NEGATIVE_INFINITY, 0D, true, true) {
+	public static Range nonPositive() {
+		return new Range(Double.NEGATIVE_INFINITY, 0D, true, true) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -239,12 +239,12 @@ public class Range<K extends Number> extends ValidationRule<K> {
 	 * 
 	 * @return the range [0,1].
 	 */
-	public static Range<? extends Number> unit() {
+	public static Range unit() {
 		return incl(0, 1);
 	}
 
 	@Override
-	public void test(K arg) throws ValidationException {
+	public void test(Number arg) throws ValidationException {
 		double d = arg.doubleValue();
 		boolean lowb = lowInc ? d >= low : d > low;
 		boolean highb = highInc ? d <= high : d < high;

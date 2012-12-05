@@ -8,7 +8,6 @@
  */
 package dfh.cli;
 
-
 /**
  * Dummy validation rule that serves only to augment the description of an enum
  * option.
@@ -42,6 +41,6 @@ class EnumDescriber extends ValidationRule<Enum<?>> {
 	}
 
 	@Override
-	public void test(Enum<?> arg) {
+	public void test(Enum<?> arg) throws ValidationException {
 	}
 }

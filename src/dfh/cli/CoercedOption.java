@@ -31,13 +31,12 @@ class CoercedOption<K> extends Option<K> {
 			value = c.coerce(stored);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void setDefault(Object def) throws ValidationException {
 		if (def instanceof String)
 			this.def = c.coerce(def.toString());
 		else
-			this.def = (K) def;
+			this.def = def;
 	}
 
 	@Override

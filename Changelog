@@ -1,5 +1,6 @@
 2.06
    * added toString method to Option
+   * cleaned up Range tests
 
 2.05, 27 November 2012
    * fixed validation problem with enum options

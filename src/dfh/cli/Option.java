@@ -160,10 +160,9 @@ abstract class Option<K> implements Serializable {
 		return (K) def;
 	}
 
-	@SuppressWarnings("unchecked")
 	void setDefault(Object def) throws ValidationException {
 		try {
-			this.def = (K) def;
+			this.def = def;
 		} catch (ClassCastException e) {
 			throw new ValidationException(
 					"wrong type for default value of option --" + name);
