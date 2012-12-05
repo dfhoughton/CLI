@@ -674,13 +674,9 @@ public class Cli implements Serializable {
 							if (lastCommand == versionOption)
 								version();
 						}
-					} else if (lastCommand == null) {
-						endCommands = true;
-						argList.add(s);
 					} else {
 						argList.add(s);
 						endCommands = true;
-						lastCommand = null;
 					}
 				}
 			} catch (ValidationException e) {
