@@ -669,6 +669,10 @@ public class Cli implements Serializable {
 							ExtractedCommand ec = extractCommands(s);
 							lastCommand = ec.opt;
 							mustStore = !ec.stored;
+							if (lastCommand == helpOption)
+								usage(0);
+							if (lastCommand == versionOption)
+								version();
 						}
 					} else if (lastCommand == null) {
 						endCommands = true;
@@ -681,12 +685,6 @@ public class Cli implements Serializable {
 				}
 			} catch (ValidationException e) {
 				errors.add(e.getMessage());
-			}
-			if (lastCommand != null) {
-				if (lastCommand == helpOption)
-					usage(0);
-				if (lastCommand == versionOption)
-					version();
 			}
 		}
 		if (argNames.size() > 0) {
